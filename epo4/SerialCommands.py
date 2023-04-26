@@ -12,13 +12,15 @@ comport = 'COM7'
 # Serial instance
 serial_port = serial.Serial(comport, 115200, rtscts=True)
 
-## Controlling KITT
-# NEUTRAL: 150
-# LEFT: 100
-# RIGHT: 200
-serial_port.write(b'M135\n')
+# Controlling KITT
+# neutral: 150
+# Hard left: 100
+# Hard right: 200
+# Backward: 135
+# Forward: 165
+serial_port.write(b'M153\n')
 
-# Time
+# Time loop in seconds
 time.sleep(2)
 
 # End connection
