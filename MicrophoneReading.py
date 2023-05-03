@@ -57,8 +57,6 @@ N_total = N_mic * N     # total number of samples
 
 # for i in range()
 
-
-
 # Plotting the microphone data
 
 dataTotal = np.loadtxt('data_mics.txt')
@@ -82,7 +80,7 @@ plt.title('Audio Recording')
 # Plot each channel
 
 # Create subplots for each microphone channel
-fig, axs = plt.subplots(5, 1, figsize=(8, 10), sharex=True)
+fig, axs = plt.subplots(5, 1, figsize=(8, 10))
 
 # Plot the data for each microphone
 axs[0].plot(time, data0, label='Microphone 0')
