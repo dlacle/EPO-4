@@ -1,0 +1,159 @@
+Index: epo4/SerialCommands.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/epo4/SerialCommands.py b/epo4/SerialCommands.py
+new file mode 100644
+--- /dev/null	(date 1682783311773)
++++ b/epo4/SerialCommands.py	(date 1682783311773)
+@@ -0,0 +1,27 @@
++""""
++This file is used for initial testing and controlling of the car
++"""
++
++import serial
++import time
++
++
++# Specify COMPORT of KITT
++comport = 'COM7'
++
++# Serial instance
++serial_port = serial.Serial(comport, 115200, rtscts=True)
++
++# Controlling KITT
++# neutral: 150
++# Hard left: 100
++# Hard right: 200
++# Backward: 135
++# Forward: 165
++serial_port.write(b'M153\n')
++
++# Time loop in seconds
++time.sleep(2)
++
++# End connection
++serial_port.close()
+Index: epo4/EpoCommunications.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/epo4/EpoCommunications.py b/epo4/EpoCommunications.py
+new file mode 100644
+--- /dev/null	(date 1682788007405)
++++ b/epo4/EpoCommunications.py	(date 1682788007405)
+@@ -0,0 +1,48 @@
++import serial
++
++def EpoCommunications(code,connection):
++    # connect to bluetooth KITT
++    #set transmitting connection
++    comport = 'COM5'
++
++    # set baudrate
++    baudrate = 115200
++    while Connection == true:
++    serial_port = serial.Serial(comport, baudrate, rtscts=True)
++
++    # send command to KITT
++    serial_port.write(b'code\n')
++
++        #example motor/direction control
++            # serial_port.write(b'D169\n')
++            # serial_port.write(b'M135\n')
++
++        # Audio beacon command
++            #serial_port.write(b'A1\n')  --on
++            # serial_port.write(b'A0\n') --off
++
++
++            # carrier_frequency = 10000.
++            # to_bytes(2, byteorder='big')
++            # serial_port.write(b'F' + carrier_frequency + b'\n')
++
++            # bit_frequency = 5000.
++            # to_bytes(2, byteorder='big')
++            # serial_port.write(b'B' + bit_frequency + b'\n')
++
++            # repetition_count = 2500.
++            # to_bytes(2, byteorder='big')
++            # serial_port.write(b'R' + repetition_count + b'\n')
++
++            # code = 0xDEADBEEF.to_bytes(4, byteorder='big')
++            # serial_port.write(b'C' + code + b'\n')
++
++    # Status command from KITT
++        # serial_port.write(b'S\n')
++        # status = serial_port.read_until(b'\x04')
++
++    # close connection
++    serial_port.close()
++
++    return(status, )
++
+Index: Recieve_mic_data.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Recieve_mic_data.py b/Recieve_mic_data.py
+new file mode 100644
+--- /dev/null	(date 1683098666643)
++++ b/Recieve_mic_data.py	(date 1683098666643)
+@@ -0,0 +1,54 @@
++import pyaudio
++
++# list the index and names of all audio
++ PyAudiopyaudio_handle = pyaudio.PyAudio()
++
++for i in range(pyaudio_handle.get_device_count()):
++    device_info = pyaudio_handle.get_device_info_by_index(i)
++    print(i, device_info['name'])
++
++# InitializedT the microphone array.
++Fs = 48000  # Sampling freq
++device_index = 1  # Chosen device index
++stream = pyaudio_handle.open(input_device_index=device_index,
++                             channels=5,
++                             format=pyaudio.paInt16,
++                             rate=Fs,
++                             input=True)
++
++# recording of N frames
++Time_recording = 10     # in seconds
++N_mic = 5               # number of mics/channels
++N = Time_recording * Fs # number of frames per mic
++N_total = N_mic * N     # total number of samples
++
++samples = stream.read(N)
++
++#######
++
++w = wave.open(r'C:\Users\ZA\Desktop\Audacity-EPO4\01-Audio Track.wav', 'rb')
++sample_width = w.getsampwidth()
++frame_rate = w.getframerate()
++
++print(sample_width, frame_rate)
++
++#######
++
++# data = np.frombuffer(samples, dtype='int16')
++data = [0b0000, 0b0001, 0b0010, 0b0011]  # Test data
++with open('data_mics.txt', 'w') as fp:
++    for sample in data:
++        fp.write("%s\n" % sample)
++    print("data stored")
++
++Data_loaded = open('data_mics.txt', 'r')
++data_mic_loaded = []
++for line in Data_loaded:
++    data_mic_loaded.append(line)
++# plt.plot(data)
++# plt.show()
++# print(data[0])
++
++# for i in range()
++
++# data1 = data[0:N_total:5]
