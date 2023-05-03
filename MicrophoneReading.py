@@ -1,4 +1,7 @@
 import pyaudio
+import numpy as np
+import matplotlib.pyplot as plt
+import wave
 
 # pyaudio_handle = pyaudio.PyAudio()
 
