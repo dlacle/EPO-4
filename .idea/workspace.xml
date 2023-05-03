@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e436bdc1-ac86-4841-ba71-8e2af3696f32" name="Changes" comment="test">
-      <change afterPath="$PROJECT_DIR$/AudioBeacon.py" afterDir="false" />
+    <list default="true" id="e436bdc1-ac86-4841-ba71-8e2af3696f32" name="Changes" comment="added audiobeacon">
+      <change beforePath="$PROJECT_DIR$/AudioBeacon.py" beforeDir="false" afterPath="$PROJECT_DIR$/AudioBeacon.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MicrophoneReading.py" beforeDir="false" afterPath="$PROJECT_DIR$/MicrophoneReading.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,7 +56,7 @@
   <component name="GithubPullRequestsUISettings">
     <option name="selectedUrlAndAccountId">
       <UrlAndAccount>
-        <option name="accountId" value="703478be-d375-459f-803b-c91c7ba1f529" />
+        <option name="accountId" value="9f975dca-cf5b-4f02-ac66-afec6fd84ff4" />
         <option name="url" value="https://github.com/dlacle/EPO-4.git" />
       </UrlAndAccount>
     </option>
@@ -150,7 +151,14 @@
       <option name="project" value="LOCAL" />
       <updated>1683108091589</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="added audiobeacon">
+      <created>1683108319075</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1683108319075</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -182,7 +190,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="GUI interface" />
     <MESSAGE value="test" />
-    <option name="LAST_COMMIT_MESSAGE" value="test" />
+    <MESSAGE value="added audiobeacon" />
+    <option name="LAST_COMMIT_MESSAGE" value="added audiobeacon" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/EPO_4$GUI_test.coverage" NAME="GUI test Coverage Results" MODIFIED="1682547260900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/epo4/.idea" />

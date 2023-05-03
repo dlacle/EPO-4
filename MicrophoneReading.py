@@ -38,10 +38,10 @@ device_index = 1  # Chosen device index
 #                              input=True)
 
 # recording of N frames
-Time_recording = 10     # in seconds
-N_mic = 5               # number of mics/channels
-N = Time_recording * Fs # number of frames per mic
-N_total = N_mic * N     # total number of samples
+Time_recording = 10      # in seconds
+N_mic = 5                # number of mics/channels
+N = Time_recording * Fs  # number of frames per mic
+N_total = N_mic * N      # total number of samples
 
 # samples = stream.read(N)
 
@@ -121,4 +121,3 @@ plt.savefig('Task1.svg', format='svg')
 
 # Display the plot
 plt.show()
-
