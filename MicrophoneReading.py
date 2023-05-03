@@ -1,7 +1,7 @@
 import pyaudio
 import numpy as np
 import matplotlib.pyplot as plt
-import wave
+# import wave
 
 # Create instance of PyAudio
 pyaudio_handle = pyaudio.PyAudio()
@@ -12,7 +12,7 @@ for i in range(pyaudio_handle.get_device_count()):
     device_info = pyaudio_handle.get_device_info_by_index(i)
     print(i, device_info['name'])
 
-# InitializedT the microphone array.
+# Initialize the microphone array.
 Fs = 48000  # Sampling freq
 device_index = 1  # Chosen device index
 
@@ -59,13 +59,53 @@ N_total = N_mic * N     # total number of samples
 
 
 
-# Plot settings
-data = np.loadtxt('data_mics.txt')
-# data1 = data[0:N_total:5]
-time = np.arange(len(data)) / Fs
+# Plotting the microphone data
 
-plt.plot(time, data)
+dataTotal = np.loadtxt('data_mics.txt')
+
+data0 = dataTotal[0:N_total:5]
+data1 = dataTotal[1:N_total:5]
+data2 = dataTotal[2:N_total:5]
+data3 = dataTotal[3:N_total:5]
+data4 = dataTotal[4:N_total:5]
+
+# Create an array for time based on the length of the data
+time_total = np.arange(len(dataTotal)) / Fs
+time = np.arange(len(data0)) / Fs
+
+# Plot Datatotal
+plt.plot(time_total, dataTotal)
 plt.xlabel('Time (seconds)')
 plt.ylabel('Amplitude')
 plt.title('Audio Recording')
+
+# Plot each channel
+
+# Create subplots for each microphone channel
+fig, axs = plt.subplots(5, 1, figsize=(8, 10), sharex=True)
+
+# Plot the data for each microphone
+axs[0].plot(time, data0, label='Microphone 0')
+axs[1].plot(time, data1, label='Microphone 1')
+axs[2].plot(time, data2, label='Microphone 2')
+axs[3].plot(time, data3, label='Microphone 3')
+axs[4].plot(time, data4, label='Microphone 4')
+
+# Set labels and title for each subplot
+for i in range(5):
+    axs[i].set_ylabel('Amplitude')
+    axs[i].set_title('Microphone ' + str(i))
+
+# Set labels and title for the entire figure
+fig.suptitle('Data of the five microphones', ha='center')
+axs[-1].set_xlabel('Time [s]')
+
+# Adjust spacing between subplots
+plt.tight_layout()
+
+# Export plot
+plt.savefig('Task1.svg', format='svg')
+
+# Display the plot
 plt.show()
+
