@@ -13,29 +13,29 @@ for i in range(pyaudio_handle.get_device_count()):
     print(i, device_info['name'])
 
 
-# automate the correct PyAudio device index
-# desired_device_name = "My Microphone"
-# desired_channels = 1
-# desired_sample_rate = 48000
-#
-# p = pyaudio.PyAudio()
-# for i in range(p.get_device_count()):
-#     device_info = p.get_device_info_by_index(i)
-#     if (device_info["name"] == desired_device_name and
-#             device_info["maxInputChannels"] >= desired_channels and
-#             device_info["defaultSampleRate"] >= desired_sample_rate):
-#         device_index = i
-#         break
+#automate the correct PyAudio device index
+desired_device_name = "AudioBo0x 1818 VS"
+desired_channels = 1
+desired_sample_rate = 48000
+
+p = pyaudio.PyAudio()
+for i in range(p.get_device_count()):
+    device_info = p.get_device_info_by_index(i)
+    if (device_info["name"] == desired_device_name and
+            device_info["maxInputChannels"] >= desired_channels and
+            device_info["defaultSampleRate"] >= desired_sample_rate):
+        device_index = i
+        break
 
 # Initialize the microphone array.
 Fs = 48000  # Sampling freq
-device_index = 1  # Chosen device index
+# device_index = 1  # Chosen device index manual
 
-# stream = pyaudio_handle.open(input_device_index=device_index,
-#                              channels=5,
-#                              format=pyaudio.paInt16,
-#                              rate=Fs,
-#                              input=True)
+stream = pyaudio_handle.open(input_device_index=device_index,
+                             channels=5,
+                             format=pyaudio.paInt16,
+                             rate=Fs,
+                             input=True)
 
 # recording of N frames
 Time_recording = 10      # in seconds
@@ -43,7 +43,7 @@ N_mic = 5                # number of mics/channels
 N = Time_recording * Fs  # number of frames per mic
 N_total = N_mic * N      # total number of samples
 
-# samples = stream.read(N)
+samples = stream.read(N)
 
 #######
 
