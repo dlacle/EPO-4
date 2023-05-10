@@ -30,11 +30,11 @@ for i in range(pyaudio_handle.get_device_count()):
 
 
 
-# stream = pyaudio_handle.open(input_device_index=device_index,
-#                              channels=5,
-#                              format=pyaudio.paInt16,
-#                              rate=Fs,
-#                              input=True)
+stream = pyaudio_handle.open(input_device_index=device_index,
+                             channels=5,
+                             format=pyaudio.paInt16,
+                             rate=Fs,
+                             input=True)
 
 # Sampling frequency
 Fs = 48000
@@ -46,12 +46,12 @@ N = Time_recording * Fs  # number of frames per mic
 N_total = N_mic * N      # total number of samples
 
 # Recording and storing mic data
-# samples = stream.read(N)
-# data = np.frombuffer(samples, dtype='int16')
-# with open('data_mics.txt', 'w') as file:
-#     for sample in data:
-#         file.write("%s\n" % sample)
-#     print("data stored")
+samples = stream.read(N)
+data = np.frombuffer(samples, dtype='int16')
+with open('data_mics.txt', 'w') as file:
+    for sample in data:
+        file.write("%s\n" % sample)
+    print("data stored")
 
 
 # Plotting the microphone data
