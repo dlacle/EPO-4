@@ -45,7 +45,6 @@ N = Time_recording * Fs  # number of frames per mic
 N_total = N_mic * N      # total number of samples
 
 # Recording and storing mic data
-
 # samples = stream.read(N)
 # data = np.frombuffer(samples, dtype='int16')
 # with open('data_mics.txt', 'w') as file:
@@ -53,8 +52,8 @@ N_total = N_mic * N      # total number of samples
 #         file.write("%s\n" % sample)
 #     print("data stored")
 
-# Plotting the microphone data
 
+# Plotting the microphone data
 dataTotal = np.loadtxt('data_mics.txt')
 
 data0 = dataTotal[0:N_total:5]

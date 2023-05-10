@@ -1,5 +1,8 @@
-import time
+"""
+Audio beacon and code transmission of Module 2
+"""
 
+import time
 import serial
 
 # transmitting connection takes place over port 7
@@ -12,20 +15,20 @@ serial_port = serial.Serial(comport, 115200, rtscts=True)
 # Audio beacon command
 serial_port.write(b'A1\n')  # on
 
-
-# Carrier freq = 20 kHz
-carrier_frequency = (20000).to_bytes(2, byteorder='big')
+# Carrier freq = 7 kHz
+carrier_frequency = (7000).to_bytes(2, byteorder='big')
 serial_port.write(b'F' + carrier_frequency + b'\n')
 
 # Bit freq = 5 kHz
-bit_frequency = (5000).to_bytes(2, byteorder='big')
+bit_frequency = (2000).to_bytes(2, byteorder='big')
 serial_port.write(b'B' + bit_frequency + b'\n')
 
 # Repetition count = bit freq / repetition freq
-repetition_count = (2500).to_bytes(2, byteorder='big')
+repetition_count = (1250).to_bytes(2, byteorder='big')
 serial_port.write(b'R' + repetition_count + b'\n')
 
-code = 0xDEADBEEF.to_bytes(4, byteorder='big')
+# Gold code
+code = 0x3355A780.to_bytes(4, byteorder='big')
 serial_port.write(b'C' + code + b'\n')
 time.sleep(10)
 
