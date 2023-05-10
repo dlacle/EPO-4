@@ -1,3 +1,7 @@
+"""
+Microphone reading assignment of Module 2
+"""
+
 import pyaudio
 import numpy as np
 import matplotlib.pyplot as plt
