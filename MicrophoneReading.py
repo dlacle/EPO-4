@@ -16,19 +16,18 @@ for i in range(pyaudio_handle.get_device_count()):
     print(i, device_info['name'])
 
 # Automate the correct PyAudio device index
-desired_device_name = "AudioBox 1818 VS"
+desired_device_name = "Microphone (AudioBox 1818 VSL)"
 desired_channels = 1
 desired_sample_rate = 48000
 
 for i in range(pyaudio_handle.get_device_count()):
     device_info = pyaudio_handle.get_device_info_by_index(i)
-    if (device_info["name"] == desired_device_name and
-            device_info["maxInputChannels"] >= desired_channels and
-            device_info["defaultSampleRate"] >= desired_sample_rate):
+    if (device_info["name"] == desired_device_name ):
         device_index = i
         break
-
-
+print(i)
+# Sampling frequency
+Fs = 48000
 
 stream = pyaudio_handle.open(input_device_index=device_index,
                              channels=5,
@@ -36,8 +35,7 @@ stream = pyaudio_handle.open(input_device_index=device_index,
                              rate=Fs,
                              input=True)
 
-# Sampling frequency
-Fs = 48000
+
 
 # Recording of N frames
 Time_recording = 10      # in seconds
@@ -48,14 +46,14 @@ N_total = N_mic * N      # total number of samples
 # Recording and storing mic data
 samples = stream.read(N)
 data = np.frombuffer(samples, dtype='int16')
-with open('data_mics.txt', 'w') as file:
+with open('data_mics_kitt.txt', 'w') as file:
     for sample in data:
         file.write("%s\n" % sample)
     print("data stored")
 
 
 # Plotting the microphone data
-dataTotal = np.loadtxt('data_mics.txt')
+dataTotal = np.loadtxt('data_mics_kitt.txt')
 
 data0 = dataTotal[0:N_total:5]
 data1 = dataTotal[1:N_total:5]
@@ -98,7 +96,7 @@ axs[-1].set_xlabel('Time [s]')
 plt.tight_layout()
 
 # Export plot
-plt.savefig('Task1.svg', format='svg')
+plt.savefig('Task2-middle.svg', format='svg')
 
 # Display the plot
 plt.show()
