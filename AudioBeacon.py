@@ -15,7 +15,7 @@ except serial.SerialException as var :
     print("Error has occured")
     print("var")
 else
-    print("serial port opend")
+    print("serial port opened")
 
 
 # Audio beacon command
