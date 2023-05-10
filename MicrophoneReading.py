@@ -1,7 +1,7 @@
 import pyaudio
 import numpy as np
 import matplotlib.pyplot as plt
-# import wave
+
 
 # Create instance of PyAudio
 pyaudio_handle = pyaudio.PyAudio()
@@ -12,24 +12,18 @@ for i in range(pyaudio_handle.get_device_count()):
     device_info = pyaudio_handle.get_device_info_by_index(i)
     print(i, device_info['name'])
 
+# Automate the correct PyAudio device index
+desired_device_name = "My Microphone"
+desired_channels = 1
+desired_sample_rate = 48000
 
-# automate the correct PyAudio device index
-# desired_device_name = "My Microphone"
-# desired_channels = 1
-# desired_sample_rate = 48000
-#
-# p = pyaudio.PyAudio()
-# for i in range(p.get_device_count()):
-#     device_info = p.get_device_info_by_index(i)
-#     if (device_info["name"] == desired_device_name and
-#             device_info["maxInputChannels"] >= desired_channels and
-#             device_info["defaultSampleRate"] >= desired_sample_rate):
-#         device_index = i
-#         break
-
-# Initialize the microphone array.
-Fs = 48000  # Sampling freq
-device_index = 1  # Chosen device index
+for i in range(pyaudio_handle.get_device_count()):
+    device_info = pyaudio_handle.get_device_info_by_index(i)
+    if (device_info["name"] == desired_device_name and
+            device_info["maxInputChannels"] >= desired_channels and
+            device_info["defaultSampleRate"] >= desired_sample_rate):
+        device_index = i
+        break
 
 # stream = pyaudio_handle.open(input_device_index=device_index,
 #                              channels=5,
@@ -37,40 +31,23 @@ device_index = 1  # Chosen device index
 #                              rate=Fs,
 #                              input=True)
 
-# recording of N frames
+# Sampling frequency
+Fs = 48000
+
+# Recording of N frames
 Time_recording = 10      # in seconds
 N_mic = 5                # number of mics/channels
 N = Time_recording * Fs  # number of frames per mic
 N_total = N_mic * N      # total number of samples
 
+# Recording and storing mic data
+
 # samples = stream.read(N)
-
-#######
-
-# w = wave.open(r'C:\Users\ZA\Desktop\Audacity-EPO4\01-Audio Track.wav', 'rb')
-# sample_width = w.getsampwidth()
-# frame_rate = w.getframerate()
-#
-# print(sample_width, frame_rate)
-
-#######
-
 # data = np.frombuffer(samples, dtype='int16')
-# # data = [0b0000, 0b0001, 0b0010, 0b0011]  # Test data
-# with open('data_mics.txt', 'w') as fp:
+# with open('data_mics.txt', 'w') as file:
 #     for sample in data:
-#         fp.write("%s\n" % sample)
+#         file.write("%s\n" % sample)
 #     print("data stored")
-
-# Data_loaded = open('data_mics.txt', 'r')
-# data_mic_loaded = []
-# for line in Data_loaded:
-#     data_mic_loaded.append(line)
-# plt.plot(data)
-# plt.show()
-# print(data[0])
-
-# for i in range()
 
 # Plotting the microphone data
 
@@ -110,7 +87,7 @@ for i in range(5):
     axs[i].set_title('Microphone ' + str(i))
 
 # Set labels and title for the entire figure
-fig.suptitle('Data of the five microphones', ha='center')
+# fig.suptitle('Data of the five microphones', ha='center')
 axs[-1].set_xlabel('Time [s]')
 
 # Adjust spacing between subplots
