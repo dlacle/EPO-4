@@ -29,6 +29,8 @@ for i in range(pyaudio_handle.get_device_count()):
         device_index = i
         break
 
+
+
 # stream = pyaudio_handle.open(input_device_index=device_index,
 #                              channels=5,
 #                              format=pyaudio.paInt16,

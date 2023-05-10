@@ -11,6 +11,7 @@ comport = 'COM7'
 # getting access to bluetooth link
 try:
     serial_port = serial.Serial(comport, 115200, rtscts=True)
+    print("Port details ->",serial_port)
 except serial.SerialException as var :
     print("Error has occured")
     print("var")
