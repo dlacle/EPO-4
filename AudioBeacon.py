@@ -9,7 +9,13 @@ import serial
 comport = 'COM7'
 
 # getting access to bluetooth link
-serial_port = serial.Serial(comport, 115200, rtscts=True)
+try:
+    serial_port = serial.Serial(comport, 115200, rtscts=True)
+except serial.SerialException as var :
+    print("Error has occured")
+    print("var")
+else
+    print("serial port opend")
 
 
 # Audio beacon command
