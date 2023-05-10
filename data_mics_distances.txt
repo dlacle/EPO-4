@@ -1,0 +1,6 @@
+middle: 240x240 cm, direct: 339 cm
+mic0:	30x30 cm, direct: 50 cm
+mic1:	30x30 cm, direct: 50 cm
+mic2:	30x30 cm, direct: 50 cm
+mic3:	30x30 cm, direct: 50 cm
+mic4:	240x25 cm, direct: 60 cm
