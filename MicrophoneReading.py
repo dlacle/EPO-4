@@ -10,14 +10,13 @@ import matplotlib.pyplot as plt
 # Create instance of PyAudio
 pyaudio_handle = pyaudio.PyAudio()
 
-# List the index and names of all audio
-# devices visible to PyAudio
+# List the index and names of all audio devices visible to PyAudio
 for i in range(pyaudio_handle.get_device_count()):
     device_info = pyaudio_handle.get_device_info_by_index(i)
     print(i, device_info['name'])
 
 # Automate the correct PyAudio device index
-desired_device_name = "My Microphone"
+desired_device_name = "AudioBox 1818 VS"
 desired_channels = 1
 desired_sample_rate = 48000
 
