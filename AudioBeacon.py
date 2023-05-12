@@ -56,6 +56,8 @@ def start_pairing(comport='COM7'):
 
     # On
     serial_port.write(b'A1\n')
+
+    # Speaker playback duration
     time.sleep(2)
 
     return
@@ -70,7 +72,7 @@ def mic_recording():
         device_info = pyaudio_handle.get_device_info_by_index(i)
         print(i, device_info['name'])
 
-    ####################[Automate the correct PyAudio device index]###############
+    # Automate the correct PyAudio device index
     desired_device_name1 = "Microphone (AudioBox 1818 VSL)"
     desired_device_name2 = "Microphone (2- AudioBox 1818 VS"
     desired_device_name3 = "Microphone (2- AudioBox 1818 VSL)"
@@ -78,7 +80,9 @@ def mic_recording():
 
     for i in range(pyaudio_handle.get_device_count()):
         device_info = pyaudio_handle.get_device_info_by_index(i)
-        if (device_info["name"] == desired_device_name1 or device_info["name"] == desired_device_name2 or device_info["name"] == desired_device_name3 ):
+        if (device_info["name"] == desired_device_name1 or
+            device_info["name"] == desired_device_name2 or
+            device_info["name"] == desired_device_name3):
             device_index = i
             break
 
@@ -87,9 +91,7 @@ def mic_recording():
                                  format=pyaudio.paInt16,
                                  rate=Fs,
                                  input=True)
-    ###############################################################################
 
-    # Recording of N frames
 
     # Recording and storing mic data
     samples = stream.read(N)
@@ -168,3 +170,37 @@ def main():
     return
 
 main()
+
+
+# 1. 11111111111111111111111111111111
+# 2. 11001001010110011010101101100000
+# 3. 10110010101100110101011011000001
+# 4. 01100101011001101010110110000011
+# 5. 11001101010011010101101100000110
+# 6. 10011010100110101011011000001101
+# 7. 00110101001101010110110000011011
+# 8. 01101010011010101101100000110110
+# 9. 11010100110101011011000001101101
+# 10. 10101001101010110110000011011011
+# 11. 01010011010101101100000110110110
+# 12. 10100110101011011000001101101101
+# 13. 01001101010110110000011011011011
+# 14. 10011010101101100000110110110110
+# 15. 00110101011011000001101101101101
+# 16. 01101010110110000011011011011011
+# 17. 11010101101100000110110110110110
+# 18. 10101011011000001101101101101101
+# 19. 01010110110000011011011011011011
+# 20. 10101101100000110110110110110110
+# 21. 01011011000001101101101101101101
+# 22. 10110110000011011011011011011011
+# 23. 01101100000110110110110110110110
+# 24. 11011000001101101101101101101101
+# 25. 10110000011011011011011011011011
+# 26. 01100000110110110110110110110110
+# 27. 11000001101101101101101101101101
+# 28. 10000011011011011011011011011011
+# 29. 00000110110110110110110110110110
+# 30. 00001101101101101101101101101101
+# 31. 00011011011011011011011011011011
+# 32. 00110110110110110110110110110110
