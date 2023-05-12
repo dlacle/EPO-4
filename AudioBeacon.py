@@ -31,10 +31,9 @@ def start_pairing(comport='COM7'):
 
     # Audio beacon command
     # time.sleep(1)
-    # On
-    serial_port.write(b'A1\n')
 
-    time.sleep(5)
+
+
     # Carrier freq = 7 kHz
     carrier_frequency = (7000).to_bytes(2, byteorder='big')
     serial_port.write(b'F' + carrier_frequency + b'\n')
@@ -55,6 +54,9 @@ def start_pairing(comport='COM7'):
     serial_port.write(b'C' + code + b'\n')
     time.sleep(0.1)
 
+    # On
+    serial_port.write(b'A1\n')
+    time.sleep(2)
 
     return
 
@@ -69,12 +71,14 @@ def mic_recording():
         print(i, device_info['name'])
 
     ####################[Automate the correct PyAudio device index]###############
-    desired_device_name = "Microphone (AudioBox 1818 VSL)"
-    desired_channels = 1
+    desired_device_name1 = "Microphone (AudioBox 1818 VSL)"
+    desired_device_name2 = "Microphone (2- AudioBox 1818 VS"
+    desired_device_name3 = "Microphone (2- AudioBox 1818 VSL)"
+
 
     for i in range(pyaudio_handle.get_device_count()):
         device_info = pyaudio_handle.get_device_info_by_index(i)
-        if (device_info["name"] == desired_device_name):
+        if (device_info["name"] == desired_device_name1 or device_info["name"] == desired_device_name2 or device_info["name"] == desired_device_name3 ):
             device_index = i
             break
 
@@ -90,7 +94,7 @@ def mic_recording():
     # Recording and storing mic data
     samples = stream.read(N)
     data = np.frombuffer(samples, dtype='int16')
-    with open('unnamed.txt', 'w') as file:
+    with open("Mic-Data/data_mics_kitt_140x320.txt", 'w') as file:
         for sample in data:
             file.write("%s\n" % sample)
         print("data stored")
@@ -99,7 +103,7 @@ def mic_recording():
 
 def plotting():
     # Plotting the microphone data
-    dataTotal = np.loadtxt('unnamed.txt')
+    dataTotal = np.loadtxt('Mic-Data/data_mics_kitt_140x320.txt')
 
     data0 = dataTotal[0:N_total:5]
     data1 = dataTotal[1:N_total:5]
@@ -142,7 +146,7 @@ def plotting():
     plt.tight_layout()
 
     # Export plot
-    plt.savefig('/Plots/unnamed.svg', format='svg')
+    plt.savefig('data_mics_kitt_140x320.svg', format='svg')
 
     # Display the plot
     plt.show()
@@ -158,8 +162,8 @@ def stop_pairing():
 
 def main():
     start_pairing()
-    # mic_recording()
-    # plotting()
+    mic_recording()
+    plotting()
     stop_pairing()
     return
 
