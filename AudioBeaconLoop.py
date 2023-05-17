@@ -16,7 +16,7 @@ N = Time_recording * Fs  # number of frames per mic
 N_total = N_mic * N  # total number of samples
 
 
-def start_pairing(carrier_frequency, bit_frequency, comport='COM8'):
+def start_pairing(carrier_frequency, bit_frequency, comport='COM7'):
     """
     This function starts the pairing mode to KITT,
     transmission takes place over port 7
@@ -45,7 +45,7 @@ def start_pairing(carrier_frequency, bit_frequency, comport='COM8'):
     time.sleep(0.1)
 
     # Repetition count = bit freq / repetition freq
-    repetition_count = (int(bit_frequency / 1000)).to_bytes(2, byteorder='big')
+    repetition_count = (4000).to_bytes(2, byteorder='big')
     serial_port.write(b'R' + repetition_count + b'\n')
     time.sleep(0.1)
 
@@ -154,33 +154,40 @@ def plotting():
     plt.show()
     return
 
-def stop_pairing():
-    serial_port.write(b'A0\n')  # off
-    time.sleep(0.1)
-
-    # close connection
-    serial_port.close()
-    print("Disconnected")
-    return
+# def stop_pairing():
+#     serial_port.write(b'A0\n')  # off
+#     time.sleep(0.1)
+#
+#     # close connection
+#     serial_port.close()
+#     print("Disconnected")
+#     return
 
 def main():
     # Loop for carrier frequencies from 1 kHz to 30 kHz with a step
-    carrier_frequencies = range(1000, 30000, 1000)
+    carrier_frequencies = range(7000, 15000, 1000)
 
     # Loop for bit frequencies from 1 kHz to 3 kHz with a step of 1 kHz
     # of 1 kHz
-    bit_frequencies = range(1000, 3000, 1000)
+    # bit_frequencies = range(5000, 6000, 1000)
 
+
+    # for bit_freq in bit_frequencies:
     for carrier_freq in carrier_frequencies:
-        for bit_freq in bit_frequencies:
-            print("Carrier Frequency:", carrier_freq, "Hz")
-            print("Bit Frequency:", bit_freq, "Hz\n")
 
-            start_pairing(carrier_frequency=carrier_freq, bit_frequency=bit_freq)
+        bit_freq = 5000
+        print("\n Carrier Frequency:", carrier_freq, "Hz")
+        print("Bit Frequency:", bit_freq, "Hz\n")
+
+        start_pairing(carrier_frequency=carrier_freq, bit_frequency=bit_freq)
+
+        time.sleep(3)
+
+    time.sleep(5)
             # mic_recording()
             # plotting()
 
-    stop_pairing()
+    # stop_pairing()
     return
 
 

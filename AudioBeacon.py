@@ -14,7 +14,7 @@ Time_recording = 10  # in seconds
 N_mic = 5  # number of mics/channels
 N = Time_recording * Fs  # number of frames per mic
 N_total = N_mic * N  # total number of samples
-
+filename = 'data_mics_kitt_carrier_2250_bit_3k_ref'
 
 def start_pairing(comport='COM7'):
     """
@@ -35,12 +35,12 @@ def start_pairing(comport='COM7'):
         print("connected, serial port opened")
 
     # Carrier freq = 7 kHz
-    carrier_frequency = (7000).to_bytes(2, byteorder='big')
+    carrier_frequency = (3000).to_bytes(2, byteorder='big')
     serial_port.write(b'F' + carrier_frequency + b'\n')
     time.sleep(0.1)
 
     # Bit freq = 2 kHz
-    bit_frequency = (2000).to_bytes(2, byteorder='big')
+    bit_frequency = (1500).to_bytes(2, byteorder='big')
     serial_port.write(b'B' + bit_frequency + b'\n')
     time.sleep(0.1)
 
@@ -96,7 +96,7 @@ def mic_recording():
     # Recording and storing mic data
     samples = stream.read(N)
     data = np.frombuffer(samples, dtype='int16')
-    with open("Mic-Data/data_mics_kitt_140x320.txt", 'w') as file:
+    with open(f'Mic-Data/{filename}.txt', 'w') as file:
         for sample in data:
             file.write("%s\n" % sample)
         print("data stored")
@@ -105,20 +105,20 @@ def mic_recording():
 
 def plotting():
     # Plotting the microphone data
-    dataTotal = np.loadtxt('Mic-Data/data_mics_kitt_140x320.txt')
+    dataTotal = np.loadtxt(f'Mic-Data/{filename}.txt')
 
-    data0 = dataTotal[0:N_total:5]
-    data1 = dataTotal[1:N_total:5]
+    # data0 = dataTotal[0:N_total:5]
+    # data1 = dataTotal[1:N_total:5]
     data2 = dataTotal[2:N_total:5]
-    data3 = dataTotal[3:N_total:5]
-    data4 = dataTotal[4:N_total:5]
+    # data3 = dataTotal[3:N_total:5]
+    # data4 = dataTotal[4:N_total:5]
 
     # Create an array for time based on the length of the data
     time_total = np.arange(len(dataTotal)) / Fs
-    time = np.arange(len(data0)) / Fs
+    time = np.arange(len(data2)) / Fs
 
     # Plot Datatotal
-    plt.plot(time_total, dataTotal)
+    plt.plot(time, data2)
     plt.xlabel('Time (seconds)')
     plt.ylabel('Amplitude')
     plt.title('Audio Recording')
@@ -126,29 +126,29 @@ def plotting():
     # Plot each channel
 
     # Create subplots for each microphone channel
-    fig, axs = plt.subplots(5, 1, figsize=(8, 10))
+    # fig, axs = plt.subplots(5, 1, figsize=(8, 10))
 
     # Plot the data for each microphone
-    axs[0].plot(time, data0, label='Microphone 0')
-    axs[1].plot(time, data1, label='Microphone 1')
-    axs[2].plot(time, data2, label='Microphone 2')
-    axs[3].plot(time, data3, label='Microphone 3')
-    axs[4].plot(time, data4, label='Microphone 4')
+    # axs[0].plot(time, data0, label='Microphone 0')
+    # axs[1].plot(time, data1, label='Microphone 1')
+    plt.plot(time, data2, label='Microphone 2')
+    # axs[3].plot(time, data3, label='Microphone 3')
+    # axs[4].plot(time, data4, label='Microphone 4')
 
     # Set labels and title for each subplot
-    for i in range(5):
-        axs[i].set_ylabel('Amplitude')
-        axs[i].set_title('Microphone ' + str(i))
-
-    # Set labels and title for the entire figure
-    # fig.suptitle('Data of the five microphones', ha='center')
-    axs[-1].set_xlabel('Time [s]')
-
-    # Adjust spacing between subplots
-    plt.tight_layout()
+    # for i in range(5):
+    #     axs[i].set_ylabel('Amplitude')
+    #     axs[i].set_title('Microphone ' + str(i))
+    #
+    # # Set labels and title for the entire figure
+    # # fig.suptitle('Data of the five microphones', ha='center')
+    # axs[-1].set_xlabel('Time [s]')
+    #
+    # # Adjust spacing between subplots
+    # plt.tight_layout()
 
     # Export plot
-    plt.savefig('data_mics_kitt_140x320.svg', format='svg')
+    plt.savefig(f'Plots/{filename}.svg', format='svg')
 
     # Display the plot
     plt.show()
@@ -164,8 +164,8 @@ def stop_pairing():
 
 def main():
     start_pairing()
-    # mic_recording()
-    # plotting()
+    mic_recording()
+    plotting()
     stop_pairing()
     return
 
