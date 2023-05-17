@@ -14,7 +14,9 @@ Time_recording = 10  # in seconds
 N_mic = 5  # number of mics/channels
 N = Time_recording * Fs  # number of frames per mic
 N_total = N_mic * N  # total number of samples
-filename = 'data_mics_kitt_carrier_2250_bit_3k_ref'
+filename = 'data_mics_kitt_carrier_2250_bit_3k_140x320'
+
+# Chosen carrier=2250 Hz, bit=3000 Hz, and rep=1250
 
 def start_pairing(comport='COM7'):
     """
@@ -35,12 +37,12 @@ def start_pairing(comport='COM7'):
         print("connected, serial port opened")
 
     # Carrier freq = 7 kHz
-    carrier_frequency = (3000).to_bytes(2, byteorder='big')
+    carrier_frequency = (2250).to_bytes(2, byteorder='big')
     serial_port.write(b'F' + carrier_frequency + b'\n')
     time.sleep(0.1)
 
     # Bit freq = 2 kHz
-    bit_frequency = (1500).to_bytes(2, byteorder='big')
+    bit_frequency = (3000).to_bytes(2, byteorder='big')
     serial_port.write(b'B' + bit_frequency + b'\n')
     time.sleep(0.1)
 
@@ -58,7 +60,8 @@ def start_pairing(comport='COM7'):
     serial_port.write(b'A1\n')
 
     # Speaker playback duration
-    time.sleep(2)
+    time.sleep(10)
+    serial_port.write(b'A0\n')  # off
 
     return
 
@@ -77,7 +80,6 @@ def mic_recording():
     desired_device_name2 = "Microphone (2- AudioBox 1818 VS"
     desired_device_name3 = "Microphone (2- AudioBox 1818 VSL)"
 
-
     for i in range(pyaudio_handle.get_device_count()):
         device_info = pyaudio_handle.get_device_info_by_index(i)
         if (device_info["name"] == desired_device_name1 or
@@ -91,7 +93,6 @@ def mic_recording():
                                  format=pyaudio.paInt16,
                                  rate=Fs,
                                  input=True)
-
 
     # Recording and storing mic data
     samples = stream.read(N)
@@ -155,52 +156,17 @@ def plotting():
     return
 
 def stop_pairing():
-    serial_port.write(b'A0\n')  # off
-    time.sleep(0.1)
+
     # close connection
     serial_port.close()
-    print("disconnected")
+    print("Disconnected\n")
     return
 
 def main():
     start_pairing()
     mic_recording()
-    plotting()
     stop_pairing()
+    plotting()
     return
 
 main()
-
-
-# 1. 11111111111111111111111111111111
-# 2. 11001001010110011010101101100000
-# 3. 10110010101100110101011011000001
-# 4. 01100101011001101010110110000011
-# 5. 11001101010011010101101100000110
-# 6. 10011010100110101011011000001101
-# 7. 00110101001101010110110000011011
-# 8. 01101010011010101101100000110110
-# 9. 11010100110101011011000001101101
-# 10. 10101001101010110110000011011011
-# 11. 01010011010101101100000110110110
-# 12. 10100110101011011000001101101101
-# 13. 01001101010110110000011011011011
-# 14. 10011010101101100000110110110110
-# 15. 00110101011011000001101101101101
-# 16. 01101010110110000011011011011011
-# 17. 11010101101100000110110110110110
-# 18. 10101011011000001101101101101101
-# 19. 01010110110000011011011011011011
-# 20. 10101101100000110110110110110110
-# 21. 01011011000001101101101101101101
-# 22. 10110110000011011011011011011011
-# 23. 01101100000110110110110110110110
-# 24. 11011000001101101101101101101101
-# 25. 10110000011011011011011011011011
-# 26. 01100000110110110110110110110110
-# 27. 11000001101101101101101101101101
-# 28. 10000011011011011011011011011011
-# 29. 00000110110110110110110110110110
-# 30. 00001101101101101101101101101101
-# 31. 00011011011011011011011011011011
-# 32. 00110110110110110110110110110110
