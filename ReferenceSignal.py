@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # File path
-file_path = r"C:\Users\ZA\Desktop\EPO-4\EPO-4-Python\Mic-Data\data_mics_kitt_10cm.txt"
+file_path = r"C:\Users\ZA\Desktop\EPO-4\EPO-4-Python\Mic-Data\data_mics_kitt_10cm_ref.txt"
 
 # Load data from the text file
 data = np.loadtxt(file_path)
