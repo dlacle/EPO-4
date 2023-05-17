@@ -23,16 +23,16 @@ def start_pairing(comport='COM7'):
     """
 
     # global comport
-
     global serial_port
-    serial_port = serial.Serial(comport, 115200, rtscts=True)
-
-    print("connected")
-
-    # Audio beacon command
-    # time.sleep(1)
-
-
+    # getting access to bluetooth link
+    try:
+        serial_port = serial.Serial(comport, 115200, rtscts=True)
+        print("Port details ->", serial_port)
+    except serial.SerialException as var:
+        print("Error has occured")
+        print("var")
+    else:
+        print("connected, serial port opened")
 
     # Carrier freq = 7 kHz
     carrier_frequency = (7000).to_bytes(2, byteorder='big')
@@ -164,8 +164,8 @@ def stop_pairing():
 
 def main():
     start_pairing()
-    mic_recording()
-    plotting()
+    # mic_recording()
+    # plotting()
     stop_pairing()
     return
 
