@@ -40,7 +40,7 @@ t_autocorr = np.linspace(-t_total, t_total, len(autocorr))
 # Clean up the recording by removing zero intervals
 # clean_data = average_peak[np.nonzero(average_peak)]
 
-threshold = 1000 # Adjust this value according to your needs
+threshold = 950 # Adjust this value according to your needs
 
 # Find the indices where the peak values exceed the threshold
 peak_indices = np.where(abs(average_peak)> threshold)[0]
@@ -52,6 +52,9 @@ end_index = peak_indices[-1]
 # Trim the average peak to remove the zero intervals
 clean_peak = average_peak[start_index:end_index+1]
 
+with open('Mic-Data/data_mics_kitt_carrier_2250_bit3k_ref_clean_threshold950.txt', 'w') as file:
+    for sample in data:
+        file.write("%s\n" % sample)
 
 # Plot the reference signal (amplitude vs time) for the average peak
 plt.figure(figsize=(12, 4))
