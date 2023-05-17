@@ -16,7 +16,7 @@ N = Time_recording * Fs  # number of frames per mic
 N_total = N_mic * N  # total number of samples
 
 
-def start_pairing(comport='COM7', carrier_frequency=7000, bit_frequency=2000):
+def start_pairing(carrier_frequency, bit_frequency, comport='COM7'):
     """
     This function starts the pairing mode to KITT,
     transmission takes place over port 7
@@ -164,19 +164,19 @@ def stop_pairing():
 
 def main():
     comport = 'COM7'
-    bit_frequencies = range(1000, 6001, 1000)  # Range from 1kHz to 5kHz
-    carrier_frequencies = range(1000, 10001, 1000)  # Range from 1kHz to 10kHz
+    bit_frequencies = range(1000, 6000, 1000)  # Loop for bit frequencies from 1 kHz to 5 kHz with a step of 1 kHz
+    carrier_frequencies = range(1000, 11000, 1000)  # Loop for carrier frequencies from 1 kHz to 10 kHz with a step
+    # of 1 kHz
 
     for carrier_freq in carrier_frequencies:
         for bit_freq in bit_frequencies:
             print("Carrier Frequency:", carrier_freq, "Hz")
             print("Bit Frequency:", bit_freq, "Hz")
 
-            start_pairing(comport, carrier_freq, bit_freq)
-            mic_recording()
-            plotting()
+            start_pairing(carrier_frequency=carrier_freq, bit_frequency=bit_freq)
+            # mic_recording()
+            # plotting()
             stop_pairing()
-
     return
 
 
