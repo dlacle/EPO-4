@@ -38,21 +38,21 @@ t_autocorr = np.linspace(-t_total, t_total, len(autocorr))
 
 
 # Clean up the recording by removing zero intervals
-# clean_data = average_peak[np.nonzero(average_peak)]
+clean_data = average_peak[np.nonzero(average_peak)]
 
-threshold = 950 # Adjust this value according to your needs
+# threshold = 950 # Adjust this value according to your needs
+#
+# # Find the indices where the peak values exceed the threshold
+# peak_indices = np.where(abs(average_peak)> threshold)[0]
+#
+# # Find the start and end indices of the non-zero interval
+# start_index = peak_indices[0]
+# end_index = peak_indices[-1]
+#
+# # Trim the average peak to remove the zero intervals
+# clean_data = average_peak[start_index:end_index+1]
 
-# Find the indices where the peak values exceed the threshold
-peak_indices = np.where(abs(average_peak)> threshold)[0]
-
-# Find the start and end indices of the non-zero interval
-start_index = peak_indices[0]
-end_index = peak_indices[-1]
-
-# Trim the average peak to remove the zero intervals
-clean_peak = average_peak[start_index:end_index+1]
-
-with open('Mic-Data/data_mics_kitt_carrier_2250_bit3k_ref_clean_threshold950.txt', 'w') as file:
+with open('Mic-Data/data_mics_kitt_carrier_2250_bit3k_ref_clean_nozero.txt', 'w') as file:
     for sample in data:
         file.write("%s\n" % sample)
 
@@ -73,15 +73,15 @@ plt.title("Autocorrelation of Average Peak")
 
 #plot clean data
 plt.subplot(143)
-# plt.plot(t[:len(clean_data)], clean_data)
-plt.plot(t[start_index:end_index+1], clean_peak)
+plt.plot(t[:len(clean_data)], clean_data)
+# plt.plot(t[start_index:end_index+1], clean_peak)
 plt.xlabel("Time (s)")
 plt.ylabel("Amplitude")
 plt.title("Clean Single Pulse")
 
 plt.subplot(144)
-t_c = np.linspace(-t_total, t_total, len(clean_peak))
-C_c = np.correlate(clean_peak, clean_peak, mode='full')
+t_c = np.linspace(-t_total, t_total, len(clean_data))
+C_c = np.correlate(clean_data, clean_data, mode='full')
 plt.plot(C_c)
 plt.xlabel("Time Lag (s)")
 plt.ylabel("Autocorrelation")
