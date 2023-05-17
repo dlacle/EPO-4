@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e436bdc1-ac86-4841-ba71-8e2af3696f32" name="Changes" comment="updated beacon loop measurements">
-      <change afterPath="$PROJECT_DIR$/Deconvolution.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_2250_bit_3k_140x320.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_2250_bit_3k_140x320.svg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AudioBeacon.py" beforeDir="false" afterPath="$PROJECT_DIR$/AudioBeacon.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Deconvolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/Deconvolution.py" afterDir="false" />
     </list>
     <list id="009714d2-bfdb-4e3f-a24b-5a05957a551d" name="Changes by Sam" comment="Changes by Sam" />
     <option name="SHOW_DIALOG" value="false" />
@@ -108,7 +105,7 @@
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "preferences.intentionPowerPack",
+    "settings.editor.selected.configurable": "CodeWithMe",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -179,7 +176,7 @@
       <workItem from="1682780311864" duration="2781000" />
       <workItem from="1683109883629" duration="635000" />
       <workItem from="1683697236663" duration="14899000" />
-      <workItem from="1683891702646" duration="28546000" />
+      <workItem from="1683891702646" duration="34698000" />
     </task>
     <task id="LOCAL-00001" summary="GUI interface">
       <created>1682503141387</created>
@@ -363,7 +360,14 @@
       <option name="project" value="LOCAL" />
       <updated>1684317085312</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="updated beacon loop measurements">
+      <created>1684323682143</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1684323682143</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
