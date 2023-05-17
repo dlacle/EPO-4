@@ -6,15 +6,18 @@ import matplotlib.pyplot as plt
 from scipy.fft import fft, ifft
 
 # Reference signal
-ref_sig = np.loadtxt('Mic-Data/data_mics_kitt_carrier_2250_bit_3k_ref.txt')
+ref_sig = np.loadtxt('Mic-Data/data_mics_kitt_carrier_2250_bit3k_ref_clean_threshold950.txt')
 
 # Field locations
-data_80x400 = np.loadtxt('Mic-Data/data_mics_kitt_mic_80x400.txt')
-data_140x320 = np.loadtxt('Mic-Data/data_mics_kitt_mic_140x320.txt')
+# data_80x400 = np.loadtxt('Mic-Data/data_mics_kitt_mic_80x400.txt')
 
-h = ref_sig
-y_80x400 = np.convolve(x_80x400, h)
-h_80x400 = ch3(x_80x400, y_80x400, Lhat, eps)
+data_140x320 = np.loadtxt('Mic-Data/data_mics_kitt_mic_140x320.txt')
+data_140x3202 = data_140x320[0:len(data_140x320):5]
+
+
+# h = ref_sig
+# y_80x400 = np.convolve(x_80x400, h)
+# h_80x400 = ch3(x_80x400, y_80x400, Lhat, eps)
 
 
 def ch3(x, y, Lhat, eps):
@@ -64,3 +67,5 @@ def TDOA(x, y, Fs):
     distance = 343 * t_diff
 
     return distance
+
+print(TDOA(ref_sig, data_140x3202, 48000))
