@@ -1,12 +1,12 @@
 """
 Audio beacon and code transmission of Module 2
 """
-
 import time
 import serial
 import pyaudio
 import numpy as np
 import matplotlib.pyplot as plt
+import serial.tools.list_ports
 
 # Sampling data
 Fs = 48000
@@ -18,11 +18,17 @@ filename = 'data_mics_kitt_carrier_2250_bit_3k_140x320'
 
 # Chosen carrier=2250 Hz, bit=3000 Hz, and rep=1250
 
-def start_pairing(comport='COM7'):
+def start_pairing():
     """
     This function starts the pairing mode to KITT,
     transmission takes place over port 7
     """
+    #get port info
+    ports = serial.tools.list_ports.comports()
+    for i in range(len(ports)):
+        print(f"{i} - {ports[i].description}")
+    comport = 'COM7'
+    # comport = ports[int(input(f"Enter device index: \n"))].device
 
     # global comport
     global serial_port
@@ -163,10 +169,11 @@ def stop_pairing():
     return
 
 def main():
-    start_pairing()
-    mic_recording()
-    stop_pairing()
-    plotting()
+    # start_pairing()
+    # mic_recording()
+    # stop_pairing()
+    # plotting()
     return
 
-main()
+# main()
+
