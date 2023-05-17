@@ -4,46 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e436bdc1-ac86-4841-ba71-8e2af3696f32" name="Changes" comment="updated beacon loop">
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_10k_bit_2k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_2250_bit_1_5k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_2250_bit_1_5k_ref.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_2250_bit_1k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_2250_bit_2_5k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_2250_bit_2k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_2250_bit_3k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_2250_bit_3k_ref.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_2250_bit_5k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_2250_bit_5k_ref.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_2k_bit_2k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_3k_bit_2k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_4k_bit_2k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_5k_bit_2k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_6k_bit_2k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_7k_bit_2k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_8k_bit_2k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_9k_bit_2k.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_10k_bit_2k.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_2250_bit_1_5k.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_2250_bit_1_5k_ref.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_2250_bit_1k.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_2250_bit_2_5k.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_2250_bit_2k.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_2250_bit_3k.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_2250_bit_3k_ref.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_2250_bit_5k.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_2250_bit_5k_ref.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_2k_bit_2k.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_3k_bit_2k.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_4k_bit_2k.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_5k_bit_2k.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_6k_bit_2k.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_7k_bit_2k.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_8k_bit_2k.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_9k_bit_2k.svg" afterDir="false" />
+    <list default="true" id="e436bdc1-ac86-4841-ba71-8e2af3696f32" name="Changes" comment="updated beacon loop measurements">
+      <change afterPath="$PROJECT_DIR$/Deconvolution.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Mic-Data/data_mics_kitt_carrier_2250_bit_3k_140x320.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots/data_mics_kitt_carrier_2250_bit_3k_140x320.svg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AudioBeacon.py" beforeDir="false" afterPath="$PROJECT_DIR$/AudioBeacon.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AudioBeaconLoop.py" beforeDir="false" afterPath="$PROJECT_DIR$/AudioBeaconLoop.py" afterDir="false" />
     </list>
     <list id="009714d2-bfdb-4e3f-a24b-5a05957a551d" name="Changes by Sam" comment="Changes by Sam" />
     <option name="SHOW_DIALOG" value="false" />
@@ -213,7 +179,7 @@
       <workItem from="1682780311864" duration="2781000" />
       <workItem from="1683109883629" duration="635000" />
       <workItem from="1683697236663" duration="14899000" />
-      <workItem from="1683891702646" duration="22870000" />
+      <workItem from="1683891702646" duration="28546000" />
     </task>
     <task id="LOCAL-00001" summary="GUI interface">
       <created>1682503141387</created>
@@ -390,7 +356,14 @@
       <option name="project" value="LOCAL" />
       <updated>1684311484706</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="updated beacon loop measurements">
+      <created>1684317085312</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1684317085312</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -429,7 +402,8 @@
     <MESSAGE value="Changes by Sam" />
     <MESSAGE value="added beacon loop" />
     <MESSAGE value="updated beacon loop" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated beacon loop" />
+    <MESSAGE value="updated beacon loop measurements" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated beacon loop measurements" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/EPO_4$GUI_test.coverage" NAME="GUI test Coverage Results" MODIFIED="1682547260900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/epo4/.idea" />
@@ -439,7 +413,7 @@
     <SUITE FILE_PATH="coverage/EPO_4_Python$ReferenceSignal.coverage" NAME="ReferenceSignal Coverage Results" MODIFIED="1684309508012" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EPO_4_Python$KittSensor.coverage" NAME="KittSensor Coverage Results" MODIFIED="1682693671021" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EPO_4$test.coverage" NAME="test Coverage Results" MODIFIED="1682517126951" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/epo4/GUI" />
-    <SUITE FILE_PATH="coverage/EPO_4_Python$AudioBeacon.coverage" NAME="AudioBeacon Coverage Results" MODIFIED="1684316389849" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/EPO_4_Python$AudioBeacon.coverage" NAME="AudioBeacon Coverage Results" MODIFIED="1684319524258" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EPO_4$EpoCommunications.coverage" NAME="EpoCommunications Coverage Results" MODIFIED="1682787210129" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/epo4" />
     <SUITE FILE_PATH="coverage/EPO_4$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1682502582070" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/epo4" />
     <SUITE FILE_PATH="coverage/EPO_4$module2_delay.coverage" NAME="module2_delay Coverage Results" MODIFIED="1682787257737" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/epo4/Module2" />
