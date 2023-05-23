@@ -4,6 +4,7 @@ import pyaudio
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fft import fft, ifft
+from Localization import mic_positions
 
 # Reference signal
 ref_sigtest = np.loadtxt(r"C:\Users\Sam\PycharmProjects\EPO-4\Mic-Data\mics_car_2250_bit3k_refclean_threshold950.txt")
@@ -43,7 +44,7 @@ def ch3(x, y, Lhat, eps):
 
     # Compute time-domain impulse response, make result real
     h = np.real(ifft(H))
-    h = h[0:Lhat]
+    # h = h[0:Lhat]
     return h
 
 
@@ -74,8 +75,48 @@ def TDOA(x, y, Fs):
     return distance
 
 print(TDOA(ref_sig, data_140x320_0, 48000))
-def difference_peaks()
-def difference_to_location(diff_peak,mic_positions, Fs)
+
+def localization(data1,data2,data3,data4,data5):
+
+    # estimate the channels
+    h1 = ch3(x, data1, x.size, 0.001)
+    h2 = ch3(x, data2, x.size, 0.001)
+    h3 = ch3(x, data3, x.size, 0.001)
+    h4 = ch3(x, data4, x.size, 0.001)
+    h5 = ch3(x, data5, x.size, 0.001)
+
+    #find the location of the peaks
+    location_peak = find_peaks(h1, h2, h3, h4, h5)
+
+    #calculate the difference of the peak locations
+    diff_peaks = difference_peaks(location_peak)
+
+    #calculate the cooridanates of the car using the difference of peaks
+    estimated_location_KITT = difference_to_location(diff_peaks, mic_positions)
+    x = estimated_location_KITT[0]
+    y = estimated_location_KITT[1]
+    return x, y
+def find_peaks(h1, h2, h3, h4, h5):
+    peak_ch1 = np.argmax(h1)
+    peak_ch2 = np.argmax(h2)
+    peak_ch3 = np.argmax(h3)
+    peak_ch4 = np.argmax(h4)
+    peak_ch5 = np.argmax(h5)
+
+    peak = np.array(peak_ch1, peak_ch2, peak_ch3, peak_ch4, peak_ch5)
+
+    return peak
+def difference_peaks(location_peak):
+    # Calculate the differences between each pair of elements
+    diff_peak = []
+    for i in range(len(location_peak)):
+        for j in range(i + 1, len(location_peak)):
+            diff = abs(location_peak[i] - location_peak[j])
+            differences.append(diff)
+    return diff_peak
+
+
+def difference_to_location(diff_peak, mic_positions, Fs):
     Vsound = 343.14 #speed of sound m/s 20 degree
     diff_to_distance = diff_peak*Vsound/Fs
 
@@ -136,9 +177,9 @@ def difference_to_location(diff_peak,mic_positions, Fs)
     # A*y=B solving for y:
     y = np.linalg.pinv(A)*B
 
-return(y[1], y[2])
+    return y[1], y[2]
 
-def Average_location(x,y,n_locations = 1)
+# def Average_location(x,y,n_locations = 1):
 
 
 

@@ -11,9 +11,3 @@ mic_positions = np.array(
         [240, 480, 80]    # mic 5 (side)
     ]
 )
-for i, mic_position in enumerate(mic_positions):
-    locals()[f'x{i+1}'] = mic_position
-
-# test Print the variables
-for i in range(1, len(mic_positions) + 1):
-    print(f'x{i} = {locals()["x" + str(i)]}')
