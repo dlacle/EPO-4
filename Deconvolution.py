@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 from scipy.fft import fft, ifft
 
 # Reference signal
-ref_sig = np.loadtxt('Mic-Data/data_mics_kitt_carrier_2250_bit3k_ref_clean_threshold950.txt')
-
+ref_sigtest = np.loadtxt(r"C:\Users\Sam\PycharmProjects\EPO-4\Mic-Data\mics_car_2250_bit3k_refclean_threshold950.txt")
+ref_sig = ref_sigtest[0:len(ref_sigtest):5]
 # Field locations
 # data_80x400 = np.loadtxt('Mic-Data/data_mics_kitt_mic_80x400.txt')
 
-data_140x320 = np.loadtxt('Mic-Data/data_mics_kitt_mic_140x320.txt')
-data_140x3202 = data_140x320[0:len(data_140x320):5]
+data_140x320 = np.loadtxt(r"C:\Users\Sam\PycharmProjects\EPO-4\Mic-Data\data_mics_kitt_carrier_2250_bit_3k_140x320.txt")
+data_140x320_0 = data_140x320[0:len(data_140x320):5]
 
 
 # h = ref_sig
@@ -24,8 +24,13 @@ def ch3(x, y, Lhat, eps):
     lenx = x.size  # Length of x
     leny = y.size  # Length of y
 
-    # Make x the same length as y
-    x = np.concatenate((x, np.zeros(leny - lenx)), axis=None)
+    l = leny - lenx + 1  # Length of h
+
+    # Force x to be the same length as y
+    x = np.append(x, [0] * (l - 1))
+
+    # # Make x the same length as y
+    # x = np.concatenate((x, np.zeros(leny - lenx)), axis=None)
 
     # Deconvolution in frequency domain
     Y = fft(y)
@@ -38,14 +43,14 @@ def ch3(x, y, Lhat, eps):
 
     # Compute time-domain impulse response, make result real
     h = np.real(ifft(H))
-
+    h = h[0:Lhat]
     return h
 
 
 def TDOA(x, y, Fs):
     # Reference and measured channels
-    ch_ref = ch3(x, x, x.size, 0.01)
-    ch_measured = ch3(x, y, x.size, 0.01)
+    ch_ref = ch3(x, x, x.size, 0.001)
+    ch_measured = ch3(x, y, x.size, 0.001)
 
     # The time axis for the impulse response is
     # then created using the length of the reference
@@ -68,4 +73,75 @@ def TDOA(x, y, Fs):
 
     return distance
 
-print(TDOA(ref_sig, data_140x3202, 48000))
+print(TDOA(ref_sig, data_140x320_0, 48000))
+def difference_peaks()
+def difference_to_location(diff_peak,mic_positions, Fs)
+    Vsound = 343.14 #speed of sound m/s 20 degree
+    diff_to_distance = diff_peak*Vsound/Fs
+
+    for i, mic_position in enumerate(mic_positions):
+        locals()[f'x{i + 1}'] = mic_position
+
+    # test Print the variables
+    for i in range(1, len(mic_positions) + 1):
+        print(f'x{i} = {locals()["x" + str(i)]}')
+
+    #define r_ij (Range difference)
+    r12 = diff_to_distance[0]
+    r13 = diff_to_distance[1]
+    r14 = diff_to_distance[2]
+    r15 = diff_to_distance[3]
+    r23 = diff_to_distance[4]
+    r24 = diff_to_distance[5]
+    r25 = diff_to_distance[6]
+    r34 = diff_to_distance[7]
+    r35 = diff_to_distance[8]
+    r45 = diff_to_distance[9]
+
+    #define matrix A
+    A =np.array([
+        [2*(x2-x1),-2*r12,0     ,0     ,0     ],
+        [2*(x3-x1),0     ,-2*r13,0     ,0     ],
+        [2*(x4-x1),0     ,0     ,-2*r14,0     ],
+        [2*(x5-x1),0     ,0     ,0     ,-2*r15],
+        [2*(x3-x2),0     ,-2*r23,0     ,0     ],
+        [2*(x4-x2),0     ,0     ,-2*r24,0     ],
+        [2*(x5-x2),0     ,0     ,0     ,-2*r25],
+        [2*(x4-x3),0     ,0     ,-2*r34,0     ],
+        [2*(x5-x3),0     ,0     ,0     ,-2*r35],
+        [2*(x5-x4),0     ,0     ,0     ,-2*r35]
+    ])
+
+    # magnitude / length
+    l1 = np.linalg.norm(x1, axis=1)
+    l2 = np.linalg.norm(x2, axis=1)
+    l3 = np.linalg.norm(x3, axis=1)
+    l4 = np.linalg.norm(x4, axis=1)
+    l5 = np.linalg.norm(x5, axis=1)
+
+    #define matrix B
+    B = np.array([
+        [r12**2-l1**2+l2**2],
+        [r13**2-l1**2+l3**2],
+        [r14**2-l1**2+l4**2],
+        [r15**2-l1**2+l5**2],
+        [r23**2-l2**2+l3**2],
+        [r24**2-l2**2+l4**2],
+        [r25**2-l2**2+l5**2],
+        [r34**2-l3**2+l4**2],
+        [r35**2-l3**2+l5**2],
+        [r45**2-l4**2+l5**2]
+    ])
+
+    # A*y=B solving for y:
+    y = np.linalg.pinv(A)*B
+
+return(y[1], y[2])
+
+def Average_location(x,y,n_locations = 1)
+
+
+
+
+
+
