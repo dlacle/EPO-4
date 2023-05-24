@@ -39,9 +39,15 @@ def visuel_grid():
     ax.grid(True, linestyle='--', linewidth=0.5, which='both')
     ax.grid(True, linestyle='-', linewidth=1, which='major')
 
+    #add label axis
+    ax.set_xlabel("y")
+    ax.set_ylabel("x")
+    ax.yaxis.set_label_position('right')
+
     # Move the y-axis to the right side
     ax.yaxis.tick_right()
 
     # # Display the plot
     # plt.show()
+    return fig
 
