@@ -292,6 +292,8 @@ def Find_peak_begin(data):
 def filterpeaks():
     peaks = [[17787, 37819, 57788, 77820], [18270, 38229, 58271, 78224], [18483, 38451, 58633, 78494],
          [104, 18188, 38177, 58189, 78178], [17879, 37868, 57881, 77869]]
+
+    # filers out lonely initial peaks
     while True:
         # Get the lowest value of the first element in the sublists
         lowest_value = min(sublist[0] for sublist in peaks)
@@ -311,6 +313,7 @@ def filterpeaks():
         else:
             break
 
+    # filers out lonely final peaks
     while True:
         # Get the highest value of the last element in the sublists
         highest_value = max(sublist[-1] for sublist in peaks)
@@ -331,7 +334,7 @@ def filterpeaks():
             break
     peak_filter = peaks
     return print(peak_filter)
-
+filterpeaks()
 def automatically_segment():
     segments = []
     for p in range(len(peaks[0])):
