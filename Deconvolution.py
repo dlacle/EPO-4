@@ -77,26 +77,30 @@ def TDOA(x, y, Fs):
 
 # print(TDOA(ref_sig, data_140x320_0, 48000))
 
-def localization(data1,data2,data3,data4,data5):
+def localization(x_ref,segments):
+    location = []
+    for n in range(len(segments)//5): # N segments
 
-    # estimate the channels
-    h1 = ch3(x, data1, x.size, 0.001)
-    h2 = ch3(x, data2, x.size, 0.001)
-    h3 = ch3(x, data3, x.size, 0.001)
-    h4 = ch3(x, data4, x.size, 0.001)
-    h5 = ch3(x, data5, x.size, 0.001)
+        # estimate the channels
+        h1 = ch3(x_ref, segments[n * 5], 0.001)
+        h2 = ch3(x_ref, segments[n * 5 + 1], 0.001)
+        h3 = ch3(x_ref, segments[n * 5 + 2], 0.001)
+        h4 = ch3(x_ref, segments[n * 5 + 3], 0.001)
+        h5 = ch3(x_ref, segments[n * 5 + 4], 0.001)
 
-    #find the location of the peaks
-    location_peak = find_peaks(h1, h2, h3, h4, h5)
+        #find the location of the peaks
+        location_peak = find_peaks(h1, h2, h3, h4, h5)
 
-    #calculate the difference of the peak locations
-    diff_peaks = difference_peaks(location_peak)
+        #calculate the difference of the peak locations
+        diff_peaks = difference_peaks(location_peak)
 
-    #calculate the cooridanates of the car using the difference of peaks
-    estimated_location_KITT = difference_to_location(diff_peaks, mic_positions)
-    x = estimated_location_KITT[0]
-    y = estimated_location_KITT[1]
-    return x, y
+        #calculate the cooridanates of the car using the difference of peaks
+        estimated_location_KITT = difference_to_location(diff_peaks, mic_positions)
+
+    location.append(estimated_location_KITT)
+    # x = estimated_location_KITT[0]
+    # y = estimated_location_KITT[1]
+    return location
 def find_peaks(h1, h2, h3, h4, h5):
     peak_ch1 = np.argmax(h1)
     peak_ch2 = np.argmax(h2)
@@ -222,11 +226,11 @@ def Plot_each_channel(data1, data2, data3, data4, data5,Fs):
     fig, axs = plt.subplots(5, 1, figsize=(8, 10))
 
     # Plot the data for each microphone
-    axs[0].plot(time, data1, label='Microphone 0')
-    axs[1].plot(time, data2, label='Microphone 1')
-    axs[2].plot(time, data3, label='Microphone 2')
-    axs[3].plot(time, data4, label='Microphone 3')
-    axs[4].plot(time, data5, label='Microphone 4')
+    axs[0].plot(time, data1, label='Microphone 1')
+    axs[1].plot(time, data2, label='Microphone 2')
+    axs[2].plot(time, data3, label='Microphone 3')
+    axs[3].plot(time, data4, label='Microphone 4')
+    axs[4].plot(time, data5, label='Microphone 5')
 
     # Set labels and title for each subplot
     for i in range(5):
@@ -247,11 +251,11 @@ def Plot_each_channel(data1, data2, data3, data4, data5,Fs):
 
     # Plotting 140x320
     data1 = data1/max(data1)
-    data2 = data2 / max(data2)
+    data4 = data4 / max(data4)
     Fs = 48000
     time_axis = np.linspace(0, len(data1) / Fs, len(data1))
     plt.plot(time_axis, data1, label='mic 1')
-    plt.plot(time_axis, data2, label='mic 3')
+    plt.plot(time_axis, data4, label='mic 4')
     plt.legend()
 
     # Display the plot
@@ -260,28 +264,92 @@ def Plot_each_channel(data1, data2, data3, data4, data5,Fs):
 
 lst = split_channels(data)
 
-def automatically_segment(data):
-    data1= data[0]
-    print(len(data1))
-    # X_norm = x/max(x)
-    y_norm = data1/max(abs(data1))
+def Find_peak_begin(data):
+    total_peak_begin = []
+    for i, data_array in enumerate(data):
+        # print("Results for data", i + 1)
+        # print(len(data_array))
+        y_norm = data_array/max(abs(data_array))
+        peaks_begin = []
+        total_peak_begin.append(peaks_begin)
 
-    peaks_begin = []
-    counter = 0
-    for index,item in enumerate(y_norm):
-        if counter >= 0:
-            counter -= 1
-            continue
-        if item > 0.5: #50% of maximum
-            peaks_begin.append(index)
-            counter = 18000 #lengt one peak+rest period
-    peaks_begin = [peak / Fs for peak in peaks_begin]
-    print(peaks_begin)
-    # segment = y[i-950:i+800]
+
+        counter = 0
+        for index,item in enumerate(y_norm):
+            if counter >= 0:
+                counter -= 1
+                continue
+            if item > 0.75: #75% of maximum
+                peaks_begin.append(index)
+                counter = 18000 #after lengt one peak+rest period looking for another peak 8000-22000
+        peaks_begin_debug = [peak / Fs for peak in peaks_begin]
+        # print("Peaks Begin:", peaks_begin_debug)
+    peaks_begin_debug = [peak / Fs for peak in peaks_begin]
+    # print(total_peak_begin)
     return
 
-automatically_segment(data=lst)
 
-Plot_each_channel(data1, data2, data3, data4, data5, Fs)
+def filterpeaks():
+    peaks = [[17787, 37819, 57788, 77820], [18270, 38229, 58271, 78224], [18483, 38451, 58633, 78494],
+         [104, 18188, 38177, 58189, 78178], [17879, 37868, 57881, 77869]]
+    while True:
+        # Get the lowest value of the first element in the sublists
+        lowest_value = min(sublist[0] for sublist in peaks)
+        print(lowest_value)
+        print(min(peaks))
+        lower_limit = lowest_value - 3000
+        upper_limit = lowest_value + 3000
+
+        # Check if all first values are within the interval
+        within_interval = all(lower_limit <= sublist[0] <= upper_limit for sublist in peaks)
+
+        if not within_interval:
+            # Remove the lowest overall element from the list
+            for sublist in peaks:
+                if sublist[0] == lowest_value:
+                    sublist.remove(lowest_value)
+        else:
+            break
+
+    while True:
+        # Get the highest value of the last element in the sublists
+        highest_value = max(sublist[-1] for sublist in peaks)
+        print(highest_value)
+        print(max(peaks))
+        lower_limit = highest_value - 3000
+        upper_limit = highest_value + 3000
+
+        # Check if all first values are within the interval
+        within_interval = all(lower_limit <= sublist[-1] <= upper_limit for sublist in peaks)
+
+        if not within_interval:
+            # Remove the highest overall element from the list
+            for sublist in peaks:
+                if sublist[-1] == highest_value:
+                    sublist.remove(highest_value)
+        else:
+            break
+    peak_filter = peaks
+    return print(peak_filter)
+
+def automatically_segment():
+    segments = []
+    for p in range(len(peaks[0])):
+        i = min(sublist[p] for sublist in peaks)
+        segment_data1 = data1[i - 100:i + 12000]
+        segment_data2 = data2[i - 100:i + 12000]
+        segment_data3 = data3[i - 100:i + 12000]
+        segment_data4 = data4[i - 100:i + 12000]
+        segment_data5 = data5[i - 100:i + 12000]
+        segments.append([segment_data1, segment_data2, segment_data3, segment_data4, segment_data5])
+
+    # segments will contain the desired output
+    print(segments)
+
+    return segments
+
+# Find_peak_begin(data=lst)
+#
+# Plot_each_channel(data1, data2, data3, data4, data5, Fs)
 
 
