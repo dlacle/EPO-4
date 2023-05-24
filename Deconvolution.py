@@ -7,13 +7,13 @@ from scipy.fft import fft, ifft
 from Localization import mic_positions
 
 # Reference signal
-x = np.loadtxt(r"Mic-Data/data_mics_kitt_carrier_2250_bit3k_ref_clean_threshold950.txt")
+x = np.loadtxt(r'Mic-Data/kitt_carrier_2250_bit3k_ref_clean_threshold950.txt')
 x = x[0:len(x):5]
 
 # Field locations
 # data_80x400 = np.loadtxt('Mic-Data/data_mics_kitt_mic_80x400.txt')
 
-data_140x320 = np.loadtxt(r"Mic-Data/data_mics_kitt_carrier_2250_bit_3k_140x320.txt")
+data_140x320 = np.loadtxt(r'Mic-Data/kitt_carrier_2250_bit_3k_140x320.txt')
 data_140x320 = data_140x320[0:len(data_140x320):5]
 
 

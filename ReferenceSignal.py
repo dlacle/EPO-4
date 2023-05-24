@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # File path
-file_path = r"Mic-Data/data_mics_kitt_carrier_2250_bit_3k_ref.txt"
+file_path = r'Mic-Data/kitt_carrier_2250_bit_3k_ref.txt'
 
 # Load data from the text file
 data = np.loadtxt(file_path)
@@ -52,7 +52,7 @@ end_index = peak_indices[-1]
 # Trim the average peak to remove the zero intervals
 clean_data = average_peak[start_index:end_index+1]
 
-with open('Mic-Data/data_mics_kitt_carrier_2250_bit3k_ref_clean_nozero.txt', 'w') as file:
+with open('Mic-Data/kitt_carrier_2250_bit3k_ref_clean_nozero.txt', 'w') as file:
     for sample in data:
         file.write("%s\n" % sample)
 
