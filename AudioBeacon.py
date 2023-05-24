@@ -14,7 +14,8 @@ Time_recording = 10  # in seconds
 N_mic = 5  # number of mics/channels
 N = Time_recording * Fs  # number of frames per mic
 N_total = N_mic * N  # total number of samples
-filename = 'data_mics_kitt_carrier_2250_bit_3k_140x320'
+filename = 'kitt_carrier_2250_bit_3k_80x400'
+
 
 # Chosen carrier=2250 Hz, bit=3000 Hz, and rep=1250
 
@@ -23,7 +24,7 @@ def start_pairing():
     This function starts the pairing mode to KITT,
     transmission takes place over port 7
     """
-    #get port info
+    # get port info
     ports = serial.tools.list_ports.comports()
     for i in range(len(ports)):
         print(f"{i} - {ports[i].description}")
@@ -66,8 +67,8 @@ def start_pairing():
     serial_port.write(b'A1\n')
 
     # Speaker playback duration
-    time.sleep(10)
-    serial_port.write(b'A0\n')  # off
+    time.sleep(3)
+
 
     return
 
@@ -89,8 +90,8 @@ def mic_recording():
     for i in range(pyaudio_handle.get_device_count()):
         device_info = pyaudio_handle.get_device_info_by_index(i)
         if (device_info["name"] == desired_device_name1 or
-            device_info["name"] == desired_device_name2 or
-            device_info["name"] == desired_device_name3):
+                device_info["name"] == desired_device_name2 or
+                device_info["name"] == desired_device_name3):
             device_index = i
             break
 
@@ -106,7 +107,7 @@ def mic_recording():
     with open(f'Mic-Data/{filename}.txt', 'w') as file:
         for sample in data:
             file.write("%s\n" % sample)
-        print("data stored")
+        print("Data stored")
     return
 
 
@@ -114,11 +115,11 @@ def plotting():
     # Plotting the microphone data
     dataTotal = np.loadtxt(f'Mic-Data/{filename}.txt')
 
-    # data0 = dataTotal[0:N_total:5]
-    # data1 = dataTotal[1:N_total:5]
+    data0 = dataTotal[0:N_total:5]
+    data1 = dataTotal[1:N_total:5]
     data2 = dataTotal[2:N_total:5]
-    # data3 = dataTotal[3:N_total:5]
-    # data4 = dataTotal[4:N_total:5]
+    data3 = dataTotal[3:N_total:5]
+    data4 = dataTotal[4:N_total:5]
 
     # Create an array for time based on the length of the data
     time_total = np.arange(len(dataTotal)) / Fs
@@ -133,26 +134,26 @@ def plotting():
     # Plot each channel
 
     # Create subplots for each microphone channel
-    # fig, axs = plt.subplots(5, 1, figsize=(8, 10))
+    fig, axs = plt.subplots(5, 1, figsize=(8, 10))
 
     # Plot the data for each microphone
-    # axs[0].plot(time, data0, label='Microphone 0')
-    # axs[1].plot(time, data1, label='Microphone 1')
-    plt.plot(time, data2, label='Microphone 2')
-    # axs[3].plot(time, data3, label='Microphone 3')
-    # axs[4].plot(time, data4, label='Microphone 4')
+    axs[0].plot(time, data0, label='Microphone 0')
+    axs[1].plot(time, data1, label='Microphone 1')
+    axs[2].plot(time, data2, label='Microphone 2')
+    axs[3].plot(time, data3, label='Microphone 3')
+    axs[4].plot(time, data4, label='Microphone 4')
 
     # Set labels and title for each subplot
-    # for i in range(5):
-    #     axs[i].set_ylabel('Amplitude')
-    #     axs[i].set_title('Microphone ' + str(i))
-    #
-    # # Set labels and title for the entire figure
-    # # fig.suptitle('Data of the five microphones', ha='center')
-    # axs[-1].set_xlabel('Time [s]')
-    #
-    # # Adjust spacing between subplots
-    # plt.tight_layout()
+    for i in range(5):
+        axs[i].set_ylabel('Amplitude')
+        axs[i].set_title('Microphone ' + str(i))
+
+    # Set labels and title for the entire figure
+    # fig.suptitle('Data of the five microphones', ha='center')
+    axs[-1].set_xlabel('Time [s]')
+
+    # Adjust spacing between subplots
+    plt.tight_layout()
 
     # Export plot
     plt.savefig(f'Plots/{filename}.svg', format='svg')
@@ -161,19 +162,21 @@ def plotting():
     plt.show()
     return
 
-def stop_pairing():
 
-    # close connection
+def stop_pairing():
+    # Close connection
     serial_port.close()
     print("Disconnected\n")
     return
 
+
 def main():
-    # start_pairing()
-    # mic_recording()
-    # stop_pairing()
-    # plotting()
+    start_pairing()
+    mic_recording()
+    serial_port.write(b'A0\n')  # off
+    plotting()
+    stop_pairing()
     return
 
-# main()
 
+main()
