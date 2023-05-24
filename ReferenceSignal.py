@@ -8,7 +8,7 @@ file_path = r'Mic-Data/kitt_carrier_2250_bit_3k_ref.txt'
 data = np.loadtxt(file_path)
 
 # Sampling frequency
-Fs = 48000
+Fs = 48e3
 
 # Number of samples: 2.4e6
 n_samples = len(data)
@@ -35,30 +35,10 @@ average_peak = np.mean(data_reshaped, axis=0)
 autocorr = np.correlate(average_peak, average_peak, mode='full')
 t_autocorr = np.linspace(-t_total, t_total, len(autocorr))
 
-# # Calculate auto-correlation
-# autocorr = np.correlate(average_peak, average_peak, mode='full')
-#
-# # Time lag vector for auto-correlation
-# t_autocorr = np.linspace(-t_total, t_total, len(autocorr))
-#
-# # Clean up the recording by removing zero intervals
-# # clean_data = average_peak[np.nonzero(average_peak)]
-#
-# threshold = 950  # Adjust this value according to your needs
-#
-# # Find the indices where the peak values exceed the threshold
-# peak_indices = np.where(abs(average_peak) > threshold)[0]
-#
-# # Find the start and end indices of the non-zero interval
-# # start_index = peak_indices[0]
-# # end_index = peak_indices[-1]
-
-# Trim the average peak to remove the zero intervals
-
-start_time = 0.75
-end_time = 1.3
-start_index = int(start_time * 48000)
-end_index = int(end_time * 48000)
+start_time = 0.70
+end_time = 1.0
+start_index = int(start_time * Fs)
+end_index = int(end_time * Fs)
 
 clean_data = average_peak[start_index:end_index]
 
@@ -67,35 +47,37 @@ autocorr_clean = np.correlate(clean_data, clean_data, mode='full')
 
 # Time lag vector for auto-correlation
 t_total_clean = len(clean_data) / Fs
-t_autocorr_clean = np.linspace(-t_total_clean/2, t_total_clean/2-1, len(clean_data))
+t_autocorr_clean = np.linspace(-t_total, t_total, len(autocorr_clean))
+
+# Create subplots with 2 rows and 2 columns
+fig, axs = plt.subplots(2, 2)
 
 # Plot the reference signal for the averaged peaks
-plt.subplot(221)
-plt.plot(t, average_peak)
-plt.xlabel("Time (s)")
-plt.ylabel("Amplitude")
-plt.title("Reference Signal: Averaged Peaks")
+axs[0, 0].plot(t, average_peak)
+axs[0, 0].set_xlabel("Time [s]")
+axs[0, 0].set_ylabel("Amplitude")
+axs[0, 0].set_title("Reference Signal: Averaged Peaks")
 
 # Plot the auto-correlation of reference signal
-plt.subplot(222)
-plt.plot(t_autocorr, autocorr)
-plt.xlabel("Time Lag (s)")
-plt.ylabel("Auto correlation")
-plt.title("Auto-correlation of Reference Signal")
+axs[0, 1].plot(t_autocorr, autocorr)
+axs[0, 1].set_xlabel("Time Lag [s]")
+axs[0, 1].set_ylabel("Amplitude")
+axs[0, 1].set_title("Auto-correlation of Reference Signal")
 
 # Plot cleaned reference signal
-plt.subplot(223)
-plt.plot(t[start_index:end_index], clean_data)
-plt.xlabel("Time (s)")
-plt.ylabel("Amplitude")
-plt.title("Reference Signal: Cleaned")
+axs[1, 0].plot(t[start_index:end_index], clean_data)
+axs[1, 0].set_xlabel("Time [s]")
+axs[1, 0].set_ylabel("Amplitude")
+axs[1, 0].set_title("Reference Signal: Cleaned")
 
 # Plot the auto-correlation of cleaned signal
-plt.subplot(224)
-plt.plot(t_autocorr_clean, autocorr_clean)
-plt.xlabel("Time Lag (s)")
-plt.ylabel("Auto-correlation")
-plt.title("Auto-correlation of Cleaned Reference Signal")
+axs[1, 1].plot(t_autocorr_clean, autocorr_clean)
+axs[1, 1].set_xlabel("Time Lag [s]")
+axs[1, 1].set_ylabel("Amplitude")
+axs[1, 1].set_title("Auto-correlation of Cleaned Reference Signal")
+
+# # Adjust spacing between subplots
+# plt.subplots_adjust(wspace=2, hspace=2)  # Adjust the value as per your requirement
 
 plt.tight_layout()
 plt.show()
