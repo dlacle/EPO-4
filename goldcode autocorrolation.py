@@ -20,3 +20,5 @@ plt.ylabel('Autocorrelation')
 plt.title('Autocorrelation of Gold code 3355A780')
 plt.show()
 
+plt.savefig('goldcode_autocorrolation.svg')
+

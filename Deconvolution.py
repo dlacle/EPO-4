@@ -337,7 +337,7 @@ def localization(data_recording,x_ref, mic_positions,Fs,eps,Vsound):
 # # Find_peak_begin(data=lst)
 # #
 # Plot_each_channel(data1, data2, data3, data4, data5, Fs)
-def Plot_each_channel(data1, data2, data3, data4, data5,Fs):
+def Plot_each_channel(lst,Fs):
 
     time = np.linspace(0, len(data1)/Fs, len(data1))
 
@@ -364,7 +364,7 @@ def Plot_each_channel(data1, data2, data3, data4, data5,Fs):
     plt.tight_layout()
 
     # # Export plot
-    plt.savefig(f'Plots-Report/{filename}.svg', format='svg')
+    # plt.savefig(f'Plots-Report/{filename}.svg', format='svg')
     # Display the plot
     plt.show()
 
@@ -407,3 +407,24 @@ def TDOA(x, y, Fs):
 
     return distance
 print(localization(data_recording,xref,mic_positions,Fs,eps,Vsound))
+
+def Plot_each_channel_in_one_plot(lst, Fs):
+    time = np.linspace(0, len(lst[0])/Fs, len(lst[0]))
+
+    # Plot the data for each microphone
+    plt.plot(time, lst[0], label='Microphone 1')
+    plt.plot(time, lst[1], label='Microphone 2')
+    plt.plot(time, lst[2], label='Microphone 3')
+    plt.plot(time, lst[3], label='Microphone 4')
+    plt.plot(time, lst[4], label='Microphone 5')
+
+    # Set labels and title
+    plt.xlabel('Time [s]')
+    plt.ylabel('Amplitude')
+    plt.title('Signals of the five microphones')
+
+    # Add legend
+    plt.legend()
+
+    # Display the plot
+    plt.show()
