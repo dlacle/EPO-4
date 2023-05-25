@@ -40,14 +40,19 @@ end_time = 1.0
 start_index = int(start_time * Fs)
 end_index = int(end_time * Fs)
 
-clean_data = average_peak[start_index:end_index]
+clean_data = np.array(average_peak[start_index:end_index])
+clean_data = clean_data[clean_data != 0]
+
+with open('ref_sig.txt', 'w') as f:
+    for i in clean_data:
+        f.write("%s\n" % i)
 
 # Calculate auto-correlation
 autocorr_clean = np.correlate(clean_data, clean_data, mode='full')
 
 # Time lag vector for auto-correlation
 t_total_clean = len(clean_data) / Fs
-t_autocorr_clean = np.linspace(-t_total, t_total, len(autocorr_clean))
+t_autocorr_clean = np.linspace(-t_total_clean/2, t_total_clean/2, len(autocorr_clean))
 
 # Create subplots with 2 rows and 2 columns
 fig, axs = plt.subplots(2, 2)
@@ -65,7 +70,7 @@ axs[0, 1].set_ylabel("Amplitude")
 axs[0, 1].set_title("Auto-correlation of Reference Signal")
 
 # Plot cleaned reference signal
-axs[1, 0].plot(t[start_index:end_index], clean_data)
+axs[1, 0].plot(t[start_index:end_index - 7], clean_data)
 axs[1, 0].set_xlabel("Time [s]")
 axs[1, 0].set_ylabel("Amplitude")
 axs[1, 0].set_title("Reference Signal: Cleaned")
@@ -75,9 +80,6 @@ axs[1, 1].plot(t_autocorr_clean, autocorr_clean)
 axs[1, 1].set_xlabel("Time Lag [s]")
 axs[1, 1].set_ylabel("Amplitude")
 axs[1, 1].set_title("Auto-correlation of Cleaned Reference Signal")
-
-# # Adjust spacing between subplots
-# plt.subplots_adjust(wspace=2, hspace=2)  # Adjust the value as per your requirement
 
 plt.tight_layout()
 plt.show()
