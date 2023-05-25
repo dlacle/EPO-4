@@ -1,30 +1,30 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-time_period = 0.5*1e-2  # seconds
-duty_cycle = 0.5  # 50% duty cycle
-carrier_freq = 2250  # Hz
+# Define the data
+data = "00110011010101011010011110000000"
 
-# Define time steps
-num_samples = 1000  # number of samples
-time_step = time_period / num_samples
-time = np.arange(0, time_period, time_step)
+# Define the carrier frequency and period
+fc = 2250  # in Hz
+Tc = 1 / fc  # in seconds
 
-# Generate OOK signal
-signal = np.zeros(num_samples)
-on_time = duty_cycle * time_period
-num_on_samples = int(on_time / time_step)
-signal[:num_on_samples] = 1
+# Define the sampling frequency and period
+fs = 48e3  # in Hz
+Ts = 1 / fs  # in seconds
 
-# Generate carrier signal
-carrier = np.sin(2 * np.pi * carrier_freq * time)
+# Create the time vector
+t = np.arange(0, len(data) * Tc, Ts)
 
-# Modulate carrier with OOK signal
-modulated_signal = signal * carrier
+# Generate the OOK waveform
+ook = np.zeros(len(t))
+for i in range(len(data)):
+    if data[i] == "1":
+        ook[i * int(Tc / Ts):(i + 1) * int(Tc / Ts)] = 1
 
-# Plot modulated signal
-plt.plot(time, modulated_signal)
-plt.xlabel('Time (s)')
+# Plot the OOK waveform
+plt.plot(t, ook)
+plt.xlabel('Time [s]')
 plt.ylabel('Amplitude')
-plt.title('OOK Modulated Signal')
+plt.title('Ideal OOK waveform (gold code: 0x3355A780)')
+plt.savefig('Plots-Report/IdealOOK.svg', format='svg')
 plt.show()
