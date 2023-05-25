@@ -14,7 +14,7 @@ Time_recording = 10  # in seconds
 N_mic = 5  # number of mics/channels
 N = Time_recording * Fs  # number of frames per mic
 N_total = N_mic * N  # total number of samples
-filename = 'kitt_carrier_2250_bit_3k_80x400'
+filename = 'kitt_middle'
 
 
 # Chosen carrier=2250 Hz, bit=3000 Hz, and rep=1250
@@ -126,7 +126,7 @@ def plotting():
     time = np.arange(len(data2)) / Fs
 
     # Plot Datatotal
-    plt.plot(time, data2)
+    plt.plot(time_total, dataTotal)
     plt.xlabel('Time (seconds)')
     plt.ylabel('Amplitude')
     plt.title('Audio Recording')
@@ -137,16 +137,16 @@ def plotting():
     fig, axs = plt.subplots(5, 1, figsize=(8, 10))
 
     # Plot the data for each microphone
-    axs[0].plot(time, data0, label='Microphone 0')
-    axs[1].plot(time, data1, label='Microphone 1')
-    axs[2].plot(time, data2, label='Microphone 2')
-    axs[3].plot(time, data3, label='Microphone 3')
-    axs[4].plot(time, data4, label='Microphone 4')
+    axs[0].plot(time[:int(Fs*2)], data0[:int(Fs*2)], label='Microphone 1')
+    axs[1].plot(time[:int(Fs*2)], data1[:int(Fs*2)], label='Microphone 2')
+    axs[2].plot(time[:int(Fs*2)], data2[:int(Fs*2)], label='Microphone 3')
+    axs[3].plot(time[:int(Fs*2)], data3[:int(Fs*2)], label='Microphone 4')
+    axs[4].plot(time[:int(Fs*2)], data4[:int(Fs*2)], label='Microphone 5')
 
     # Set labels and title for each subplot
     for i in range(5):
         axs[i].set_ylabel('Amplitude')
-        axs[i].set_title('Microphone ' + str(i))
+        axs[i].set_title('Microphone ' + str(i + 1))
 
     # Set labels and title for the entire figure
     # fig.suptitle('Data of the five microphones', ha='center')
@@ -156,11 +156,12 @@ def plotting():
     plt.tight_layout()
 
     # Export plot
-    plt.savefig(f'Plots/{filename}.svg', format='svg')
+    plt.savefig(f'Plots-Report/{filename}_report.svg', format='svg')
 
     # Display the plot
     plt.show()
     return
+
 
 
 def stop_pairing():
@@ -171,11 +172,11 @@ def stop_pairing():
 
 
 def main():
-    start_pairing()
-    mic_recording()
-    serial_port.write(b'A0\n')  # off
+    # start_pairing()
+    # mic_recording()
+    # serial_port.write(b'A0\n')  # off
     plotting()
-    stop_pairing()
+    # stop_pairing()
     return
 
 
