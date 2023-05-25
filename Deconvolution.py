@@ -4,25 +4,124 @@ import pyaudio
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fft import fft, ifft
-from Localization import mic_positions
+
+# Define the positions of the 5 microphones x,y,z
+mic_positions = np.array(
+    [
+        [0  ,480, 50],   # mic 1 (bottom left corner)
+        [480,480, 50],   # mic 2 (top left corner)
+        [480,0  , 50],   # mic 3 (top right corner)
+        [0  ,0  , 50],   # mic 4 (bottom right corner)
+        [0  ,240, 80]    # mic 5 (side)
+    ]
+)
 Fs = 48000
+# File path plot
+filename_plot = 'plot_kitt_carrier_2250_bit_3k_80x400_2sec'
 
-# Reference signal
-# ref_sigtest = np.loadtxt(r"C:\Users\Sam\PycharmProjects\EPO-4\Mic-Data\mics_car_2250_bit3k_refclean_threshold950.txt")
-# ref_sig = ref_sigtest[0:len(ref_sigtest):5]
-# # Field locations
-# # data_80x400 = np.loadtxt('Mic-Data/data_mics_kitt_mic_80x400.txt')
-#
-# data_140x320 = np.loadtxt(r"C:\Users\Sam\PycharmProjects\EPO-4\Mic-Data\data_mics_kitt_carrier_2250_bit_3k_140x320.txt")
-# data_140x320_0 = data_140x320[0:len(data_140x320):5]
-#
+# File path
+file_path = r"Mic-Data/kitt_carrier_2250_bit_3k_80x400.txt"
 
-# h = ref_sig
-# y_80x400 = np.convolve(x_80x400, h)
-# h_80x400 = ch3(x_80x400, y_80x400, Lhat, eps)
+# Load data from the text file
+data = np.loadtxt(file_path)
+def split_channels(dataTotal):
+    N_total = len(dataTotal)
+    # dataTotal = dataTotal[:len(dataTotal)//5] #only use when u find the recording to long,example for plotting
+    data1 = dataTotal[0:N_total:5]
+    data2 = dataTotal[1:N_total:5]
+    data3 = dataTotal[2:N_total:5]
+    data4 = dataTotal[3:N_total:5]
+    data5 = dataTotal[4:N_total:5]
+    lst = [data1, data2, data3, data4, data5]
+    return lst
 
-filename = 'plot_kitt_carrier_2250_bit_3k_80x400_2sec'
-def ch3(x, y, Lhat, eps):
+def find_peak_begin(data):
+    total_peak_begin = []
+    for i, data_array in enumerate(data):
+        # print("Results for data", i + 1)
+        # print(len(data_array))
+        y_norm = data_array/max(abs(data_array))
+        peaks_begin = []
+        total_peak_begin.append(peaks_begin)
+
+
+        counter = 0
+        for index,item in enumerate(y_norm):
+            if counter >= 0:
+                counter -= 1
+                continue
+            if item > 0.75: #75% of maximum
+                peaks_begin.append(index)
+                counter = 18000 #after lengt one peak+rest period looking for another peak 8000-22000
+        peaks_begin_debug = [peak / Fs for peak in peaks_begin]
+        # print("Peaks Begin:", peaks_begin_debug)
+    peaks_begin_debug = [peak / Fs for peak in peaks_begin]
+    # print(total_peak_begin)
+    return total_peak_begin #returning a list inside a list [peaks_data1_begin....peaks_data5_begin]
+
+
+def filterpeaks(total_peak_begin):
+    # peaks = [[17787, 37819, 57788, 77820], [106,18270, 38229, 58271, 78224], [18483, 38451, 58633, 78494],
+    #      [104, 18188, 38177, 58189, 78178], [17879, 37868, 57881, 77869,100000]]
+
+    # filers out lonely initial peaks
+    while True:
+        # Get the lowest value of the first element in the sublists
+        lowest_value = min(sublist[0] for sublist in total_peak_begin)
+        print(lowest_value)
+        print(min(total_peak_begin))
+        lower_limit = lowest_value - 3000
+        upper_limit = lowest_value + 3000
+
+        # Check if all first values are within the interval
+        within_interval = all(lower_limit <= sublist[0] <= upper_limit for sublist in total_peak_begin)
+
+        if not within_interval:
+            # Remove the lowest overall element from the list
+            for sublist in total_peak_begin:
+                if sublist[0] == lowest_value:
+                    sublist.remove(lowest_value)
+        else:
+            break
+
+    # filers out lonely final peaks
+    while True:
+        # Get the highest value of the last element in the sublists
+        highest_value = max(sublist[-1] for sublist in total_peak_begin)
+        print(highest_value)
+        print(max(total_peak_begin))
+        lower_limit = highest_value - 3000
+        upper_limit = highest_value + 3000
+
+        # Check if all first values are within the interval
+        within_interval = all(lower_limit <= sublist[-1] <= upper_limit for sublist in total_peak_begin)
+
+        if not within_interval:
+            # Remove the highest overall element from the list
+            for sublist in total_peak_begin:
+                if sublist[-1] == highest_value:
+                    sublist.remove(highest_value)
+        else:
+            break
+    peak_filter = total_peak_begin
+    return peak_filter #returning a list inside a list with filterd [peaks_data1_begin....peaks_data5_begin]
+
+def automatically_segment(peak_filter,lst):
+    segments = []
+    for p in range(len(peak_filter[0])):
+        i = min(sublist[p] for sublist in peak_filter)
+        segment_data1 = lst[0][i - 100:i + 12000]
+        segment_data2 = lst[1][i - 100:i + 12000]
+        segment_data3 = lst[2][i - 100:i + 12000]
+        segment_data4 = lst[3][i - 100:i + 12000]
+        segment_data5 = lst[4][i - 100:i + 12000]
+        segments.append([segment_data1, segment_data2, segment_data3, segment_data4, segment_data5])
+
+    # segments will contain the desired output
+    print(segments)
+    return segments
+
+def ch3(x, y, eps, Lhat):
     lenx = x.size  # Length of x
     leny = y.size  # Length of y
 
@@ -48,59 +147,6 @@ def ch3(x, y, Lhat, eps):
     # h = h[0:Lhat]
     return h
 
-
-def TDOA(x, y, Fs):
-    # Reference and measured channels
-    ch_ref = ch3(x, x, x.size, 0.001)
-    ch_measured = ch3(x, y, x.size, 0.001)
-
-    # The time axis for the impulse response is
-    # then created using the length of the reference
-    # channel and the sampling rate.
-    t = np.linspace(0, len(ch_ref)/Fs, len(ch_ref))
-
-    # Find the peak of each of the impulse responses
-    # using the argmax() function. This assumes that
-    # the peak represents the arrival
-    # time of the direct sound between the two signals.
-    pk_ref = np.argmax(ch_ref)
-    pk_measured = np.argmax(ch_measured)
-
-    # Time difference between two peaks (in samples)
-    t_diff = t[pk_measured] - t[pk_ref]
-
-    # Distance between two signals is obtained by
-    # multiplying the time difference by speed of sound
-    distance = 343 * t_diff
-
-    return distance
-
-# print(TDOA(ref_sig, data_140x320_0, 48000))
-
-def localization(x_ref,segments):
-    location = []
-    for n in range(len(segments)//5): # N segments
-
-        # estimate the channels
-        h1 = ch3(x_ref, segments[n * 5], 0.001)
-        h2 = ch3(x_ref, segments[n * 5 + 1], 0.001)
-        h3 = ch3(x_ref, segments[n * 5 + 2], 0.001)
-        h4 = ch3(x_ref, segments[n * 5 + 3], 0.001)
-        h5 = ch3(x_ref, segments[n * 5 + 4], 0.001)
-
-        #find the location of the peaks
-        location_peak = find_peaks(h1, h2, h3, h4, h5)
-
-        #calculate the difference of the peak locations
-        diff_peaks = difference_peaks(location_peak)
-
-        #calculate the cooridanates of the car using the difference of peaks
-        estimated_location_KITT = difference_to_location(diff_peaks, mic_positions)
-
-    location.append(estimated_location_KITT)
-    # x = estimated_location_KITT[0]
-    # y = estimated_location_KITT[1]
-    return location
 def find_peaks(h1, h2, h3, h4, h5):
     peak_ch1 = np.argmax(h1)
     peak_ch2 = np.argmax(h2)
@@ -119,7 +165,6 @@ def difference_peaks(location_peak):
             diff = abs(location_peak[i] - location_peak[j])
             differences.append(diff)
     return diff_peak
-
 
 def difference_to_location(diff_peak, mic_positions, Fs):
     Vsound = 343.14 #speed of sound m/s 20 degree
@@ -186,38 +231,42 @@ def difference_to_location(diff_peak, mic_positions, Fs):
 
 # def Average_location(x,y,n_locations = 1):
 
+def localization(data_recording,x_ref,segments):
+
+    data_per_channel = split_channels(data_recording)
+
+    peak_begin = find_peak_begin(data_per_channel)
+
+    filtered_peaks = filterpeaks(peak_begin)
 
 
-# peaks = []
-# counter = 0
-# for item, index in enumerate(data1):
-#     if counter > 0:
-#         counter -= 1
-#         continue
-#     if item > 0.96:
-#         peaks.append(index)
-#         counter = 10
+    location = []
+    for n in range(len(segments)//5): # N segments
 
+        # estimate the channels
+        h1 = ch3(x_ref, segments[n * 5], 0.001)
+        h2 = ch3(x_ref, segments[n * 5 + 1], 0.001)
+        h3 = ch3(x_ref, segments[n * 5 + 2], 0.001)
+        h4 = ch3(x_ref, segments[n * 5 + 3], 0.001)
+        h5 = ch3(x_ref, segments[n * 5 + 4], 0.001)
 
-# File path
-file_path = r"Mic-Data/kitt_carrier_2250_bit_3k_80x400.txt"
+        #find the location of the peaks
+        location_peak = find_peaks(h1, h2, h3, h4, h5)
 
-# Load data from the text file
-data = np.loadtxt(file_path)
+        #calculate the difference of the peak locations
+        diff_peaks = difference_peaks(location_peak)
 
-def split_channels(dataTotal):
-    N_total = len(dataTotal)
-    dataTotal = dataTotal[:len(dataTotal)//5] #only use when u find the recording to long
-    data1 = dataTotal[0:N_total:5]
-    data2 = dataTotal[1:N_total:5]
-    data3 = dataTotal[2:N_total:5]
-    data4 = dataTotal[3:N_total:5]
-    data5 = dataTotal[4:N_total:5]
-    lst = [data1, data2, data3, data4, data5]
-    return lst
+        #calculate the cooridanates of the car using the difference of peaks
+        estimated_location_KITT = difference_to_location(diff_peaks, mic_positions)
 
-data1, data2, data3, data4, data5 = split_channels(data)
+    location.append(estimated_location_KITT)
+    # x = estimated_location_KITT[0]
+    # y = estimated_location_KITT[1]
+    return location
 
+# # Find_peak_begin(data=lst)
+# #
+# Plot_each_channel(data1, data2, data3, data4, data5, Fs)
 def Plot_each_channel(data1, data2, data3, data4, data5,Fs):
 
     time = np.linspace(0, len(data1)/Fs, len(data1))
@@ -262,97 +311,28 @@ def Plot_each_channel(data1, data2, data3, data4, data5,Fs):
     plt.show()
     return
 
-lst = split_channels(data)
+def TDOA(x, y, Fs):
+    # Reference and measured channels
+    ch_ref = ch3(x, x, x.size, 0.001)
+    ch_measured = ch3(x, y, x.size, 0.001)
 
-def Find_peak_begin(data):
-    total_peak_begin = []
-    for i, data_array in enumerate(data):
-        # print("Results for data", i + 1)
-        # print(len(data_array))
-        y_norm = data_array/max(abs(data_array))
-        peaks_begin = []
-        total_peak_begin.append(peaks_begin)
+    # The time axis for the impulse response is
+    # then created using the length of the reference
+    # channel and the sampling rate.
+    t = np.linspace(0, len(ch_ref)/Fs, len(ch_ref))
 
+    # Find the peak of each of the impulse responses
+    # using the argmax() function. This assumes that
+    # the peak represents the arrival
+    # time of the direct sound between the two signals.
+    pk_ref = np.argmax(ch_ref)
+    pk_measured = np.argmax(ch_measured)
 
-        counter = 0
-        for index,item in enumerate(y_norm):
-            if counter >= 0:
-                counter -= 1
-                continue
-            if item > 0.75: #75% of maximum
-                peaks_begin.append(index)
-                counter = 18000 #after lengt one peak+rest period looking for another peak 8000-22000
-        peaks_begin_debug = [peak / Fs for peak in peaks_begin]
-        # print("Peaks Begin:", peaks_begin_debug)
-    peaks_begin_debug = [peak / Fs for peak in peaks_begin]
-    # print(total_peak_begin)
-    return
+    # Time difference between two peaks (in samples)
+    t_diff = t[pk_measured] - t[pk_ref]
 
+    # Distance between two signals is obtained by
+    # multiplying the time difference by speed of sound
+    distance = 343 * t_diff
 
-def filterpeaks():
-    peaks = [[17787, 37819, 57788, 77820], [106,18270, 38229, 58271, 78224], [18483, 38451, 58633, 78494],
-         [104, 18188, 38177, 58189, 78178], [17879, 37868, 57881, 77869,100000]]
-
-    # filers out lonely initial peaks
-    while True:
-        # Get the lowest value of the first element in the sublists
-        lowest_value = min(sublist[0] for sublist in peaks)
-        print(lowest_value)
-        print(min(peaks))
-        lower_limit = lowest_value - 3000
-        upper_limit = lowest_value + 3000
-
-        # Check if all first values are within the interval
-        within_interval = all(lower_limit <= sublist[0] <= upper_limit for sublist in peaks)
-
-        if not within_interval:
-            # Remove the lowest overall element from the list
-            for sublist in peaks:
-                if sublist[0] == lowest_value:
-                    sublist.remove(lowest_value)
-        else:
-            break
-
-    # filers out lonely final peaks
-    while True:
-        # Get the highest value of the last element in the sublists
-        highest_value = max(sublist[-1] for sublist in peaks)
-        print(highest_value)
-        print(max(peaks))
-        lower_limit = highest_value - 3000
-        upper_limit = highest_value + 3000
-
-        # Check if all first values are within the interval
-        within_interval = all(lower_limit <= sublist[-1] <= upper_limit for sublist in peaks)
-
-        if not within_interval:
-            # Remove the highest overall element from the list
-            for sublist in peaks:
-                if sublist[-1] == highest_value:
-                    sublist.remove(highest_value)
-        else:
-            break
-    peak_filter = peaks
-    return print(peak_filter)
-filterpeaks()
-def automatically_segment():
-    segments = []
-    for p in range(len(peaks[0])):
-        i = min(sublist[p] for sublist in peaks)
-        segment_data1 = data1[i - 100:i + 12000]
-        segment_data2 = data2[i - 100:i + 12000]
-        segment_data3 = data3[i - 100:i + 12000]
-        segment_data4 = data4[i - 100:i + 12000]
-        segment_data5 = data5[i - 100:i + 12000]
-        segments.append([segment_data1, segment_data2, segment_data3, segment_data4, segment_data5])
-
-    # segments will contain the desired output
-    print(segments)
-
-    return segments
-
-# Find_peak_begin(data=lst)
-#
-Plot_each_channel(data1, data2, data3, data4, data5, Fs)
-
-
+    return distance
