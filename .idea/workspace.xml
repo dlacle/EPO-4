@@ -5,13 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e436bdc1-ac86-4841-ba71-8e2af3696f32" name="Changes" comment=":)">
-      <change afterPath="$PROJECT_DIR$/3e segment at location 80x400" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/3e segment channel response at location 400x400" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots-Report/3e segment at location 80x400.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots-Report/3e segment channel response at location 400x400.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots-Report/Signals of the 5 channels at 80x400.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots-Report/goldcode_autocorrolation.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Signals of the 5 channels at 80x400 diff color.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots-Report/segment3_channel_responses_separate_subplots.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots-Report/segment3_channel_responses_separate_subplots_nocollor.svg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Deconvolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/Deconvolution.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Localization.py" beforeDir="false" afterPath="$PROJECT_DIR$/Localization.py" afterDir="false" />
@@ -191,7 +186,7 @@
       <workItem from="1683891702646" duration="34698000" />
       <workItem from="1684340528850" duration="41172000" />
       <workItem from="1684933065613" duration="33844000" />
-      <workItem from="1685024184910" duration="15830000" />
+      <workItem from="1685024184910" duration="16704000" />
     </task>
     <task id="LOCAL-00001" summary="GUI interface">
       <created>1682503141387</created>
@@ -466,7 +461,14 @@
       <option name="project" value="LOCAL" />
       <updated>1685033269157</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary=":)">
+      <created>1685040163102</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1685040163102</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -530,7 +532,7 @@
     <SUITE FILE_PATH="coverage/EPO_4_Python$Audiobeacon.coverage" NAME="Audiobeacon Coverage Results" MODIFIED="1683106211156" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/epo4/Module2" />
     <SUITE FILE_PATH="coverage/EPO_4$module2_delay.coverage" NAME="module2_delay Coverage Results" MODIFIED="1682787257737" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/epo4/Module2" />
     <SUITE FILE_PATH="coverage/EPO_4_Python$AutoCorrelation.coverage" NAME="AutoCorrelation Coverage Results" MODIFIED="1684307005836" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/EPO_4$Deconvolution.coverage" NAME="Deconvolution Coverage Results" MODIFIED="1685039792201" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/EPO_4$Deconvolution.coverage" NAME="Deconvolution Coverage Results" MODIFIED="1685040610737" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EPO_4$KittSensor.coverage" NAME="KittSensor Coverage Results" MODIFIED="1685024486618" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
