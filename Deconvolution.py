@@ -21,7 +21,7 @@ Fs = 48000
 # y_80x400 = np.convolve(x_80x400, h)
 # h_80x400 = ch3(x_80x400, y_80x400, Lhat, eps)
 
-
+filename = 'plot_kitt_carrier_2250_bit_3k_80x400_2sec'
 def ch3(x, y, Lhat, eps):
     lenx = x.size  # Length of x
     leny = y.size  # Length of y
@@ -235,7 +235,7 @@ def Plot_each_channel(data1, data2, data3, data4, data5,Fs):
     # Set labels and title for each subplot
     for i in range(5):
         axs[i].set_ylabel('Amplitude')
-        axs[i].set_title('Microphone ' + str(i))
+        axs[i].set_title('Microphone ' + str(i+1))
 
     # Set labels and title for the entire figure
     # fig.suptitle('Data of the five microphones', ha='center')
@@ -245,7 +245,7 @@ def Plot_each_channel(data1, data2, data3, data4, data5,Fs):
     plt.tight_layout()
 
     # # Export plot
-    # plt.savefig(f'Plots/{filename}.svg', format='svg')
+    plt.savefig(f'Plots-Report/{filename}.svg', format='svg')
     # Display the plot
     plt.show()
 
@@ -290,8 +290,8 @@ def Find_peak_begin(data):
 
 
 def filterpeaks():
-    peaks = [[17787, 37819, 57788, 77820], [18270, 38229, 58271, 78224], [18483, 38451, 58633, 78494],
-         [104, 18188, 38177, 58189, 78178], [17879, 37868, 57881, 77869]]
+    peaks = [[17787, 37819, 57788, 77820], [106,18270, 38229, 58271, 78224], [18483, 38451, 58633, 78494],
+         [104, 18188, 38177, 58189, 78178], [17879, 37868, 57881, 77869,100000]]
 
     # filers out lonely initial peaks
     while True:
@@ -353,6 +353,6 @@ def automatically_segment():
 
 # Find_peak_begin(data=lst)
 #
-# Plot_each_channel(data1, data2, data3, data4, data5, Fs)
+Plot_each_channel(data1, data2, data3, data4, data5, Fs)
 
 
