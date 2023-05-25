@@ -5,13 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e436bdc1-ac86-4841-ba71-8e2af3696f32" name="Changes" comment=":)">
-      <change afterPath="$PROJECT_DIR$/.idea/EPO-4.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GUI.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots-Report/grid_plot.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots-Report/grid_plot.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Deconvolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/Deconvolution.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Localization.py" beforeDir="false" afterPath="$PROJECT_DIR$/Localization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mic-Data/Visual grid.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Visual grid.py" beforeDir="false" afterPath="$PROJECT_DIR$/Visual_grid.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Visual_grid.py" beforeDir="false" afterPath="$PROJECT_DIR$/Visual_grid.py" afterDir="false" />
     </list>
     <list id="009714d2-bfdb-4e3f-a24b-5a05957a551d" name="Changes by Sam" comment="Changes by Sam" />
     <option name="SHOW_DIALOG" value="false" />
@@ -116,6 +116,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Sam\PycharmProjects\EPO-4\Plots-Report" />
       <recent name="C:\Users\Sam\PycharmProjects\EPO-4" />
       <recent name="C:\Users\Sam\PycharmProjects\EPO-4\Plots" />
       <recent name="C:\Users\ZA\Desktop\EPO-4\EPO-4-Python\Mic-Data" />
@@ -185,7 +186,8 @@
       <workItem from="1683697236663" duration="14899000" />
       <workItem from="1683891702646" duration="34698000" />
       <workItem from="1684340528850" duration="41172000" />
-      <workItem from="1684933065613" duration="4952000" />
+      <workItem from="1684933065613" duration="33844000" />
+      <workItem from="1685024184910" duration="7953000" />
     </task>
     <task id="LOCAL-00001" summary="GUI interface">
       <created>1682503141387</created>
@@ -418,7 +420,35 @@
       <option name="project" value="LOCAL" />
       <updated>1684885745758</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary=":)">
+      <created>1684938057937</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1684938057937</updated>
+    </task>
+    <task id="LOCAL-00035" summary=":)">
+      <created>1684970364050</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1684970364050</updated>
+    </task>
+    <task id="LOCAL-00036" summary=":)">
+      <created>1684970804881</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1684970804881</updated>
+    </task>
+    <task id="LOCAL-00037" summary=":)">
+      <created>1685016973285</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1685016973285</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -466,22 +496,22 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/EPO_4$GUI_test.coverage" NAME="GUI test Coverage Results" MODIFIED="1682547260900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/epo4/.idea" />
-    <SUITE FILE_PATH="coverage/EPO_4$ReferenceSignal.coverage" NAME="ReferenceSignal Coverage Results" MODIFIED="1684913165231" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/EPO_4$ReferenceSignal.coverage" NAME="ReferenceSignal Coverage Results" MODIFIED="1685019634767" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EPO_4_Python$MicrophoneReading.coverage" NAME="MicrophoneReading Coverage Results" MODIFIED="1683709117693" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/EPO_4$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1684931424340" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/EPO_4$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1685032206334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EPO_4$Localization.coverage" NAME="Localization Coverage Results" MODIFIED="1684922541105" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EPO_4$AutoCorrelation.coverage" NAME="AutoCorrelation Coverage Results" MODIFIED="1684346814327" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/EPO_4$Visual_grid.coverage" NAME="Visual_grid Coverage Results" MODIFIED="1684920687750" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/EPO_4$Visual_grid.coverage" NAME="Visual_grid Coverage Results" MODIFIED="1685032184187" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EPO_4_Python$AudioBeacon.coverage" NAME="AudioBeacon Coverage Results" MODIFIED="1684319524258" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EPO_4_Python$AudioBeaconLoop.coverage" NAME="AudioBeaconLoop Coverage Results" MODIFIED="1684313238504" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EPO_4_Python$ReferenceSignal.coverage" NAME="ReferenceSignal Coverage Results" MODIFIED="1684309508012" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EPO_4_Python$KittSensor.coverage" NAME="KittSensor Coverage Results" MODIFIED="1682693671021" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/EPO_4$test.coverage" NAME="test Coverage Results" MODIFIED="1682517126951" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/epo4/GUI" />
+    <SUITE FILE_PATH="coverage/EPO_4$test.coverage" NAME="test Coverage Results" MODIFIED="1685028689485" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EPO_4$EpoCommunications.coverage" NAME="EpoCommunications Coverage Results" MODIFIED="1682787210129" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/epo4" />
     <SUITE FILE_PATH="coverage/EPO_4_Python$Audiobeacon.coverage" NAME="Audiobeacon Coverage Results" MODIFIED="1683106211156" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/epo4/Module2" />
     <SUITE FILE_PATH="coverage/EPO_4$module2_delay.coverage" NAME="module2_delay Coverage Results" MODIFIED="1682787257737" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/epo4/Module2" />
     <SUITE FILE_PATH="coverage/EPO_4_Python$AutoCorrelation.coverage" NAME="AutoCorrelation Coverage Results" MODIFIED="1684307005836" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/EPO_4$Deconvolution.coverage" NAME="Deconvolution Coverage Results" MODIFIED="1684937957315" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/EPO_4$KittSensor.coverage" NAME="KittSensor Coverage Results" MODIFIED="1684933539920" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/EPO_4$Deconvolution.coverage" NAME="Deconvolution Coverage Results" MODIFIED="1685030445952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/EPO_4$KittSensor.coverage" NAME="KittSensor Coverage Results" MODIFIED="1685024486618" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

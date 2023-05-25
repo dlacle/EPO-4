@@ -19,14 +19,28 @@ Fs = 48000
 # File path plot
 filename_plot = 'plot_kitt_carrier_2250_bit_3k_80x400_2sec'
 
-# File path
-file_path = r"Mic-Data/kitt_carrier_2250_bit_3k_80x400.txt"
+# File path mic data
+file_path_mic = r"Mic-Data/kitt_carrier_2250_bit_3k_80x400.txt"
 
 # Load data from the text file
-data = np.loadtxt(file_path)
+data_recording = np.loadtxt(file_path_mic)
+
+# File path ref signal
+file_path_xref = r"ref_sig.txt"
+
+# Load data from the text file
+xref = np.loadtxt(file_path_xref)
+
+#set eps ch3 function
+eps = 0.001
+
+#set speed of sound
+Vsound = 343.14 #speed of sound m/s 20 degree
+
+
 def split_channels(dataTotal):
     N_total = len(dataTotal)
-    # dataTotal = dataTotal[:len(dataTotal)//5] #only use when u find the recording to long,example for plotting
+    dataTotal = dataTotal[:len(dataTotal)//5] #only use when u find the recording to long,example for plotting
     data1 = dataTotal[0:N_total:5]
     data2 = dataTotal[1:N_total:5]
     data3 = dataTotal[2:N_total:5]
@@ -50,26 +64,25 @@ def find_peak_begin(data):
             if counter >= 0:
                 counter -= 1
                 continue
-            if item > 0.75: #75% of maximum
+            if item > 0.50: #75% of maximum
                 peaks_begin.append(index)
                 counter = 18000 #after lengt one peak+rest period looking for another peak 8000-22000
-        peaks_begin_debug = [peak / Fs for peak in peaks_begin]
+        # peaks_begin_debug = [peak / Fs for peak in peaks_begin]
         # print("Peaks Begin:", peaks_begin_debug)
-    peaks_begin_debug = [peak / Fs for peak in peaks_begin]
+    # peaks_begin_debug = [peak / Fs for peak in peaks_begin]
     # print(total_peak_begin)
     return total_peak_begin #returning a list inside a list [peaks_data1_begin....peaks_data5_begin]
 
 
 def filterpeaks(total_peak_begin):
     # peaks = [[17787, 37819, 57788, 77820], [106,18270, 38229, 58271, 78224], [18483, 38451, 58633, 78494],
-    #      [104, 18188, 38177, 58189, 78178], [17879, 37868, 57881, 77869,100000]]
+    #      [104, 18188, 38177, 58189, 78178], [17879, 37868, 57881, 77869]]
 
     # filers out lonely initial peaks
     while True:
         # Get the lowest value of the first element in the sublists
         lowest_value = min(sublist[0] for sublist in total_peak_begin)
-        print(lowest_value)
-        print(min(total_peak_begin))
+
         lower_limit = lowest_value - 3000
         upper_limit = lowest_value + 3000
 
@@ -88,8 +101,7 @@ def filterpeaks(total_peak_begin):
     while True:
         # Get the highest value of the last element in the sublists
         highest_value = max(sublist[-1] for sublist in total_peak_begin)
-        print(highest_value)
-        print(max(total_peak_begin))
+
         lower_limit = highest_value - 3000
         upper_limit = highest_value + 3000
 
@@ -115,23 +127,26 @@ def automatically_segment(peak_filter,lst):
         segment_data3 = lst[2][i - 100:i + 12000]
         segment_data4 = lst[3][i - 100:i + 12000]
         segment_data5 = lst[4][i - 100:i + 12000]
-        segments.append([segment_data1, segment_data2, segment_data3, segment_data4, segment_data5])
+        segments.extend([segment_data1, segment_data2, segment_data3, segment_data4, segment_data5])
 
     # segments will contain the desired output
-    print(segments)
-    return segments
+    return segments #returs a list: [segment1_data1..segment1_data5,.....,segment5_data1,..,segment5_data5]
 
-def ch3(x, y, eps, Lhat):
+def ch3(x, y, eps):
     lenx = x.size  # Length of x
     leny = y.size  # Length of y
 
     l = leny - lenx + 1  # Length of h
 
+    if lenx < leny:
+        x = np.concatenate((x, np.zeros(leny - lenx)))
+    else:
+        y = np.concatenate((y, np.zeros(lenx - leny)))
     # Force x to be the same length as y
-    x = np.append(x, [0] * (l - 1))
+    # x = np.append(x, [0] * (l - 1))
 
     # # Make x the same length as y
-    # x = np.concatenate((x, np.zeros(leny - lenx)), axis=None)
+    # x = np.concatenate(x, np.zeros(leny - lenx))
 
     # Deconvolution in frequency domain
     Y = fft(y)
@@ -144,7 +159,7 @@ def ch3(x, y, eps, Lhat):
 
     # Compute time-domain impulse response, make result real
     h = np.real(ifft(H))
-    # h = h[0:Lhat]
+    # # h = h[0:Lhat]
     return h
 
 def find_peaks(h1, h2, h3, h4, h5):
@@ -154,101 +169,156 @@ def find_peaks(h1, h2, h3, h4, h5):
     peak_ch4 = np.argmax(h4)
     peak_ch5 = np.argmax(h5)
 
-    peak = np.array(peak_ch1, peak_ch2, peak_ch3, peak_ch4, peak_ch5)
+    peak_location = np.array([peak_ch1, peak_ch2, peak_ch3, peak_ch4, peak_ch5])
 
-    return peak
+    return peak_location
 def difference_peaks(location_peak):
     # Calculate the differences between each pair of elements
     diff_peak = []
     for i in range(len(location_peak)):
         for j in range(i + 1, len(location_peak)):
             diff = abs(location_peak[i] - location_peak[j])
-            differences.append(diff)
-    return diff_peak
+            diff_peak.append(diff)
+    return diff_peak #returns a list: [r12,r13,r14,r15,r23,r24,r25,r34,r35,r45]
 
-def difference_to_location(diff_peak, mic_positions, Fs):
-    Vsound = 343.14 #speed of sound m/s 20 degree
-    diff_to_distance = diff_peak*Vsound/Fs
+def difference_to_location(diff_peak, mic_positions, Fs,Vsound):
+    diff_to_distance = [x * Vsound for x in diff_peak]
+    diff_to_distance = [x /Fs for x in diff_to_distance]
 
-    for i, mic_position in enumerate(mic_positions):
-        locals()[f'x{i + 1}'] = mic_position
+    # for i, mic_position in enumerate(mic_positions):
+    #     locals()[f'x{i + 1}'] = mic_position
+    #
+    # # test Print the variables
+    # for i in range(1, len(mic_positions) + 1):
+    #     print(f'x{i} = {locals()["x" + str(i)]}')
 
-    # test Print the variables
-    for i in range(1, len(mic_positions) + 1):
-        print(f'x{i} = {locals()["x" + str(i)]}')
+    # TDOA measurements
+    rij = np.array(diff_to_distance)
+    xi = mic_positions
 
-    #define r_ij (Range difference)
-    r12 = diff_to_distance[0]
-    r13 = diff_to_distance[1]
-    r14 = diff_to_distance[2]
-    r15 = diff_to_distance[3]
-    r23 = diff_to_distance[4]
-    r24 = diff_to_distance[5]
-    r25 = diff_to_distance[6]
-    r34 = diff_to_distance[7]
-    r35 = diff_to_distance[8]
-    r45 = diff_to_distance[9]
+    # Constructing the coefficient matrix A
+    A = np.zeros((10, 5))
+    for i in range(4):
+        A[i, :3] = 2 * (xi[i + 1] - xi[0])
+        A[i, 3] = -2 * rij[i]
 
-    #define matrix A
-    A =np.array([
-        [2*(x2-x1),-2*r12,0     ,0     ,0     ],
-        [2*(x3-x1),0     ,-2*r13,0     ,0     ],
-        [2*(x4-x1),0     ,0     ,-2*r14,0     ],
-        [2*(x5-x1),0     ,0     ,0     ,-2*r15],
-        [2*(x3-x2),0     ,-2*r23,0     ,0     ],
-        [2*(x4-x2),0     ,0     ,-2*r24,0     ],
-        [2*(x5-x2),0     ,0     ,0     ,-2*r25],
-        [2*(x4-x3),0     ,0     ,-2*r34,0     ],
-        [2*(x5-x3),0     ,0     ,0     ,-2*r35],
-        [2*(x5-x4),0     ,0     ,0     ,-2*r35]
-    ])
+    for i in range(3):
+        A[i + 4, :3] = 2 * (xi[i + 2] - xi[i + 1])
+        A[i + 4, 3] = -2 * rij[i + 4]
 
-    # magnitude / length
-    l1 = np.linalg.norm(x1, axis=1)
-    l2 = np.linalg.norm(x2, axis=1)
-    l3 = np.linalg.norm(x3, axis=1)
-    l4 = np.linalg.norm(x4, axis=1)
-    l5 = np.linalg.norm(x5, axis=1)
+    for i in range(2):
+        A[i + 7, :3] = 2 * (xi[i + 3] - xi[i + 1])
+        A[i + 7, 3] = -2 * rij[i + 7]
 
-    #define matrix B
-    B = np.array([
-        [r12**2-l1**2+l2**2],
-        [r13**2-l1**2+l3**2],
-        [r14**2-l1**2+l4**2],
-        [r15**2-l1**2+l5**2],
-        [r23**2-l2**2+l3**2],
-        [r24**2-l2**2+l4**2],
-        [r25**2-l2**2+l5**2],
-        [r34**2-l3**2+l4**2],
-        [r35**2-l3**2+l5**2],
-        [r45**2-l4**2+l5**2]
-    ])
+    A[9, :3] = 2 * (xi[4] - xi[3])
+    A[9, 4] = -2 * rij[9]
 
-    # A*y=B solving for y:
-    y = np.linalg.pinv(A)*B
+    # Constructing the known vector b
+    b = np.zeros(10)
+    for i in range(4):
+        b[i] = np.linalg.norm(xi[0]) ** 2 - np.linalg.norm(xi[i + 1]) ** 2 + rij[i] ** 2
 
-    return y[1], y[2]
+    for i in range(3):
+        b[i + 4] = np.linalg.norm(xi[i + 1]) ** 2 - np.linalg.norm(xi[i + 2]) ** 2 + rij[i + 4] ** 2
+
+    for i in range(2):
+        b[i + 7] = np.linalg.norm(xi[i + 1]) ** 2 - np.linalg.norm(xi[i + 3]) ** 2 + rij[i + 7] ** 2
+
+    b[9] = np.linalg.norm(xi[3]) ** 2 - np.linalg.norm(xi[4]) ** 2 + rij[9] ** 2
+
+    # Computing the pseudo-inverse of A
+    A_pseudo_inv = np.linalg.pinv(A)
+
+    # Solving for the unknown vector y
+    y = np.dot(A_pseudo_inv, b)
+
+    # Extracting the car's location x and nuisance parameters d2, d3, d4, d5
+    location = y[:3]
+    # d2, d3, d4, d5 = y[3:]
+
+    # Printing the results
+    # print("Car Location (x, y, z):", x)
+    # print("Nuisance Parameters (d2, d3, d4, d5):", d2, d3, d4, d5)
+
+    #Algorith neglect height
+
+    # x1, x2, x3, x4, x5 = mic_positions
+    # #define r_ij (Range difference)
+    # r12 = diff_to_distance[0]
+    # r13 = diff_to_distance[1]
+    # r14 = diff_to_distance[2]
+    # r15 = diff_to_distance[3]
+    # r23 = diff_to_distance[4]
+    # r24 = diff_to_distance[5]
+    # r25 = diff_to_distance[6]
+    # r34 = diff_to_distance[7]
+    # r35 = diff_to_distance[8]
+    # r45 = diff_to_distance[9]
+    #
+    # #define matrix A
+    # A = np.array([
+    #     [2*(x2-x1),-2*r12,0     ,0     ,0     ],
+    #     [2*(x3-x1),0     ,-2*r13,0     ,0     ],
+    #     [2*(x4-x1),0     ,0     ,-2*r14,0     ],
+    #     [2*(x5-x1),0     ,0     ,0     ,-2*r15],
+    #     [2*(x3-x2),0     ,-2*r23,0     ,0     ],
+    #     [2*(x4-x2),0     ,0     ,-2*r24,0     ],
+    #     [2*(x5-x2),0     ,0     ,0     ,-2*r25],
+    #     [2*(x4-x3),0     ,0     ,-2*r34,0     ],
+    #     [2*(x5-x3),0     ,0     ,0     ,-2*r35],
+    #     [2*(x5-x4),0     ,0     ,0     ,-2*r35]
+    # ])
+    #
+    # # magnitude / length
+    # l1 = np.linalg.norm(x1, axis=1)
+    # l2 = np.linalg.norm(x2, axis=1)
+    # l3 = np.linalg.norm(x3, axis=1)
+    # l4 = np.linalg.norm(x4, axis=1)
+    # l5 = np.linalg.norm(x5, axis=1)
+    #
+    # #define matrix B
+    # B = np.array([
+    #     [r12**2-l1**2+l2**2],
+    #     [r13**2-l1**2+l3**2],
+    #     [r14**2-l1**2+l4**2],
+    #     [r15**2-l1**2+l5**2],
+    #     [r23**2-l2**2+l3**2],
+    #     [r24**2-l2**2+l4**2],
+    #     [r25**2-l2**2+l5**2],
+    #     [r34**2-l3**2+l4**2],
+    #     [r35**2-l3**2+l5**2],
+    #     [r45**2-l4**2+l5**2]
+    # ])
+    #
+    # # A*y=B solving for y:
+    # y = np.linalg.pinv(A)*B
+
+    return location
 
 # def Average_location(x,y,n_locations = 1):
 
-def localization(data_recording,x_ref,segments):
+def localization(data_recording,x_ref, mic_positions,Fs,eps,Vsound):
 
     data_per_channel = split_channels(data_recording)
 
     peak_begin = find_peak_begin(data_per_channel)
+    # print('peak begin=',peak_begin)
 
     filtered_peaks = filterpeaks(peak_begin)
+    # print('filtered peak=', filtered_peaks)
+
+    segments = automatically_segment(filtered_peaks, data_per_channel)
 
 
     location = []
-    for n in range(len(segments)//5): # N segments
+    for n in range(len(segments)//5): # N segments/peaks, 5 = Nmics
 
         # estimate the channels
-        h1 = ch3(x_ref, segments[n * 5], 0.001)
-        h2 = ch3(x_ref, segments[n * 5 + 1], 0.001)
-        h3 = ch3(x_ref, segments[n * 5 + 2], 0.001)
-        h4 = ch3(x_ref, segments[n * 5 + 3], 0.001)
-        h5 = ch3(x_ref, segments[n * 5 + 4], 0.001)
+        h1 = ch3(x_ref, segments[n * 5],     eps)
+        h2 = ch3(x_ref, segments[n * 5 + 1], eps)
+        h3 = ch3(x_ref, segments[n * 5 + 2], eps)
+        h4 = ch3(x_ref, segments[n * 5 + 3], eps)
+        h5 = ch3(x_ref, segments[n * 5 + 4], eps)
 
         #find the location of the peaks
         location_peak = find_peaks(h1, h2, h3, h4, h5)
@@ -257,9 +327,9 @@ def localization(data_recording,x_ref,segments):
         diff_peaks = difference_peaks(location_peak)
 
         #calculate the cooridanates of the car using the difference of peaks
-        estimated_location_KITT = difference_to_location(diff_peaks, mic_positions)
+        estimated_location_KITT = difference_to_location(diff_peaks, mic_positions,Fs,Vsound)
 
-    location.append(estimated_location_KITT)
+        location.append(estimated_location_KITT)
     # x = estimated_location_KITT[0]
     # y = estimated_location_KITT[1]
     return location
@@ -336,3 +406,4 @@ def TDOA(x, y, Fs):
     distance = 343 * t_diff
 
     return distance
+print(localization(data_recording,xref,mic_positions,Fs,eps,Vsound))
