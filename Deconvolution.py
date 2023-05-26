@@ -31,6 +31,7 @@ Fs = 48000
 
 # File path mic data
 file_path_mic = r'Mic-Data/kitt_carrier_2250_bit_3k_140x320.txt'
+Location_car = '140x320'
 
 # Load data from the text file
 data_recording = np.loadtxt(file_path_mic)
@@ -52,7 +53,7 @@ Vsound = 343.14 #speed of sound m/s 20 degree
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Plotting functions:
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-def Plot_one_segment3_each_channel_separatly(segment, Fs):
+def Plot_one_segment3_each_channel_separatly(segment, Fs,Location_car):
         # location_begin_peak_seg3 =
         time = np.linspace((58156-100)/ Fs, 58156 / Fs + len(segment[10]) / Fs, len(segment[10]))
 
@@ -86,7 +87,7 @@ def Plot_one_segment3_each_channel_separatly(segment, Fs):
         plt.show()
         return
 
-def Plot_one_segment3_each_channel_in_one_plot(segment, Fs):
+def Plot_one_segment3_each_channel_in_one_plot(segment,Fs,Location_car):
 
         time = np.linspace((58156-100)/Fs, 58156/Fs + len(segment[10]) / Fs, len(segment[10]))
 
@@ -118,7 +119,7 @@ def Plot_one_segment3_each_channel_in_one_plot(segment, Fs):
 
         return
 
-def Plot_each_channel_separately(lst, Fs):
+def Plot_each_channel_separately(lst, Fs,Location_car):
     time = np.linspace(0, len(lst[0]) / Fs, len(lst[0]))
 
     # Create subplots for each microphone channel
@@ -144,7 +145,7 @@ def Plot_each_channel_separately(lst, Fs):
     plt.tight_layout()
 
     #main title
-    fig.suptitle('Recording of each channel')
+    fig.suptitle('Recording of each channel at location 140x320')
 
     # Adjust spacing between subplots
     plt.subplots_adjust(top=0.9, hspace=0.5)
@@ -169,7 +170,7 @@ def Plot_each_channel_in_one_plot_color(lst, Fs):
     # Set labels and title
     plt.xlabel('Time [s]')
     plt.ylabel('Amplitude')
-    plt.title('Recording of the 5 channels at 80x400')
+    plt.title('Recording of the 5 channels at 140x320')
 
     # Add legend
     plt.legend()
@@ -314,6 +315,7 @@ def ch3(x, y, eps,Lhat):
 
     l = leny - lenx + 1  # Length of h
 
+# if sbd
     if lenx < leny:
         x = np.concatenate((x, np.zeros(leny - lenx)))
     else:
@@ -653,7 +655,7 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat):
         # Set labels and title for each subplot
         for i in range(5):
             axs[i].set_ylabel('Amplitude')
-            axs[i].set_title('Channel ' + str(i + 1) + ' impulse response segment '+str(n+1))
+            axs[i].set_title('Channel ' + str(i + 1))
 
         # Set labels and title for the entire figure
         # fig.suptitle('Data of the five microphones', ha='center')
@@ -661,6 +663,11 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat):
 
         # Adjust spacing between subplots
         plt.tight_layout()
+
+        fig.suptitle(f'Channel inpulse response of each channel for segment {n+1} at location 140x320')
+
+        # Adjust spacing between subplots
+        plt.subplots_adjust(top=0.9, hspace=0.5)
 
         # Export plot
         # plt.savefig('Signals of each channels at 400x400.svg', format='svg')
@@ -682,6 +689,7 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat):
     # y = estimated_location_KITT[1]
 
     # Plot_each_channel_in_one_plot(data_per_channel, Fs)
+    Plot_each_channel_in_one_plot_color(data_per_channel, Fs)
     Plot_each_channel_separately(data_per_channel, Fs)
     # Plot_one_segment_each_channel_in_one_plot (channel, Fs)
     # Plot_one_segment_each_channel(channel, Fs)
