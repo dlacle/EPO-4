@@ -159,7 +159,7 @@ def Plot_each_segment_and_each_channel_separately(segment, Fs, location_car,n,lo
         ax.axvline(x=lowest_peak_value[n]/Fs, color='r', linestyle='--')
 
     # Adjust spacing between subplots
-    plt.tight_layout()
+    plt.subplots_adjust(top=0.9, hspace=0.65)
     # plt.subplots_adjust(top=0.9, hspace=0.1)  # Increased hspace value for more room
 
     #main titel

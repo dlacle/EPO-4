@@ -10,6 +10,31 @@ data = np.loadtxt(file_path)
 # Sampling frequency
 Fs = 48e3
 
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Plot the reference signal
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+N_total = len(data)
+data = data[2:N_total:5] #data mic 3
+
+time = np.linspace(0, len(data) / Fs, len(data))
+
+# Plot the data
+plt.plot(time, data)
+
+# Set labels and title
+plt.xlabel('Time [s]')
+plt.ylabel('Amplitude')
+plt.title('Recording of reference signal')
+# plt.savefig('Signals of each channels at 400x400.svg', format='svg')
+plt.show()
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Average the signal
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+''''''''''''''''''''''''''''''''''
+Compute the num of peaks automatic
+''''''''''''''''''''''''''''''''''
 # Number of samples: 2.4e6
 n_samples = len(data)
 
@@ -17,7 +42,23 @@ n_samples = len(data)
 t_total = n_samples / Fs
 
 # Number of peaks
-num_peaks = 12
+y_norm = data/max(abs(data))
+peaks_begin = []
+
+counter = 0
+for index,item in enumerate(y_norm):
+    if counter >= 0:
+        counter -= 1
+        continue
+    if item > 0.80: #80% of maximum
+        peaks_begin.append(index)
+        counter = 18000 #after lengt one peak+rest period looking for another peak 8000-22000
+print('peaks_begin=',peaks_begin)
+peak_begin_sec = [peak / Fs for peak in peaks_begin]
+print('peaks begin sec =',peak_begin_sec)
+print('number of peaks=',len(peaks_begin))
+
+num_peaks = len(peaks_begin)
 
 # Calculate the number of samples per peak
 samples_per_peak = int(n_samples / num_peaks)
@@ -25,7 +66,7 @@ samples_per_peak = int(n_samples / num_peaks)
 # Calculate time vector for a single peak
 t = np.linspace(0, t_total / num_peaks, samples_per_peak)
 
-# Reshape data into a 2D array with 16 rows (one for each peak)
+# Reshape data into a 2D array with N rows (one for each peak)
 data_reshaped = data[:samples_per_peak * num_peaks].reshape((num_peaks, samples_per_peak))
 
 # Calculate the average of all peaks to cancel the noise
@@ -35,6 +76,9 @@ average_peak = np.mean(data_reshaped, axis=0)
 autocorr = np.correlate(average_peak, average_peak, mode='full')
 t_autocorr = np.linspace(-t_total, t_total, len(autocorr))
 
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Clean the average_peak visualy
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 start_time = 0.70
 end_time = 1.0
 start_index = int(start_time * Fs)
@@ -43,9 +87,16 @@ end_index = int(end_time * Fs)
 clean_data = np.array(average_peak[start_index:end_index])
 clean_data = clean_data[clean_data != 0]
 
-with open('ref_sig.txt', 'w') as f:
-    for i in clean_data:
-        f.write("%s\n" % i)
+
+##Save the data
+# with open('ref_sig.txt', 'w') as f:
+#     for i in clean_data:
+#         f.write("%s\n" % i)
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Plot the average ref signal and its autocorrolation
+Plot the cleaned ref signal and its autocorrolation
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 # Calculate auto-correlation
 autocorr_clean = np.correlate(clean_data, clean_data, mode='full')
