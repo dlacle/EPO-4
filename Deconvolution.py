@@ -31,7 +31,7 @@ Fs = 48000
 
 # File path mic data
 file_path_mic = r'Mic-Data/kitt_carrier_2250_bit_3k_140x320.txt'
-Location_car = '140x320'
+location_car = '140x320'
 
 # Load data from the text file
 data_recording = np.loadtxt(file_path_mic)
@@ -53,73 +53,7 @@ Vsound = 343.14 #speed of sound m/s 20 degree
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Plotting functions:
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-def Plot_one_segment3_each_channel_separatly(segment, Fs,Location_car):
-        # location_begin_peak_seg3 =
-        time = np.linspace((58156-100)/ Fs, 58156 / Fs + len(segment[10]) / Fs, len(segment[10]))
-
-        # Define colors and alpha values for each microphone
-        colors = ['red', 'green', 'blue', 'orange', 'purple']
-        alpha_values = [1.0, 0.8, 0.6, 0.4, 0.2]
-
-        fig, axs = plt.subplots(5, 1, figsize=(8, 10))
-
-        # Plot the data for each microphone with different colors and transparency
-        axs[0].plot(time, segment[10], label=f'Microphone 1')
-        axs[1].plot(time, segment[11], label=f'Microphone 2')
-        axs[2].plot(time, segment[12], label=f'Microphone 3')
-        axs[3].plot(time, segment[13], label=f'Microphone 4')
-        axs[4].plot(time, segment[14], label=f'Microphone 5')
-
-        # Set labels and title for each subplot
-        for i, ax in enumerate(axs):
-            ax.set_xlabel('Time [s]')
-            ax.set_ylabel('Amplitude')
-            ax.set_title(f'Channel {i + 1}')
-            ax.legend()
-
-        # Adjust spacing between subplots
-        plt.tight_layout()
-
-        # Save the plot
-        # plt.savefig('Channel_response_of_3e_segment_at_location_140x320.svg', format='svg')
-
-        # Display the plot
-        plt.show()
-        return
-
-def Plot_one_segment3_each_channel_in_one_plot(segment,Fs,Location_car):
-
-        time = np.linspace((58156-100)/Fs, 58156/Fs + len(segment[10]) / Fs, len(segment[10]))
-
-        # Define colors and alpha values for each microphone
-        colors = ['red', 'green', 'blue', 'orange', 'purple']
-        alpha_values = [1.0, 0.8, 0.6, 0.4, 0.2]
-
-        # Plot the data for each microphone with different colors and transparency
-        plt.plot(time, segment[10], label=f'Microphone 1', color='red', alpha=0.7)
-        plt.plot(time, segment[11], label=f'Microphone 2', color='green', alpha=0.7)
-        plt.plot(time, segment[12], label=f'Microphone 3', color='blue', alpha=0.6)
-        plt.plot(time, segment[13], label=f'Microphone 4', color='orange', alpha=0.4)
-        plt.plot(time, segment[14], label=f'Microphone 5', color='purple', alpha=0.2)
-
-        # # Add a dot at time = 57688 and y = 200
-        # plt.scatter(57688 / Fs, 200, color='black', marker='o', s=30)
-
-        # Set labels and title
-        plt.xlabel('Time [s]')
-        plt.ylabel('Amplitude')
-        plt.title('Channel response of 3e segment at location 140x320')
-
-        # Add legend
-        plt.legend()
-
-        # Display the plot
-        # plt.savefig('Channel_response_of_3e_segment_at_location_140x3200_color.svg', format='svg')
-        plt.show()
-
-        return
-
-def Plot_each_channel_separately(lst, Fs,Location_car):
+def Plot_each_channel_separately(lst, Fs,location_car):
     time = np.linspace(0, len(lst[0]) / Fs, len(lst[0]))
 
     # Create subplots for each microphone channel
@@ -145,7 +79,7 @@ def Plot_each_channel_separately(lst, Fs,Location_car):
     plt.tight_layout()
 
     #main title
-    fig.suptitle('Recording of each channel at location 140x320')
+    fig.suptitle(f'Recording of each channel at location {location_car})
 
     # Adjust spacing between subplots
     plt.subplots_adjust(top=0.9, hspace=0.5)
@@ -156,7 +90,7 @@ def Plot_each_channel_separately(lst, Fs,Location_car):
     plt.show()
     return
 
-def Plot_each_channel_in_one_plot_color(lst, Fs):
+def Plot_each_channel_in_one_plot_color(lst, Fs, location_car):
     time = np.linspace(0, len(lst[0]) / Fs, len(lst[0]))
 
     # Define colors and alpha values for each microphone
@@ -170,7 +104,7 @@ def Plot_each_channel_in_one_plot_color(lst, Fs):
     # Set labels and title
     plt.xlabel('Time [s]')
     plt.ylabel('Amplitude')
-    plt.title('Recording of the 5 channels at 140x320')
+    plt.title(f'Recording of the 5 channels at {location_car}')
 
     # Add legend
     plt.legend()
@@ -179,7 +113,7 @@ def Plot_each_channel_in_one_plot_color(lst, Fs):
     # plt.savefig('Signals of the 5 channels at 80x400 diff color.svg', format='svg')
     plt.show()
     return
-def Plot_each_channel_in_one_plot(lst, Fs):
+def Plot_each_channel_in_one_plot(lst, Fs, location_car):
     time = np.linspace(0, len(lst[0]) / Fs, len(lst[0]))
 
     # Plot the data for each microphone
@@ -192,11 +126,116 @@ def Plot_each_channel_in_one_plot(lst, Fs):
     # Set labels and title
     plt.xlabel('Time [s]')
     plt.ylabel('Amplitude')
-    plt.title('Signals of the five microphones')
+    plt.title(f'Signals of the five microphones {location_car}')
 
     # Add legend
     plt.legend()
 
+    # Display the plot
+    plt.show()
+    return
+
+def Plot_each_segment_and_each_channel_separatly(segment, Fs, location_car,n,lowest_peak_value):
+    time = np.linspace((lowest_peak_value[n] - 100) / Fs, lowest_peak_value[n] / Fs + len(segment[n*5]) / Fs, len(segment[n*5]))
+
+    fig, axs = plt.subplots(5, 1, figsize=(8, 10))
+
+    # Plot the data for each microphone with different colors and transparency
+    axs[0].plot(time, segment[n*5])
+    axs[1].plot(time, segment[n*5+1])
+    axs[2].plot(time, segment[n*5+2])
+    axs[3].plot(time, segment[n*5+3])
+    axs[4].plot(time, segment[n*5+4])
+
+    # Set labels and title for each subplot
+    for i, ax in enumerate(axs):
+        ax.set_xlabel('Time [s]')
+        ax.set_ylabel('Amplitude')
+        ax.set_title(f'Channel {i + 1}')
+        ax.legend()
+
+    # Adjust spacing between subplots
+    plt.tight_layout()
+
+    #main titel
+    fig.suptitle(f'Each channel of Segment {n + 1} at location {location_car}')
+
+    # Adjust spacing between subplots
+    plt.subplots_adjust(top=0.9, hspace=0.5)
+
+    # Save the plot
+    # plt.savefig('Channel_response_of_3e_segment_at_location_140x320.svg', format='svg')
+
+    # Display the plot
+    plt.show()
+    return
+
+
+def Plot_one_segment_each_channel_in_one_plot(segment, Fs, location_car,n,lowest_peak_value):
+    time = np.linspace((lowest_peak_value[n] - 100) / Fs, lowest_peak_value[n] / Fs + len(segment[n*5]) / Fs, len(segment[n*5]))
+
+    # Define colors and alpha values for each microphone
+    colors = ['red', 'green', 'blue', 'orange', 'purple']
+    alpha_values = [1.0, 0.8, 0.6, 0.4, 0.2]
+
+    # Plot the data for each microphone with different colors and transparency
+    plt.plot(time, segment[n*5], label=f'Microphone 1', color='red', alpha=0.7)
+    plt.plot(time, segment[n*5+1], label=f'Microphone 2', color='green', alpha=0.7)
+    plt.plot(time, segment[n*5+2], label=f'Microphone 3', color='blue', alpha=0.6)
+    plt.plot(time, segment[n*5+3], label=f'Microphone 4', color='orange', alpha=0.4)
+    plt.plot(time, segment[n*5+4], label=f'Microphone 5', color='purple', alpha=0.2)
+
+    # Add a dot at time = 57688 and y = 200
+    plt.scatter(lowest_peak_value[n] / Fs, 200, color='black', marker='o', s=30)
+
+    # Set labels and title
+    plt.xlabel('Time [s]')
+    plt.ylabel('Amplitude')
+    plt.title(f'Channel response of {n+1}e segment at location {location_car}')
+
+    # Add legend
+    plt.legend()
+
+    # Display the plot
+    # plt.savefig('Channel_response_of_3e_segment_at_location_140x3200_color.svg', format='svg')
+    plt.show()
+
+    return
+
+
+def plotting_channel_response_of_every_chanel_of_every_segment(n, lowest_peak_value, h1, h2, h3, h4, h5):
+    # plotting the channel response of every chanel of every segment
+    time = np.linspace((lowest_peak_value[n] - 100) / Fs, (lowest_peak_value[n] + len(h1)) / Fs, len(h1))
+
+    # Create subplots for each microphone channel
+    fig, axs = plt.subplots(5, 1, figsize=(8, 10))
+
+    # Plot the data for each microphone
+    axs[0].plot(time, h1, label='Microphone 1')
+    axs[1].plot(time, h2, label='Microphone 2')
+    axs[2].plot(time, h3, label='Microphone 3')
+    axs[3].plot(time, h4, label='Microphone 4')
+    axs[4].plot(time, h5, label='Microphone 5')
+
+    # Set labels and title for each subplot
+    for i in range(5):
+        axs[i].set_ylabel('Amplitude')
+        axs[i].set_title('Channel ' + str(i + 1))
+
+    # Set labels and title for the entire figure
+    # fig.suptitle('Data of the five microphones', ha='center')
+    axs[-1].set_xlabel('Time [s]')
+
+    # Adjust spacing between subplots
+    plt.tight_layout()
+
+    fig.suptitle(f'Channel inpulse response of each channel for segment {n + 1} at location {location_car}')
+
+    # Adjust spacing between subplots
+    plt.subplots_adjust(top=0.9, hspace=0.5)
+
+    # Export plot
+    # plt.savefig('Signals of each channels at 400x400.svg', format='svg')
     # Display the plot
     plt.show()
     return
@@ -615,9 +654,11 @@ def difference_to_location_xyz(diff_peak, mic_positions_xyz, Fs,Vsound):
 
 # def Average_location(x,y,n_locations = 1):
 
-def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat):
+def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, location_car):
 
     data_per_channel = split_channels(data_recording)
+    Plot_each_channel_in_one_plot_color(data_per_channel, Fs, location_car)
+    Plot_each_channel_separately(data_per_channel, Fs, location_car)
 
     peak_begin = find_peak_begin(data_per_channel)
     # print('peak begin=',peak_begin)
@@ -631,6 +672,8 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat):
     channel = []
     for n in range(len(segments)//5): # N segments/peaks, 5 = Nmics
 
+        Plot_each_segment_and_each_channel_separatly(segment, Fs, location_car, n, lowest_peak_value)
+
         # estimate the channels
         h1 = ch3(x_ref, segments[n * 5],     eps,Lhat)
         h2 = ch3(x_ref, segments[n * 5 + 1], eps,Lhat)
@@ -639,40 +682,9 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat):
         h5 = ch3(x_ref, segments[n * 5 + 4], eps,Lhat)
         channel.extend([h1,h2,h3,h4,h5])
 
-        #plotting the channel response of every chanel of every segment
-        time = np.linspace((lowest_peak_value[n]-100)/Fs, (lowest_peak_value[n]+len(h1) )/ Fs, len(h1))
+        #plotting_channel_response_of_every_chanel_of_every_segment
+        plotting_channel_response_of_every_chanel_of_every_segment(n,lowest_peak_value,h1,h2,h3,h4,h5)
 
-        # Create subplots for each microphone channel
-        fig, axs = plt.subplots(5, 1, figsize=(8, 10))
-
-        # Plot the data for each microphone
-        axs[0].plot(time, h1, label='Microphone 1')
-        axs[1].plot(time, h2, label='Microphone 2')
-        axs[2].plot(time, h3, label='Microphone 3')
-        axs[3].plot(time, h4, label='Microphone 4')
-        axs[4].plot(time, h5, label='Microphone 5')
-
-        # Set labels and title for each subplot
-        for i in range(5):
-            axs[i].set_ylabel('Amplitude')
-            axs[i].set_title('Channel ' + str(i + 1))
-
-        # Set labels and title for the entire figure
-        # fig.suptitle('Data of the five microphones', ha='center')
-        axs[-1].set_xlabel('Time [s]')
-
-        # Adjust spacing between subplots
-        plt.tight_layout()
-
-        fig.suptitle(f'Channel inpulse response of each channel for segment {n+1} at location 140x320')
-
-        # Adjust spacing between subplots
-        plt.subplots_adjust(top=0.9, hspace=0.5)
-
-        # Export plot
-        # plt.savefig('Signals of each channels at 400x400.svg', format='svg')
-        # Display the plot
-        plt.show()
 
         #find the location of the peaks
         location_peak = find_peaks(h1, h2, h3, h4, h5)
@@ -688,15 +700,13 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat):
     # x = estimated_location_KITT[0]
     # y = estimated_location_KITT[1]
 
-    # Plot_each_channel_in_one_plot(data_per_channel, Fs)
-    Plot_each_channel_in_one_plot_color(data_per_channel, Fs)
-    Plot_each_channel_separately(data_per_channel, Fs)
-    # Plot_one_segment_each_channel_in_one_plot (channel, Fs)
-    # Plot_one_segment_each_channel(channel, Fs)
+    # Plot_each_channel_in_one_plot(data_per_channel, Fs, location_car)
+    # Plot_one_segment_each_channel_in_one_plot (channel, Fs, location_car)
+    # Plot_one_segment_each_channel(channel, Fs, location_car)
 
     return location
 
-print('location car x,y,z=',localization(data_recording,xref,mic_positions_xyz,Fs,eps,Vsound,len(xref)))
+print('location car x,y,z=',localization(data_recording,xref,mic_positions_xyz,Fs,eps,Vsound,len(xref)),location_car)
 
 
 
