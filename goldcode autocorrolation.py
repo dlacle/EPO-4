@@ -18,7 +18,8 @@ plt.stem(t_autocorr,autocorr)
 plt.xlabel('Shift')
 plt.ylabel('Autocorrelation')
 plt.title('Autocorrelation of Gold code 3355A780')
+# plt.savefig('goldcode_autocorrolation.svg')
 plt.show()
 
-plt.savefig('goldcode_autocorrolation.svg')
+
 
