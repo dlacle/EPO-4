@@ -23,7 +23,7 @@ breaking_power = int(input('breaking power: '))
 serial_port.write(fangle.encode())
 
 # amount of samples
-samples = 50
+samples = 20
 
 readings = [[]*2]*samples
 Distance = []
@@ -35,14 +35,6 @@ s = np.zeros(samples)
 def func_speed(s, T):
     v = s/T
     return v
-
-def moving_average(data, window_size):
-    window =np.ones(int(window_size))/float(window_size)
-    return np.convolve(data, window, 'same')
-
-def break_car(breaking_power):
-    speed = breaking_power
-    return(speed)
 
 start_time = time.time()
 for i in range(samples):                 #doing 40 measurements
@@ -60,11 +52,9 @@ for i in range(samples):                 #doing 40 measurements
 
     # average distance measured by the 2 sensors put in a array
     Distance.append(((np.array(readings[i])[0])+(np.array(readings[i])[1]))/2)
-    # print(Distance)
 
     # Time of measurement put in an array
     Time.append(np.array(readings[i])[2])
-    # print(Time)
 
     # determining the average speed over time interval T in meters/second
     if i>4:
@@ -72,35 +62,31 @@ for i in range(samples):                 #doing 40 measurements
         T[i] = Time[i] - Time[i - 5]
         v = func_speed(s[i], T[i])
         mspeed[i] = v
-    # else:
-    #     v = 0
-    #     mspeed[i] = v
 
+    # initiating break
     if i>(2*samples/3) and mspeed[i]>0 and speed != 150:
         speed = breaking_power
         fspeed = f"M{speed}\n"
     elif i>(2*samples/3) and mspeed[i]<=0 and speed != 150:
         speed = 150
         fspeed = f"M{speed}\n"
+    elif Time[i] >= 1 and mspeed[i] >= 1:
+        speed = 158
+        fspeed = f"M{speed}\n"
 
-# array of speed
+# arrays
 mspeed = np.array(mspeed)
 readings = np.array(readings)
 Distance = np.array(Distance)
 T = np.array(T)
 s = np.array(s)
-
-print(mspeed)
-print(T)
-print(s)
-
+print(Time[samples-1])
 # Shut down bluetooth connection with car
 serial_port.close()
 
 # define array of readings
 readings = np.array(readings)
 
-moving_average(mspeed, 4)
 # Create a figure and axis object
 fig,ax = plt.subplots()
 speed_flat = mspeed.flatten()
@@ -122,11 +108,11 @@ plt.ylabel('speed (m/s)')
 # plt.show()
 
 # save plot as svg
-plt.savefig('distance_vs_time_plot(speed158)_break145.svg')
+plt.savefig('distance_vs_time_plot(speed165160)_nobreak.svg')
 
 # save data
-data = list(zip(mspeed, readings, Distance, T, s))
-with open('data_speed158_break145', 'w', newline='') as file:
+data = list(zip(mspeed, readings[:, 2], Distance, T, s))
+with open('data_speed165160_nobreak', 'w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow(['mspeed', 'readings', 'Distance', 'T', 's'])
     writer.writerows(data)
