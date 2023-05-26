@@ -79,7 +79,7 @@ def Plot_each_channel_separately(lst, Fs,location_car):
     plt.tight_layout()
 
     #main title
-    fig.suptitle(f'Recording of each channel at location {location_car})
+    fig.suptitle(f'Recording of each channel at location {location_car}')
 
     # Adjust spacing between subplots
     plt.subplots_adjust(top=0.9, hspace=0.5)
@@ -135,17 +135,17 @@ def Plot_each_channel_in_one_plot(lst, Fs, location_car):
     plt.show()
     return
 
-def Plot_each_segment_and_each_channel_separatly(segment, Fs, location_car,n,lowest_peak_value):
+def Plot_each_segment_and_each_channel_separately(segment, Fs, location_car,n,lowest_peak_value):
     time = np.linspace((lowest_peak_value[n] - 100) / Fs, lowest_peak_value[n] / Fs + len(segment[n*5]) / Fs, len(segment[n*5]))
 
     fig, axs = plt.subplots(5, 1, figsize=(8, 10))
 
     # Plot the data for each microphone with different colors and transparency
-    axs[0].plot(time, segment[n*5])
-    axs[1].plot(time, segment[n*5+1])
-    axs[2].plot(time, segment[n*5+2])
-    axs[3].plot(time, segment[n*5+3])
-    axs[4].plot(time, segment[n*5+4])
+    axs[0].plot(time, segment[n*5], label='mic 1')
+    axs[1].plot(time, segment[n*5+1], label='mic 2')
+    axs[2].plot(time, segment[n*5+2], label='mic 3')
+    axs[3].plot(time, segment[n*5+3], label='mic 4')
+    axs[4].plot(time, segment[n*5+4], label='mic 5')
 
     # Set labels and title for each subplot
     for i, ax in enumerate(axs):
@@ -154,14 +154,16 @@ def Plot_each_segment_and_each_channel_separatly(segment, Fs, location_car,n,low
         ax.set_title(f'Channel {i + 1}')
         ax.legend()
 
+    # Add a vertical line to each subplot
+    for ax in axs:
+        ax.axvline(x=lowest_peak_value[n]/Fs, color='r', linestyle='--')
+
     # Adjust spacing between subplots
     plt.tight_layout()
+    # plt.subplots_adjust(top=0.9, hspace=0.1)  # Increased hspace value for more room
 
     #main titel
     fig.suptitle(f'Each channel of Segment {n + 1} at location {location_car}')
-
-    # Adjust spacing between subplots
-    plt.subplots_adjust(top=0.9, hspace=0.5)
 
     # Save the plot
     # plt.savefig('Channel_response_of_3e_segment_at_location_140x320.svg', format='svg')
@@ -171,7 +173,7 @@ def Plot_each_segment_and_each_channel_separatly(segment, Fs, location_car,n,low
     return
 
 
-def Plot_one_segment_each_channel_in_one_plot(segment, Fs, location_car,n,lowest_peak_value):
+def Plot_all_channels_per_segment_one_plot(segment, Fs, location_car, n, lowest_peak_value):
     time = np.linspace((lowest_peak_value[n] - 100) / Fs, lowest_peak_value[n] / Fs + len(segment[n*5]) / Fs, len(segment[n*5]))
 
     # Define colors and alpha values for each microphone
@@ -185,8 +187,9 @@ def Plot_one_segment_each_channel_in_one_plot(segment, Fs, location_car,n,lowest
     plt.plot(time, segment[n*5+3], label=f'Microphone 4', color='orange', alpha=0.4)
     plt.plot(time, segment[n*5+4], label=f'Microphone 5', color='purple', alpha=0.2)
 
-    # Add a dot at time = 57688 and y = 200
-    plt.scatter(lowest_peak_value[n] / Fs, 200, color='black', marker='o', s=30)
+    # # Add a dot or line at time = lowest_peak_value[n]/Fs
+    # plt.scatter(lowest_peak_value[n] / Fs,0, color='black', marker='o', s=30)
+    plt.axvline(x=lowest_peak_value[n]/Fs, color='r', linestyle='--')
 
     # Set labels and title
     plt.xlabel('Time [s]')
@@ -657,7 +660,8 @@ def difference_to_location_xyz(diff_peak, mic_positions_xyz, Fs,Vsound):
 def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, location_car):
 
     data_per_channel = split_channels(data_recording)
-    Plot_each_channel_in_one_plot_color(data_per_channel, Fs, location_car)
+
+    # Plot_each_channel_in_one_plot_color(data_per_channel, Fs, location_car)
     Plot_each_channel_separately(data_per_channel, Fs, location_car)
 
     peak_begin = find_peak_begin(data_per_channel)
@@ -669,10 +673,15 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, loc
     segments, which_channel_first, lowest_peak_value = automatically_segment(filtered_peaks, data_per_channel)
 
     location = []
-    channel = []
+    # channel = []
     for n in range(len(segments)//5): # N segments/peaks, 5 = Nmics
 
-        Plot_each_segment_and_each_channel_separatly(segment, Fs, location_car, n, lowest_peak_value)
+        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+                Only use when you have a low number of peaks
+        '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+        Plot_each_segment_and_each_channel_separately(segments, Fs, location_car, n, lowest_peak_value)
+        # Plot_all_channels_per_segment_one_plot(segments, Fs, location_car, n, lowest_peak_value)
+        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
         # estimate the channels
         h1 = ch3(x_ref, segments[n * 5],     eps,Lhat)
@@ -680,10 +689,13 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, loc
         h3 = ch3(x_ref, segments[n * 5 + 2], eps,Lhat)
         h4 = ch3(x_ref, segments[n * 5 + 3], eps,Lhat)
         h5 = ch3(x_ref, segments[n * 5 + 4], eps,Lhat)
-        channel.extend([h1,h2,h3,h4,h5])
+        # channel.extend([h1,h2,h3,h4,h5])
 
-        #plotting_channel_response_of_every_chanel_of_every_segment
-        plotting_channel_response_of_every_chanel_of_every_segment(n,lowest_peak_value,h1,h2,h3,h4,h5)
+        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+        Only use when you have a low number of peaks
+        '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+        # plotting_channel_response_of_every_chanel_of_every_segment(n,lowest_peak_value,h1,h2,h3,h4,h5)
+        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
         #find the location of the peaks
@@ -706,7 +718,7 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, loc
 
     return location
 
-print('location car x,y,z=',localization(data_recording,xref,mic_positions_xyz,Fs,eps,Vsound,len(xref)),location_car)
+localization(data_recording, xref, mic_positions_xyz, Fs, eps, Vsound, len(xref), location_car)
 
 
 
