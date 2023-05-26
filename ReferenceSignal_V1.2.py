@@ -132,13 +132,13 @@ start_index = int(start_time * Fs)
 end_index = int(end_time * Fs)
 
 clean_data = np.array(average_peak[start_index:end_index])
-# clean_data = clean_data[clean_data != 0]
+clean_data = clean_data[clean_data != 0]
+print(len(clean_data))
 
-
-##Save the data
-# with open('ref_sig.txt', 'w') as f:
-#     for i in clean_data:
-#         f.write("%s\n" % i)
+#Save the data
+with open('ref_sig_V1.2.txt', 'w') as f:
+    for i in clean_data:
+        f.write("%s\n" % i)
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Plot the average ref signal and its autocorrolation
