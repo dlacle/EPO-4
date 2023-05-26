@@ -80,7 +80,7 @@ def ch3(x, y, eps, Lhat):
 def TDOA(x, y, Fs):
 
     t_start = 0.35  # Start time (seconds)
-    t_end = 0.6  # End time (seconds)
+    t_end = 0.45  # End time (seconds)
 
     # Find the indices corresponding to the desired time range
     start_index = int(t_start * Fs)
@@ -90,8 +90,8 @@ def TDOA(x, y, Fs):
     y_ch3 = y[2:len(y):5][start_index:end_index]
 
     # Reference and measured channels
-    ch_ref = ch3(x[int(4.9 * Fs):int(5 * Fs)], x[int(4.9 * Fs):int(5 * Fs)], 0.001, x.size)
-    ch_mesaured = ch3(x[int(4.9 * Fs):int(5 * Fs)], y_ch1, 0.001, x.size)
+    ch_ref = ch3(x[int(4.9 * Fs):int(5 * Fs)], y_ch1, 0.001, x.size)
+    ch_mesaured = ch3(x[int(4.9 * Fs):int(5 * Fs)], y_ch3, 0.001, x.size)
 
     # The time axis for the impulse response is
     # then created using the length of the reference
@@ -122,7 +122,7 @@ def main():
     y = np.loadtxt('Mic-Data/kitt_carrier_2250_bit_3k_240x240.txt')
 
     distance = TDOA(x, y, Fs)
-    print("Distance:", distance)
+    print("Distance:", distance, ' [meter]')
 
     # plotting(x, y, Fs)
 
