@@ -28,8 +28,8 @@ def visuel_grid():
     random_source = (random.uniform(0, field_size), random.uniform(0, field_size))
 
     # Plot the random source
-    ax.plot(random_source[0], random_source[1], marker='o', color='red', markersize=12)
-    ax.text(random_source[0], random_source[1]+20, 'KITT', color='red', fontsize=12, ha='center')
+    # ax.plot(random_source[0], random_source[1], marker='o', color='red', markersize=12)
+    # ax.text(random_source[0], random_source[1]+20, 'KITT', color='red', fontsize=12, ha='center')
 
     # Set grid lines and labels
     ax.set_xticks([i for i in range(0, field_size+1, grid_spacing)])
@@ -47,7 +47,15 @@ def visuel_grid():
     # Move the y-axis to the right side
     ax.yaxis.tick_right()
 
+    # Plot black crosses on the specified coordinates
+    coordinates = [(400, 80), (160, 305), (240, 240), (120, 240), (320, 140)]
+    for coord in coordinates:
+        ax.plot(coord[0], coord[1], marker='x', color='black', markersize=8)
+
     # # Display the plot
-    # plt.show()
+    #plt.show()
+
+    # Save the figure as a PNG image
+    # fig.savefig('grid_plot.svg')
     return fig
 
