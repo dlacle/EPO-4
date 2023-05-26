@@ -4,7 +4,9 @@ import pyaudio
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fft import fft, ifft
-
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Define Constants and variables
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 # Define the positions of the 5 microphones x,y,z
 mic_positions_xyz = np.array(
     [
@@ -15,6 +17,7 @@ mic_positions_xyz = np.array(
         [0  ,240, 80]    # mic 5 (side)
     ]
 )
+
 mic_positions_xy = np.array(
     [
         [0  ,480],   # mic 1 (bottom left corner)
@@ -25,11 +28,9 @@ mic_positions_xy = np.array(
     ]
 )
 Fs = 48000
-# File path plot
-filename_plot = 'plot_kitt_carrier_2250_bit_3k_80x400_2sec'
 
 # File path mic data
-file_path_mic = r'Mic-Data/kitt_carrier_2250_bit_3k_240x240.txt'
+file_path_mic = r'Mic-Data/kitt_carrier_2250_bit_3k_140x320.txt'
 
 # Load data from the text file
 data_recording = np.loadtxt(file_path_mic)
@@ -39,22 +40,177 @@ file_path_xref = r"ref_sig.txt"
 
 # Load data from the text file
 xref = np.loadtxt(file_path_xref)
+print('lenght xref=',len(xref))
 
 #set eps ch3 function
-eps = 0.001
+eps = 0.01
 
 #set speed of sound
 Vsound = 343.14 #speed of sound m/s 20 degree
 
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Plotting functions:
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+def Plot_one_segment3_each_channel_separatly(segment, Fs):
+        # location_begin_peak_seg3 =
+        time = np.linspace((58156-100)/ Fs, 58156 / Fs + len(segment[10]) / Fs, len(segment[10]))
+
+        # Define colors and alpha values for each microphone
+        colors = ['red', 'green', 'blue', 'orange', 'purple']
+        alpha_values = [1.0, 0.8, 0.6, 0.4, 0.2]
+
+        fig, axs = plt.subplots(5, 1, figsize=(8, 10))
+
+        # Plot the data for each microphone with different colors and transparency
+        axs[0].plot(time, segment[10], label=f'Microphone 1')
+        axs[1].plot(time, segment[11], label=f'Microphone 2')
+        axs[2].plot(time, segment[12], label=f'Microphone 3')
+        axs[3].plot(time, segment[13], label=f'Microphone 4')
+        axs[4].plot(time, segment[14], label=f'Microphone 5')
+
+        # Set labels and title for each subplot
+        for i, ax in enumerate(axs):
+            ax.set_xlabel('Time [s]')
+            ax.set_ylabel('Amplitude')
+            ax.set_title(f'Channel {i + 1}')
+            ax.legend()
+
+        # Adjust spacing between subplots
+        plt.tight_layout()
+
+        # Save the plot
+        # plt.savefig('Channel_response_of_3e_segment_at_location_140x320.svg', format='svg')
+
+        # Display the plot
+        plt.show()
+        return
+
+def Plot_one_segment3_each_channel_in_one_plot(segment, Fs):
+
+        time = np.linspace((58156-100)/Fs, 58156/Fs + len(segment[10]) / Fs, len(segment[10]))
+
+        # Define colors and alpha values for each microphone
+        colors = ['red', 'green', 'blue', 'orange', 'purple']
+        alpha_values = [1.0, 0.8, 0.6, 0.4, 0.2]
+
+        # Plot the data for each microphone with different colors and transparency
+        plt.plot(time, segment[10], label=f'Microphone 1', color='red', alpha=0.7)
+        plt.plot(time, segment[11], label=f'Microphone 2', color='green', alpha=0.7)
+        plt.plot(time, segment[12], label=f'Microphone 3', color='blue', alpha=0.6)
+        plt.plot(time, segment[13], label=f'Microphone 4', color='orange', alpha=0.4)
+        plt.plot(time, segment[14], label=f'Microphone 5', color='purple', alpha=0.2)
+
+        # # Add a dot at time = 57688 and y = 200
+        # plt.scatter(57688 / Fs, 200, color='black', marker='o', s=30)
+
+        # Set labels and title
+        plt.xlabel('Time [s]')
+        plt.ylabel('Amplitude')
+        plt.title('Channel response of 3e segment at location 140x320')
+
+        # Add legend
+        plt.legend()
+
+        # Display the plot
+        # plt.savefig('Channel_response_of_3e_segment_at_location_140x3200_color.svg', format='svg')
+        plt.show()
+
+        return
+
+def Plot_each_channel_separately(lst, Fs):
+    time = np.linspace(0, len(lst[0]) / Fs, len(lst[0]))
+
+    # Create subplots for each microphone channel
+    fig, axs = plt.subplots(5, 1, figsize=(8, 10))
+
+    # Plot the data for each microphone
+    axs[0].plot(time, lst[0], label='Microphone 1')
+    axs[1].plot(time, lst[1], label='Microphone 2')
+    axs[2].plot(time, lst[2], label='Microphone 3')
+    axs[3].plot(time, lst[3], label='Microphone 4')
+    axs[4].plot(time, lst[4], label='Microphone 5')
+
+    # Set labels and title for each subplot
+    for i in range(5):
+        axs[i].set_ylabel('Amplitude')
+        axs[i].set_title('Microphone ' + str(i + 1))
+
+    # Set labels and title for the entire figure
+    # fig.suptitle('Data of the five microphones', ha='center')
+    axs[-1].set_xlabel('Time [s]')
+
+    # Adjust spacing between subplots
+    plt.tight_layout()
+
+    #main title
+    fig.suptitle('Recording of each channel')
+
+    # Adjust spacing between subplots
+    plt.subplots_adjust(top=0.9, hspace=0.5)
+
+    # Export plot
+    # plt.savefig('Signals of each channels at 400x400.svg', format='svg')
+    # Display the plot
+    plt.show()
+    return
+
+def Plot_each_channel_in_one_plot_color(lst, Fs):
+    time = np.linspace(0, len(lst[0]) / Fs, len(lst[0]))
+
+    # Define colors and alpha values for each microphone
+    colors = ['red', 'green', 'blue', 'orange', 'purple']
+    alpha_values = [1.0, 0.8, 0.6, 0.4, 0.2]
+
+    # Plot the data for each microphone with different colors and transparency
+    for i in range(len(lst)):
+        plt.plot(time, lst[i], label=f'Microphone {i + 1}', color=colors[i], alpha=alpha_values[i])
+
+    # Set labels and title
+    plt.xlabel('Time [s]')
+    plt.ylabel('Amplitude')
+    plt.title('Recording of the 5 channels at 80x400')
+
+    # Add legend
+    plt.legend()
+
+    # Display the plot
+    # plt.savefig('Signals of the 5 channels at 80x400 diff color.svg', format='svg')
+    plt.show()
+    return
+def Plot_each_channel_in_one_plot(lst, Fs):
+    time = np.linspace(0, len(lst[0]) / Fs, len(lst[0]))
+
+    # Plot the data for each microphone
+    plt.plot(time, lst[0], label='Microphone 1')
+    plt.plot(time, lst[1], label='Microphone 2')
+    plt.plot(time, lst[2], label='Microphone 3')
+    plt.plot(time, lst[3], label='Microphone 4')
+    plt.plot(time, lst[4], label='Microphone 5')
+
+    # Set labels and title
+    plt.xlabel('Time [s]')
+    plt.ylabel('Amplitude')
+    plt.title('Signals of the five microphones')
+
+    # Add legend
+    plt.legend()
+
+    # Display the plot
+    plt.show()
+    return
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 def split_channels(dataTotal):
     N_total = len(dataTotal)
-    dataTotal = dataTotal[:len(dataTotal)//5] #only use when u find the recording to long,example for plotting
-    data1 = dataTotal[0:N_total:5]
-    data2 = dataTotal[1:N_total:5]
-    data3 = dataTotal[2:N_total:5]
-    data4 = dataTotal[3:N_total:5]
-    data5 = dataTotal[4:N_total:5]
+    dataTotal = dataTotal[:N_total//5] #only use when u find the recording to long,example for plotting
+    data1 = dataTotal[0:len(dataTotal):5]
+    data2 = dataTotal[1:len(dataTotal):5]
+    data3 = dataTotal[2:len(dataTotal):5]
+    data4 = dataTotal[3:len(dataTotal):5]
+    data5 = dataTotal[4:len(dataTotal):5]
     lst = [data1, data2, data3, data4, data5]
     return lst
 
@@ -73,19 +229,17 @@ def find_peak_begin(data):
             if counter >= 0:
                 counter -= 1
                 continue
-            if item > 0.50: #75% of maximum
+            if item > 0.50: #50% of maximum
                 peaks_begin.append(index)
                 counter = 18000 #after lengt one peak+rest period looking for another peak 8000-22000
         # peaks_begin_debug = [peak / Fs for peak in peaks_begin]
         # print("Peaks Begin:", peaks_begin_debug)
     # peaks_begin_debug = [peak / Fs for peak in peaks_begin]
-    # print(total_peak_begin)
-    return total_peak_begin #returning a list inside a list [peaks_data1_begin....peaks_data5_begin]
+    print('peaks_begin=',total_peak_begin)
+    return total_peak_begin #returning a list inside a list [[peaks_data1_begin]....[peaks_data5_begin]]
 
 
 def filterpeaks(total_peak_begin):
-    # peaks = [[17787, 37819, 57788, 77820], [106,18270, 38229, 58271, 78224], [18483, 38451, 58633, 78494],
-    #      [104, 18188, 38177, 58189, 78178], [17879, 37868, 57881, 77869]]
 
     # filers out lonely initial peaks
     while True:
@@ -125,23 +279,36 @@ def filterpeaks(total_peak_begin):
         else:
             break
     peak_filter = total_peak_begin
+    print('peaks_begin_filtered=',peak_filter)
     return peak_filter #returning a list inside a list with filtered [peaks_data1_begin....peaks_data5_begin]
 
 def automatically_segment(peak_filter,lst):
     segments = []
+
     for p in range(len(peak_filter[0])):
         i = min(sublist[p] for sublist in peak_filter)
-        segment_data1 = lst[0][i - 100:i + 12000]
-        segment_data2 = lst[1][i - 100:i + 12000]
-        segment_data3 = lst[2][i - 100:i + 12000]
-        segment_data4 = lst[3][i - 100:i + 12000]
-        segment_data5 = lst[4][i - 100:i + 12000]
+        segment_data1 = lst[0][i - 100:i + 15000]
+        segment_data2 = lst[1][i - 100:i + 15000]
+        segment_data3 = lst[2][i - 100:i + 15000]
+        segment_data4 = lst[3][i - 100:i + 15000]
+        segment_data5 = lst[4][i - 100:i + 15000]
         segments.extend([segment_data1, segment_data2, segment_data3, segment_data4, segment_data5])
 
-    # segments will contain the desired output
-    return segments #returs a list: [segment1_data1..segment1_data5,.....,segment5_data1,..,segment5_data5]
+    #only use for debug and plotting
+    which_channel_first = []
+    lowest_peak_value = []
+    for p in range(len(peak_filter[0])):
+        lowest_peak = min(sublist[p] for sublist in peak_filter)
+        sublist_index = next(i for i, sublist in enumerate(peak_filter) if sublist[p] == lowest_peak)
+        print(f"lowest peak of each segment = {lowest_peak}, came from sublist [{sublist_index}]")
+        which_channel_first.append(sublist_index)
+        lowest_peak_value.append(lowest_peak)
 
-def ch3(x, y, eps):
+    # segments will contain the desired output
+    return segments, which_channel_first, lowest_peak_value #returs a list: [segment1_data1..segment1_data5,.....,segment5_data1,..,segment5_data5] , which_channel first gives which channel has the lowest value on given segment, lowest_peak_value gives the value of that segment
+
+
+def ch3(x, y, eps,Lhat):
     lenx = x.size  # Length of x
     leny = y.size  # Length of y
 
@@ -168,7 +335,7 @@ def ch3(x, y, eps):
 
     # Compute time-domain impulse response, make result real
     h = np.real(ifft(H))
-    # # h = h[0:Lhat]
+    h = h[0:Lhat]
     return h
 
 def find_peaks(h1, h2, h3, h4, h5):
@@ -191,8 +358,8 @@ def difference_peaks(location_peak):
     return diff_peak #returns a list: [r12,r13,r14,r15,r23,r24,r25,r34,r35,r45]
 
 def difference_to_location_xy(diff_peak, mic_positions, Fs,Vsound):#Algorith neglect height
-    diff_to_distance = [x * Vsound for x in diff_peak]
-    diff_to_distance = [x / Fs for x in diff_to_distance]
+    diff_to_distance = [x * Vsound/ Fs for x in diff_peak]
+
 
     x1, x2, x3, x4, x5 = mic_positions
 
@@ -248,69 +415,205 @@ def difference_to_location_xy(diff_peak, mic_positions, Fs,Vsound):#Algorith neg
     location = y[:2]
     return location
 
-def difference_to_location_xyz(diff_peak, mic_positions, Fs,Vsound):
-    diff_to_distance = [x * Vsound for x in diff_peak]
-    diff_to_distance = [x /Fs for x in diff_to_distance]
+def difference_to_location_xyz(diff_peak, mic_positions_xyz, Fs,Vsound):
+    diff_to_distance = [x * Vsound / Fs for x in diff_peak]
 
-    # for i, mic_position in enumerate(mic_positions):
-    #     locals()[f'x{i + 1}'] = mic_position
-    #
-    # # test Print the variables
-    # for i in range(1, len(mic_positions) + 1):
-    #     print(f'x{i} = {locals()["x" + str(i)]}')
+    x1, y1, z1 = mic_positions_xyz[0]
+    x2, y2, z2 = mic_positions_xyz[1]
+    x3, y3, z3 = mic_positions_xyz[2]
+    x4, y4, z4 = mic_positions_xyz[3]
+    x5, y5, z5 = mic_positions_xyz[4]
 
-    # TDOA measurements
-    rij = np.array(diff_to_distance)
-    xi = mic_positions
+    # define r_ij (Range difference)
+    r12 = diff_to_distance[0]
+    r13 = diff_to_distance[1]
+    r14 = diff_to_distance[2]
+    r15 = diff_to_distance[3]
+    r23 = diff_to_distance[4]
+    r24 = diff_to_distance[5]
+    r25 = diff_to_distance[6]
+    r34 = diff_to_distance[7]
+    r35 = diff_to_distance[8]
+    r45 = diff_to_distance[9]
 
-    # Constructing the coefficient matrix A
-    A = np.zeros((10, 5))
-    for i in range(4):
-        A[i, :3] = 2 * (xi[i + 1] - xi[0])
-        A[i, 3] = -2 * rij[i]
+    # define matrix A
+    A = np.array([
+        [2 * (x2 - x1),2 * (y2 - y1),2 * (z2 - z1), 2 * r12],
+        [2 * (x3 - x1),2 * (y3 - y1),2 * (z3 - z1), 2 * r13],
+        [2 * (x4 - x1),2 * (y4 - y1),2 * (z4 - z1), 2 * r14],
+        [2 * (x5 - x1),2 * (y5 - y1),2 * (z5 - z1), 2 * r15]
+    ])
 
-    for i in range(3):
-        A[i + 4, :3] = 2 * (xi[i + 2] - xi[i + 1])
-        A[i + 4, 3] = -2 * rij[i + 4]
+    # magnitude / length
+    norms = np.linalg.norm(mic_positions_xyz, axis=1)
 
-    for i in range(2):
-        A[i + 7, :3] = 2 * (xi[i + 3] - xi[i + 1])
-        A[i + 7, 3] = -2 * rij[i + 7]
+    l1 = norms[0]
+    l2 = norms[1]
+    l3 = norms[2]
+    l4 = norms[3]
+    l5 = norms[4]
 
-    A[9, :3] = 2 * (xi[4] - xi[3])
-    A[9, 4] = -2 * rij[9]
+    # define matrix B
+    B = np.array([
+        [-r12**2 + (x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2],
+        [-r13**2 + (x3 - x1)**2 + (y3 - y1)**2 + (z3 - z1)**2],
+        [-r14**2 + (x4 - x1)**2 + (y4 - y1)**2 + (z4 - z1)**2],
+        [-r15**2 + (x5 - x1)**2 + (y5 - y1)**2 + (z5 - z1)**2]
 
-    # Constructing the known vector b
-    b = np.zeros(10)
-    for i in range(4):
-        b[i] = np.linalg.norm(xi[0]) ** 2 - np.linalg.norm(xi[i + 1]) ** 2 + rij[i] ** 2
+    ])
 
-    for i in range(3):
-        b[i + 4] = np.linalg.norm(xi[i + 1]) ** 2 - np.linalg.norm(xi[i + 2]) ** 2 + rij[i + 4] ** 2
-
-    for i in range(2):
-        b[i + 7] = np.linalg.norm(xi[i + 1]) ** 2 - np.linalg.norm(xi[i + 3]) ** 2 + rij[i + 7] ** 2
-
-    b[9] = np.linalg.norm(xi[3]) ** 2 - np.linalg.norm(xi[4]) ** 2 + rij[9] ** 2
-
-    # Computing the pseudo-inverse of A
-    A_pseudo_inv = np.linalg.pinv(A)
-
-    # Solving for the unknown vector y
-    y = np.dot(A_pseudo_inv, b)
-
-    # Extracting the car's location x and nuisance parameters d2, d3, d4, d5
-    location = y[:3]
-    # d2, d3, d4, d5 = y[3:]
-
-    # Printing the results
-    # print("Car Location (x, y, z):", x)
-    # print("Nuisance Parameters (d2, d3, d4, d5):", d2, d3, d4, d5)
+    # A*y=B solving for y:
+    y = np.linalg.pinv(A)*B
+    location = y
     return location
+
+    # diff_to_distance = [x * Vsound / Fs for x in diff_peak]
+    #
+    # x1, y1, z1 = mic_positions_xyz[0]
+    # x2, y2, z2 = mic_positions_xyz[1]
+    # x3, y3, z3 = mic_positions_xyz[2]
+    # x4, y4, z4 = mic_positions_xyz[3]
+    # x5, y5, z5 = mic_positions_xyz[4]
+    #
+    # # define r_ij (Range difference)
+    # r12 = diff_to_distance[0]
+    # r13 = diff_to_distance[1]
+    # r14 = diff_to_distance[2]
+    # r15 = diff_to_distance[3]
+    # r23 = diff_to_distance[4]
+    # r24 = diff_to_distance[5]
+    # r25 = diff_to_distance[6]
+    # r34 = diff_to_distance[7]
+    # r35 = diff_to_distance[8]
+    # r45 = diff_to_distance[9]
+    #
+    # # define matrix A
+    # A = np.array([
+    #     [2 * (x2 - x1), 2 * (y2 - y1), 2 * (z2 - z1), -2 * r12, 0, 0, 0],
+    #     [2 * (x3 - x1), 2 * (y3 - y1), 2 * (z3 - z1), 0, -2 * r13, 0, 0],
+    #     [2 * (x4 - x1), 2 * (y4 - y1), 2 * (z4 - z1), 0, 0, -2 * r14, 0],
+    #     [2 * (x5 - x1), 2 * (y5 - y1), 2 * (z5 - z1), 0, 0, 0, -2 * r15],
+    #     [2 * (x3 - x2), 2 * (y3 - y2), 2 * (z3 - z2), 0, -2 * r23, 0, 0],
+    #     [2 * (x4 - x2), 2 * (y4 - y2), 2 * (z4 - z2), 0, 0, -2 * r24, 0],
+    #     [2 * (x5 - x2), 2 * (y5 - y2), 2 * (z5 - z2), 0, 0, 0, -2 * r25],
+    #     [2 * (x4 - x3), 2 * (y4 - y3), 2 * (z4 - z3), 0, 0, -2 * r34, 0],
+    #     [2 * (x5 - x3), 2 * (y5 - y3), 2 * (z5 - z3), 0, 0, 0, -2 * r35],
+    #     [2 * (x5 - x4), 2 * (y5 - y4), 2 * (z5 - z4), 0, 0, 0, -2 * r35]
+    # ])
+    #
+    # # magnitude / length
+    # norms = np.linalg.norm(mic_positions_xyz, axis=1)
+    #
+    # l1 = norms[0]
+    # l2 = norms[1]
+    # l3 = norms[2]
+    # l4 = norms[3]
+    # l5 = norms[4]
+    #
+    # # define matrix B
+    # B = np.array([
+    #     [r12 ** 2 - l1 ** 2 + l2 ** 2],
+    #     [r13 ** 2 - l1 ** 2 + l3 ** 2],
+    #     [r14 ** 2 - l1 ** 2 + l4 ** 2],
+    #     [r15 ** 2 - l1 ** 2 + l5 ** 2],
+    #     [r23 ** 2 - l2 ** 2 + l3 ** 2],
+    #     [r24 ** 2 - l2 ** 2 + l4 ** 2],
+    #     [r25 ** 2 - l2 ** 2 + l5 ** 2],
+    #     [r34 ** 2 - l3 ** 2 + l4 ** 2],
+    #     [r35 ** 2 - l3 ** 2 + l5 ** 2],
+    #     [r45 ** 2 - l4 ** 2 + l5 ** 2]
+    # ])
+    #
+    # # A*y=B solving for y:
+    # y = np.linalg.pinv(A) * B
+    # location = y[:2]
+    # return location
+
+    # N = len(mic_positions)  # Number of microphones
+    #
+    # # Compute pairwise range differences
+    # r_ij = np.zeros((N, N))
+    # for i in range(N):
+    #     for j in range(i + 1, N):
+    #         r_ij[i, j] = diff_peak[i * (N - 1) - (i * (i - 1) // 2) + (j - i - 1)]
+    #         r_ij[j, i] = -r_ij[i, j]
+    #
+    # # Compute matrix A and vector b
+    # A = np.zeros((N * (N - 1) // 2, N + 1))
+    # b = np.zeros((N * (N - 1) // 2,))
+    # row = 0
+    # for i in range(N):
+    #     for j in range(i + 1, N):
+    #         A[row, :2] = 2 * (mic_positions[j, :] - mic_positions[i, :])
+    #         A[row, -1] = -2 * r_ij[i, j]
+    #         b[row] = r_ij[i, j] ** 2 - np.linalg.norm(mic_positions[i, :]) ** 2 + np.linalg.norm(
+    #             mic_positions[j, :]) ** 2
+    #         row += 1
+    #
+    # # Compute pseudoinverse of A and solve for unknowns
+    # A_inv = np.linalg.pinv(A)
+    # solution = np.dot(A_inv, b)
+    # car_location = solution[:2]  # (x, y) location of the car
+    # d = solution[2:]  # Nuisance parameters (distances)
+    #
+    # # Compute z-coordinate (assuming car is always at z = 0)
+    # z = np.zeros_like(car_location[0])
+
+    # return np.array([car_location[0], car_location[1], z])
+    # diff_to_distance = [x * Vsound/Fs for x in diff_peak]
+    #
+    # # TDOA measurements
+    # rij = np.array(diff_to_distance)
+    # xi = mic_positions
+    #
+    # # Constructing the coefficient matrix A
+    # A = np.zeros((10, 5))
+    # for i in range(4):
+    #     A[i, :3] = 2 * (xi[i + 1] - xi[0])
+    #     A[i, 3] = -2 * rij[i]
+    #
+    # for i in range(3):
+    #     A[i + 4, :3] = 2 * (xi[i + 2] - xi[i + 1])
+    #     A[i + 4, 3] = -2 * rij[i + 4]
+    #
+    # for i in range(2):
+    #     A[i + 7, :3] = 2 * (xi[i + 3] - xi[i + 1])
+    #     A[i + 7, 3] = -2 * rij[i + 7]
+    #
+    # A[9, :3] = 2 * (xi[4] - xi[3])
+    # A[9, 4] = -2 * rij[9]
+    #
+    # # Constructing the known vector b
+    # b = np.zeros(10)
+    # for i in range(4):
+    #     b[i] = np.linalg.norm(xi[0]) ** 2 - np.linalg.norm(xi[i + 1]) ** 2 + rij[i] ** 2
+    #
+    # for i in range(3):
+    #     b[i + 4] = np.linalg.norm(xi[i + 1]) ** 2 - np.linalg.norm(xi[i + 2]) ** 2 + rij[i + 4] ** 2
+    #
+    # for i in range(2):
+    #     b[i + 7] = np.linalg.norm(xi[i + 1]) ** 2 - np.linalg.norm(xi[i + 3]) ** 2 + rij[i + 7] ** 2
+    #
+    # b[9] = np.linalg.norm(xi[3]) ** 2 - np.linalg.norm(xi[4]) ** 2 + rij[9] ** 2
+    #
+    # # Computing the pseudo-inverse of A
+    # A_pseudo_inv = np.linalg.pinv(A)
+    #
+    # # Solving for the unknown vector y
+    # y = np.dot(A_pseudo_inv, b)
+    #
+    # # Extracting the car's location x and nuisance parameters d2, d3, d4, d5
+    # location = y[:3]
+    # # d2, d3, d4, d5 = y[3:]
+    #
+    # # Printing the results
+    # # print("Car Location (x, y, z):", location)
+    # # print("Nuisance Parameters (d2, d3, d4, d5):", d2, d3, d4, d5)
+    # return location
 
 # def Average_location(x,y,n_locations = 1):
 
-def localization(data_recording,x_ref, mic_positions,Fs,eps,Vsound):
+def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat):
 
     data_per_channel = split_channels(data_recording)
 
@@ -320,20 +623,49 @@ def localization(data_recording,x_ref, mic_positions,Fs,eps,Vsound):
     filtered_peaks = filterpeaks(peak_begin)
     # print('filtered peak=', filtered_peaks)
 
-    segments = automatically_segment(filtered_peaks, data_per_channel)
-
+    segments, which_channel_first, lowest_peak_value = automatically_segment(filtered_peaks, data_per_channel)
 
     location = []
     channel = []
     for n in range(len(segments)//5): # N segments/peaks, 5 = Nmics
 
         # estimate the channels
-        h1 = ch3(x_ref, segments[n * 5],     eps)
-        h2 = ch3(x_ref, segments[n * 5 + 1], eps)
-        h3 = ch3(x_ref, segments[n * 5 + 2], eps)
-        h4 = ch3(x_ref, segments[n * 5 + 3], eps)
-        h5 = ch3(x_ref, segments[n * 5 + 4], eps)
+        h1 = ch3(x_ref, segments[n * 5],     eps,Lhat)
+        h2 = ch3(x_ref, segments[n * 5 + 1], eps,Lhat)
+        h3 = ch3(x_ref, segments[n * 5 + 2], eps,Lhat)
+        h4 = ch3(x_ref, segments[n * 5 + 3], eps,Lhat)
+        h5 = ch3(x_ref, segments[n * 5 + 4], eps,Lhat)
         channel.extend([h1,h2,h3,h4,h5])
+
+        #plotting the channel response of every chanel of every segment
+        time = np.linspace((lowest_peak_value[n]-100)/Fs, (lowest_peak_value[n]+len(h1) )/ Fs, len(h1))
+
+        # Create subplots for each microphone channel
+        fig, axs = plt.subplots(5, 1, figsize=(8, 10))
+
+        # Plot the data for each microphone
+        axs[0].plot(time, h1, label='Microphone 1')
+        axs[1].plot(time, h2, label='Microphone 2')
+        axs[2].plot(time, h3, label='Microphone 3')
+        axs[3].plot(time, h4, label='Microphone 4')
+        axs[4].plot(time, h5, label='Microphone 5')
+
+        # Set labels and title for each subplot
+        for i in range(5):
+            axs[i].set_ylabel('Amplitude')
+            axs[i].set_title('Channel ' + str(i + 1) + ' impulse response segment '+str(n+1))
+
+        # Set labels and title for the entire figure
+        # fig.suptitle('Data of the five microphones', ha='center')
+        axs[-1].set_xlabel('Time [s]')
+
+        # Adjust spacing between subplots
+        plt.tight_layout()
+
+        # Export plot
+        # plt.savefig('Signals of each channels at 400x400.svg', format='svg')
+        # Display the plot
+        plt.show()
 
         #find the location of the peaks
         location_peak = find_peaks(h1, h2, h3, h4, h5)
@@ -342,178 +674,29 @@ def localization(data_recording,x_ref, mic_positions,Fs,eps,Vsound):
         diff_peaks = difference_peaks(location_peak)
 
         #calculate the cooridanates of the car using the difference of peaks
-        estimated_location_KITT = difference_to_location_xy(diff_peaks, mic_positions_xy,Fs,Vsound)
-        # estimated_location_KITT = difference_to_location_xyz(diff_peaks, mic_positions_xyz, Fs, Vsound)
+        # estimated_location_KITT = difference_to_location_xy(diff_peaks, mic_positions_xy,Fs,Vsound)
+        estimated_location_KITT = difference_to_location_xyz(diff_peaks, mic_positions_xyz, Fs, Vsound)
 
         location.append(estimated_location_KITT)
     # x = estimated_location_KITT[0]
     # y = estimated_location_KITT[1]
 
-    def Plot_one_segment_each_channel(segment, Fs):
-        time = np.linspace(58056 / Fs, 58156 / Fs + len(segment[11]) / Fs, len(segment[11]))
-
-        # Define colors and alpha values for each microphone
-        colors = ['red', 'green', 'blue', 'orange', 'purple']
-        alpha_values = [1.0, 0.8, 0.6, 0.4, 0.2]
-
-        fig, axs = plt.subplots(5, 1, figsize=(8, 10))
-
-        # Plot the data for each microphone with different colors and transparency
-        axs[0].plot(time, segment[11], label=f'Microphone 1')
-        axs[1].plot(time, segment[12], label=f'Microphone 2')
-        axs[2].plot(time, segment[13], label=f'Microphone 3')
-        axs[3].plot(time, segment[14], label=f'Microphone 4')
-        axs[4].plot(time, segment[15], label=f'Microphone 5')
-
-        # Set labels and title for each subplot
-        for i, ax in enumerate(axs):
-            ax.set_xlabel('Time [s]')
-            ax.set_ylabel('Amplitude')
-            ax.set_title(f'Channel {i + 1}')
-            ax.legend()
-
-        # Adjust spacing between subplots
-        plt.tight_layout()
-
-        # Save the plot
-        plt.savefig('segment3_channel_responses_separate_subplots_nocollor.svg', format='svg')
-
-        # Display the plot
-        plt.show()
-        return
-
-    def Plot_one_segment_each_channel_in_one_plot(segment, Fs):
-        # time = np.linspace(0, len(lst[0]) / Fs, len(lst[0]))
-
-        time = np.linspace(58056/Fs, 58156/Fs + len(segment[11]) / Fs, len(segment[11]))
-
-        # Define colors and alpha values for each microphone
-        colors = ['red', 'green', 'blue', 'orange', 'purple']
-        alpha_values = [1.0, 0.8, 0.6, 0.4, 0.2]
-
-        # Plot the data for each microphone with different colors and transparency
-        plt.plot(time, segment[11], label=f'Microphone 1', color='red', alpha=0.7)
-        plt.plot(time, segment[12], label=f'Microphone 2', color='green', alpha=0.7)
-        plt.plot(time, segment[13], label=f'Microphone 3', color='blue', alpha=0.6)
-        plt.plot(time, segment[14], label=f'Microphone 4', color='orange', alpha=0.4)
-        plt.plot(time, segment[15], label=f'Microphone 5', color='purple', alpha=0.2)
-
-        # # Add a dot at time = 57688 and y = 200
-        # plt.scatter(57688 / Fs, 200, color='black', marker='o', s=30)
-
-        # Set labels and title
-        plt.xlabel('Time [s]')
-        plt.ylabel('Amplitude')
-        plt.title('3e segment channel response at location 400x400')
-
-
-
-        # Add legend
-        plt.legend()
-
-        # Display the plot
-        # plt.savefig('3e segment channel response at location 400x400.svg', format='svg')
-        plt.show()
-
-        return
-    # Plot_each_channel_in_one_plot(data_per_channel,Fs)
-    # Plot_each_channel(data_per_channel, Fs)
-    # Plot_one_segment_each_channel_in_one_plot(channel, Fs)
+    # Plot_each_channel_in_one_plot(data_per_channel, Fs)
+    Plot_each_channel_separately(data_per_channel, Fs)
+    # Plot_one_segment_each_channel_in_one_plot (channel, Fs)
     # Plot_one_segment_each_channel(channel, Fs)
 
     return location
 
-# # Find_peak_begin(data=lst)
-# #
-# Plot_each_channel(data1, data2, data3, data4, data5, Fs)
+print('location car x,y,z=',localization(data_recording,xref,mic_positions_xyz,Fs,eps,Vsound,len(xref)))
 
-def Plot_each_channel(lst,Fs):
 
-    time = np.linspace(0, len(lst[0])/Fs, len(lst[0]))
 
-    # Create subplots for each microphone channel
-    fig, axs = plt.subplots(5, 1, figsize=(8, 10))
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-    # Plot the data for each microphone
-    axs[0].plot(time, lst[0], label='Microphone 1')
-    axs[1].plot(time, lst[1], label='Microphone 2')
-    axs[2].plot(time, lst[2], label='Microphone 3')
-    axs[3].plot(time, lst[3], label='Microphone 4')
-    axs[4].plot(time, lst[4], label='Microphone 5')
 
-    # Set labels and title for each subplot
-    for i in range(5):
-        axs[i].set_ylabel('Amplitude')
-        axs[i].set_title('Microphone ' + str(i+1))
 
-    # Set labels and title for the entire figure
-    # fig.suptitle('Data of the five microphones', ha='center')
-    axs[-1].set_xlabel('Time [s]')
-
-    # Adjust spacing between subplots
-    plt.tight_layout()
-
-    # # Export plot
-    # plt.savefig(f'Plots-Report/{filename}.svg', format='svg')
-    # Display the plot
-    plt.show()
-    plt.savefig('Signals of each channels at 400x400.svg', format='svg')
-    # # Plotting 140x320
-    # data1 = data1/max(data1)
-    # data4 = data4 / max(data4)
-    # Fs = 48000
-    # time_axis = np.linspace(0, len(data1) / Fs, len(data1))
-    # plt.plot(time_axis, data1, label='mic 1')
-    # plt.plot(time_axis, data4, label='mic 4')
-    # plt.legend()
-
-    # # Display the plot
-    # plt.show()
-    return
-
-    def Plot_each_channel_in_one_plot(lst, Fs):
-        # time = np.linspace(0, len(lst[0]) / Fs, len(lst[0]))
-        #
-        # # Plot the data for each microphone
-        # plt.plot(time, lst[0], label='Microphone 1')
-        # plt.plot(time, lst[1], label='Microphone 2')
-        # plt.plot(time, lst[2], label='Microphone 3')
-        # plt.plot(time, lst[3], label='Microphone 4')
-        # plt.plot(time, lst[4], label='Microphone 5')
-        #
-        # # Set labels and title
-        # plt.xlabel('Time [s]')
-        # plt.ylabel('Amplitude')
-        # plt.title('Signals of the five microphones')
-        #
-        # # Add legend
-        # plt.legend()
-        #
-        # # Display the plot
-        # plt.show()
-        time = np.linspace(0, len(lst[0]) / Fs, len(lst[0]))
-
-        # Define colors and alpha values for each microphone
-        colors = ['red', 'green', 'blue', 'orange', 'purple']
-        alpha_values = [1.0, 0.8, 0.6, 0.4, 0.2]
-
-        # Plot the data for each microphone with different colors and transparency
-        for i in range(len(lst)):
-            plt.plot(time, lst[i], label=f'Microphone {i + 1}', color=colors[i], alpha=alpha_values[i])
-
-        # Set labels and title
-        plt.xlabel('Time [s]')
-        plt.ylabel('Amplitude')
-        plt.title('segment3 of the 5 channels at 80x400')
-
-        # Add legend
-        plt.legend()
-
-        # Display the plot
-        plt.savefig('Signals of the 5 channels at 80x400 diff color.svg', format='svg')
-        plt.show()
-
-        return
 
 def TDOA(x, y, Fs):
     # Reference and measured channels
@@ -540,5 +723,13 @@ def TDOA(x, y, Fs):
     distance = 343 * t_diff
 
     return distance
-print(localization(data_recording,xref,mic_positions_xy,Fs,eps,Vsound))
 
+
+# # Plotting 140x320
+    # data1 = data1/max(data1)
+    # data4 = data4 / max(data4)
+    # Fs = 48000
+    # time_axis = np.linspace(0, len(data1) / Fs, len(data1))
+    # plt.plot(time_axis, data1, label='mic 1')
+    # plt.plot(time_axis, data4, label='mic 4')
+    # plt.legend()
