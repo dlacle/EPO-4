@@ -93,18 +93,23 @@ Comport.set('Select Comport')  # Set default text
 Comport.grid(row=0, column=0, padx=5, pady=2,sticky='w')
 #
 # Create a KITT_connect switch widget
+connect_label = ttk.Label(frame1_1, text="Connect")
+connect_label.grid(row=0, column=1, padx=5, pady=2, sticky='w')
+
 KITT_connect = ttk.Checkbutton(
         frame1_1,
         bootstyle="success-round-toggle"
                 )
-KITT_connect.grid(row=0, column=1, padx=5, pady=2)
+KITT_connect.grid(row=0, column=1, padx=5, pady=2, sticky='e')
 
 # Create a real_or_sim switch widget
+real_or_sim_label = ttk.Label(frame1_1, text="Simulation")
+real_or_sim_label.grid(row=2, column=1, padx=5, pady=2, sticky='w')
 real_or_sim = ttk.Checkbutton(
         frame1_1,
         bootstyle="success-round-toggle"
                 )
-real_or_sim.grid(row=2, column=1, padx=5, pady=2)
+real_or_sim.grid(row=2, column=1, padx=5, pady=2, sticky='e')
 #
 
 radio1 = ttk.Radiobutton(frame1_1, text='Manual mode', value='Manual mode')
@@ -250,7 +255,7 @@ battery_level = ttk.Floodgauge(
 battery_level.grid(row=0,column=1, padx=10, pady=2)
 
 # Create a scrolled_Text widget for displaying output data
-message_output_text_field = ScrolledText(frame2_1,autohide=True) #text = 'welcome to KITT, select mode'
+message_output_text_field = ScrolledText(frame2_1,autohide=True) #text = 'welcome to KITT, select mode and fill in variables'
 message_output_text_field.grid(row=1,column=0,columnspan=2, padx=10, pady=2)
 
 

@@ -14,8 +14,8 @@ def plotting(x, y, Fs):
     t = np.arange(len(y_ch3)) / Fs
 
     # Set the time range for the plot
-    t_start =2  # Start time (seconds)
-    t_end =  2.25 # End time (seconds)
+    t_start =  2.4  # Start time (seconds)
+    t_end =  2.7 # End time (seconds)
 
     # Find the indices corresponding to the desired time range
     start_index = int(t_start * Fs)
@@ -41,7 +41,7 @@ def plotting(x, y, Fs):
     # Plot the data
     plt.xlabel('Time (s)')
     plt.ylabel('Amplitude')
-    plt.title(f'KITT recording 240x240')
+    plt.title(f'KITT recording 240x120')
     plt.show()
 
 
@@ -79,18 +79,18 @@ def ch3(x, y, eps, Lhat):
 
 def TDOA(x, y, Fs):
 
-    t_start = 0.35  # Start time (seconds)
-    t_end = 0.45  # End time (seconds)
+    t_start = 2.4  # Start time (seconds)#2.03 - 2.20
+    t_end = 2.7  # End time (seconds)
 
     # Find the indices corresponding to the desired time range
     start_index = int(t_start * Fs)
     end_index = int(t_end * Fs)
 
-    y_ch1 = y[0:len(y):5][start_index:end_index]
+    y_ch1 = y[4:len(y):5][start_index:end_index]
     y_ch3 = y[2:len(y):5][start_index:end_index]
 
     # Reference and measured channels
-    ch_ref = ch3(x, y_ch1, 0.0002, x.size)
+    ch_ref = ch3(x, y_ch1, 0.002, x.size)
     ch_mesaured = ch3(x, y_ch3, 0.002, x.size)
 
     # The time axis for the impulse response is
@@ -119,12 +119,12 @@ def main():
 
     Fs = 48e3
     x = np.loadtxt('ref_sig_V1.5.txt')
-    y = np.loadtxt('Mic-Data/kitt_carrier_2250_bit_3k_240x240.txt')
+    y = np.loadtxt('Mic-Data/kitt_carrier_2250_bit_3k_240x120.txt')
 
     distance = TDOA(x, y, Fs)
     print("Distance:", distance, ' [meter]')
 
-    plotting(x, y, Fs)
+    # plotting(x, y, Fs)
 
 if __name__ == '__main__':
     main()
