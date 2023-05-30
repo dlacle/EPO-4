@@ -11,6 +11,13 @@ import random
 from Visual_grid import visuel_grid
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+
+def stretch_figure():
+    # size
+    width = event.width
+    height = event.height
+    print(width)
+    print(height)
 window = ttk.Window(themename='journal')
 window.title('KITT GUI')
 window.iconbitmap('rc-car.ico')
@@ -263,8 +270,7 @@ message_output_text_field.grid(row=1,column=0,columnspan=2, padx=10, pady=2)
 # Create a FigureCanvasTkAgg object to display the plot
 canvas = FigureCanvasTkAgg(visuel_grid(), master=frame2_2)
 canvas.draw()
-canvas.get_tk_widget().pack(fill='both')
-
+canvas.get_tk_widget().pack(side= 'top')
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

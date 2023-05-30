@@ -90,13 +90,28 @@ def TDOA(x, y, Fs):
     y_ch3 = y[2:len(y):5][start_index:end_index]
 
     # Reference and measured channels
-    ch_ref = ch3(x, y_ch1, 0.0002, x.size)
+    ch_ref = ch3(x, y_ch1, 0.002, x.size)
     ch_mesaured = ch3(x, y_ch3, 0.002, x.size)
 
     # The time axis for the impulse response is
     # then created using the length of the reference
     # channel and the sampling rate.
     t = np.linspace(0, len(ch_ref) / Fs, len(ch_ref))
+    # Create subplots for each microphone channel
+    fig, axs = plt.subplots(2, 1, figsize=(8, 10))
+
+    axs[0].plot(t, ch_ref, label='Microphone 1')
+    axs[1].plot(t, ch_mesaured, label='Microphone 3')
+
+    # Adjust spacing between subplots
+    plt.tight_layout()
+    # axs.grid
+
+    # Plot the data
+    plt.xlabel('Time (s)')
+    plt.ylabel('Amplitude')
+    plt.title(f'Channel estimation recording 240x240')
+    plt.show()
 
     # Find the peak of each of the impulse responses
     # using the argmax() function. This assumes that
