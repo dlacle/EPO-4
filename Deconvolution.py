@@ -30,25 +30,27 @@ mic_positions_xy = np.array(
 Fs = 48000
 
 # File path mic data
-file_path_mic = r'Mic-Data/kitt_carrier_2250_bit_3k_140x320.txt'
-location_car = '140x320'
+file_path_mic = r'Mic-Data/kitt_carrier_2250_bit_3k_240x120.txt'
+location_car = '240x240'
 
 # Load data from the text file
 data_recording = np.loadtxt(file_path_mic)
 
 # File path ref signal
-file_path_xref = r"ref_sig_V1.5.txt"
+file_path_xref = r"ref_sig_V1.8.txt"
 
 # Load data from the text file
 xref = np.loadtxt(file_path_xref)
 print('lenght xref=',len(xref))
 
 #set eps ch3 function
-eps = 0.002
+eps = 0.001
 
 #set speed of sound
 Vsound = 343.14 #speed of sound m/s 20 degree
 
+#set treshold for find first peak channel response
+threshold = 0.25
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Plotting functions:
@@ -359,11 +361,11 @@ def automatically_segment(peak_filter,lst):
 
     for p in range(len(peak_filter[0])):
         i = min(sublist[p] for sublist in peak_filter)
-        segment_data1 = lst[0][i - 100:i + 15000]
-        segment_data2 = lst[1][i - 100:i + 15000]
-        segment_data3 = lst[2][i - 100:i + 15000]
-        segment_data4 = lst[3][i - 100:i + 15000]
-        segment_data5 = lst[4][i - 100:i + 15000]
+        segment_data1 = lst[0][i - 500:i + 15000]
+        segment_data2 = lst[1][i - 500:i + 15000]
+        segment_data3 = lst[2][i - 500:i + 15000]
+        segment_data4 = lst[3][i - 500:i + 15000]
+        segment_data5 = lst[4][i - 500:i + 15000]
         segments.extend([segment_data1, segment_data2, segment_data3, segment_data4, segment_data5])
 
     #only use for debug and plotting
@@ -412,19 +414,35 @@ def ch3(x, y, eps,Lhat):
     # Obtain frequency response
     H = Y / X
 
-    H[np.absolute(X) < eps * max(np.absolute(X))] = 0
+    G = [i if abs(i) > eps else 0 for i in X]
 
     # Compute time-domain impulse response, make result real
-    h = np.real(ifft(H))
-    h = h[0:Lhat]
-    return h
+    Hhat = np.multiply(H, G)
+    h = ifft(Hhat)
+    # h = h[0:Lhat]
+    return np.real(abs(h))
 
-def find_peaks(h1, h2, h3, h4, h5):
-    peak_ch1 = np.argmax(h1)
-    peak_ch2 = np.argmax(h2)
-    peak_ch3 = np.argmax(h3)
-    peak_ch4 = np.argmax(h4)
-    peak_ch5 = np.argmax(h5)
+def find_first_pk(data, threshold):
+
+    # Normalize the data to [0, 1]
+    normalized_data = data / max(abs(data))
+
+    # Find the indices where the data crosses the threshold
+    above_threshold_indices = np.where(normalized_data > threshold)[0]
+
+    if len(above_threshold_indices) == 0:
+        return None  # No peak above the threshold
+
+    # Find the first peak index
+    first_peak_index = above_threshold_indices[0]
+
+    return first_peak_index
+def find_peaks(h1, h2, h3, h4, h5,treshold):
+    peak_ch1 = find_first_pk(h1,treshold)
+    peak_ch2 = find_first_pk(h2,treshold)
+    peak_ch3 = find_first_pk(h3,treshold)
+    peak_ch4 = find_first_pk(h4,treshold)
+    peak_ch5 = find_first_pk(h5,treshold)
 
     peak_location = np.array([peak_ch1, peak_ch2, peak_ch3, peak_ch4, peak_ch5])
     print(peak_location)
@@ -493,64 +511,13 @@ def difference_to_location_xy(diff_peak, mic_positions, Fs,Vsound):#Algorith neg
     ])
 
     # A*y=B solving for y:
-    y = np.linalg.pinv(A)*B
-    location = y[:2]
+    y = np.matmul(np.linalg.pinv(A),B)
+    location = y[:3]
     return location
 
 def difference_to_location_xyz(diff_peak, mic_positions_xyz, Fs,Vsound):
-    diff_to_distance = [x * Vsound / Fs for x in diff_peak]
-    #
-    x1, y1, z1 = mic_positions_xyz[0]
-    x2, y2, z2 = mic_positions_xyz[1]
-    x3, y3, z3 = mic_positions_xyz[2]
-    x4, y4, z4 = mic_positions_xyz[3]
-    x5, y5, z5 = mic_positions_xyz[4]
-
-    # define r_ij (Range difference)
-    r12 = diff_to_distance[0]
-    r13 = diff_to_distance[1]
-    r14 = diff_to_distance[2]
-    r15 = diff_to_distance[3]
-    r23 = diff_to_distance[4]
-    r24 = diff_to_distance[5]
-    r25 = diff_to_distance[6]
-    r34 = diff_to_distance[7]
-    r35 = diff_to_distance[8]
-    r45 = diff_to_distance[9]
-
-    # define matrix A
-    A = np.array([
-        [2 * (x2 - x1),2 * (y2 - y1),2 * (z2 - z1), 2 * r12],
-        [2 * (x3 - x1),2 * (y3 - y1),2 * (z3 - z1), 2 * r13],
-        [2 * (x4 - x1),2 * (y4 - y1),2 * (z4 - z1), 2 * r14],
-        [2 * (x5 - x1),2 * (y5 - y1),2 * (z5 - z1), 2 * r15]
-    ])
-
-    # magnitude / length
-    norms = np.linalg.norm(mic_positions_xyz, axis=1)
-
-    l1 = norms[0]
-    l2 = norms[1]
-    l3 = norms[2]
-    l4 = norms[3]
-    l5 = norms[4]
-
-    # define matrix B
-    B = np.array([
-        [-r12**2 + (x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2],
-        [-r13**2 + (x3 - x1)**2 + (y3 - y1)**2 + (z3 - z1)**2],
-        [-r14**2 + (x4 - x1)**2 + (y4 - y1)**2 + (z4 - z1)**2],
-        [-r15**2 + (x5 - x1)**2 + (y5 - y1)**2 + (z5 - z1)**2]
-
-    ])
-
-    # A*y=B solving for y:
-    y = np.linalg.pinv(A)*B
-    location = y
-    return location
-
     # diff_to_distance = [x * Vsound / Fs for x in diff_peak]
-    #
+    # #
     # x1, y1, z1 = mic_positions_xyz[0]
     # x2, y2, z2 = mic_positions_xyz[1]
     # x3, y3, z3 = mic_positions_xyz[2]
@@ -571,16 +538,10 @@ def difference_to_location_xyz(diff_peak, mic_positions_xyz, Fs,Vsound):
     #
     # # define matrix A
     # A = np.array([
-    #     [2 * (x2 - x1), 2 * (y2 - y1), 2 * (z2 - z1), -2 * r12, 0, 0, 0],
-    #     [2 * (x3 - x1), 2 * (y3 - y1), 2 * (z3 - z1), 0, -2 * r13, 0, 0],
-    #     [2 * (x4 - x1), 2 * (y4 - y1), 2 * (z4 - z1), 0, 0, -2 * r14, 0],
-    #     [2 * (x5 - x1), 2 * (y5 - y1), 2 * (z5 - z1), 0, 0, 0, -2 * r15],
-    #     [2 * (x3 - x2), 2 * (y3 - y2), 2 * (z3 - z2), 0, -2 * r23, 0, 0],
-    #     [2 * (x4 - x2), 2 * (y4 - y2), 2 * (z4 - z2), 0, 0, -2 * r24, 0],
-    #     [2 * (x5 - x2), 2 * (y5 - y2), 2 * (z5 - z2), 0, 0, 0, -2 * r25],
-    #     [2 * (x4 - x3), 2 * (y4 - y3), 2 * (z4 - z3), 0, 0, -2 * r34, 0],
-    #     [2 * (x5 - x3), 2 * (y5 - y3), 2 * (z5 - z3), 0, 0, 0, -2 * r35],
-    #     [2 * (x5 - x4), 2 * (y5 - y4), 2 * (z5 - z4), 0, 0, 0, -2 * r35]
+    #     [2 * (x2 - x1),2 * (y2 - y1),2 * (z2 - z1), 2 * r12],
+    #     [2 * (x3 - x1),2 * (y3 - y1),2 * (z3 - z1), 2 * r13],
+    #     [2 * (x4 - x1),2 * (y4 - y1),2 * (z4 - z1), 2 * r14],
+    #     [2 * (x5 - x1),2 * (y5 - y1),2 * (z5 - z1), 2 * r15]
     # ])
     #
     # # magnitude / length
@@ -594,22 +555,79 @@ def difference_to_location_xyz(diff_peak, mic_positions_xyz, Fs,Vsound):
     #
     # # define matrix B
     # B = np.array([
-    #     [r12 ** 2 - l1 ** 2 + l2 ** 2],
-    #     [r13 ** 2 - l1 ** 2 + l3 ** 2],
-    #     [r14 ** 2 - l1 ** 2 + l4 ** 2],
-    #     [r15 ** 2 - l1 ** 2 + l5 ** 2],
-    #     [r23 ** 2 - l2 ** 2 + l3 ** 2],
-    #     [r24 ** 2 - l2 ** 2 + l4 ** 2],
-    #     [r25 ** 2 - l2 ** 2 + l5 ** 2],
-    #     [r34 ** 2 - l3 ** 2 + l4 ** 2],
-    #     [r35 ** 2 - l3 ** 2 + l5 ** 2],
-    #     [r45 ** 2 - l4 ** 2 + l5 ** 2]
+    #     [-r12**2 + (x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2],
+    #     [-r13**2 + (x3 - x1)**2 + (y3 - y1)**2 + (z3 - z1)**2],
+    #     [-r14**2 + (x4 - x1)**2 + (y4 - y1)**2 + (z4 - z1)**2],
+    #     [-r15**2 + (x5 - x1)**2 + (y5 - y1)**2 + (z5 - z1)**2]
+    #
     # ])
     #
     # # A*y=B solving for y:
-    # y = np.linalg.pinv(A) * B
-    # location = y[:2]
+    # y = np.linalg.pinv(A)*B
+    # location = y
     # return location
+
+    diff_to_distance = [x * Vsound / Fs for x in diff_peak]
+
+    x1, y1, z1 = mic_positions_xyz[0]
+    x2, y2, z2 = mic_positions_xyz[1]
+    x3, y3, z3 = mic_positions_xyz[2]
+    x4, y4, z4 = mic_positions_xyz[3]
+    x5, y5, z5 = mic_positions_xyz[4]
+
+    # define r_ij (Range difference)
+    r12 = diff_to_distance[0]
+    r13 = diff_to_distance[1]
+    r14 = diff_to_distance[2]
+    r15 = diff_to_distance[3]
+    r23 = diff_to_distance[4]
+    r24 = diff_to_distance[5]
+    r25 = diff_to_distance[6]
+    r34 = diff_to_distance[7]
+    r35 = diff_to_distance[8]
+    r45 = diff_to_distance[9]
+
+    # define matrix A
+    A = np.array([
+        [2 * (x2 - x1), 2 * (y2 - y1), 2 * (z2 - z1), -2 * r12, 0, 0, 0],
+        [2 * (x3 - x1), 2 * (y3 - y1), 2 * (z3 - z1), 0, -2 * r13, 0, 0],
+        [2 * (x4 - x1), 2 * (y4 - y1), 2 * (z4 - z1), 0, 0, -2 * r14, 0],
+        [2 * (x5 - x1), 2 * (y5 - y1), 2 * (z5 - z1), 0, 0, 0, -2 * r15],
+        [2 * (x3 - x2), 2 * (y3 - y2), 2 * (z3 - z2), 0, -2 * r23, 0, 0],
+        [2 * (x4 - x2), 2 * (y4 - y2), 2 * (z4 - z2), 0, 0, -2 * r24, 0],
+        [2 * (x5 - x2), 2 * (y5 - y2), 2 * (z5 - z2), 0, 0, 0, -2 * r25],
+        [2 * (x4 - x3), 2 * (y4 - y3), 2 * (z4 - z3), 0, 0, -2 * r34, 0],
+        [2 * (x5 - x3), 2 * (y5 - y3), 2 * (z5 - z3), 0, 0, 0, -2 * r35],
+        [2 * (x5 - x4), 2 * (y5 - y4), 2 * (z5 - z4), 0, 0, 0, -2 * r35]
+    ])
+
+    # magnitude / length
+    norms = np.linalg.norm(mic_positions_xyz, axis=1)
+
+    l1 = norms[0]
+    l2 = norms[1]
+    l3 = norms[2]
+    l4 = norms[3]
+    l5 = norms[4]
+
+    # define matrix B
+    B = np.array([
+        [r12 ** 2 - l1 ** 2 + l2 ** 2],
+        [r13 ** 2 - l1 ** 2 + l3 ** 2],
+        [r14 ** 2 - l1 ** 2 + l4 ** 2],
+        [r15 ** 2 - l1 ** 2 + l5 ** 2],
+        [r23 ** 2 - l2 ** 2 + l3 ** 2],
+        [r24 ** 2 - l2 ** 2 + l4 ** 2],
+        [r25 ** 2 - l2 ** 2 + l5 ** 2],
+        [r34 ** 2 - l3 ** 2 + l4 ** 2],
+        [r35 ** 2 - l3 ** 2 + l5 ** 2],
+        [r45 ** 2 - l4 ** 2 + l5 ** 2]
+    ])
+
+    # A*y=B solving for y:
+    y = np.matmul(np.linalg.pinv(A),B)
+    location = y[:3]
+    return location
 '''''''''''''''''''''''''''''
 extended iriterative version of the manual
 '''''''''''''''''''''''''''''
@@ -722,7 +740,7 @@ hh
 
 # def Average_location(x,y,n_locations = 1):
 
-def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, location_car):
+def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, location_car,treshold):
 
     data_per_channel = split_channels(data_recording)
 
@@ -764,8 +782,8 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, loc
 
 
         #find the location of the peaks
-        location_peak = find_peaks(h1, h2, h3, h4, h5)
-        plotting_channel_response_of_every_channel_in_one_plot_each_segment(n, lowest_peak_value, h1, h2, h3, h4, h5, location_peak)
+        location_peak = find_peaks(h1, h2, h3, h4, h5,treshold)
+        # plotting_channel_response_of_every_channel_in_one_plot_each_segment(n, lowest_peak_value, h1, h2, h3, h4, h5, location_peak)
 
 
         #calculate the difference of the peak locations
@@ -785,7 +803,7 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, loc
 
     return location
 
-print(localization(data_recording, xref, mic_positions_xyz, Fs, eps, Vsound, len(xref), location_car))
+print(localization(data_recording, xref, mic_positions_xyz, Fs, eps, Vsound, len(xref), location_car, threshold))
 
 
 
