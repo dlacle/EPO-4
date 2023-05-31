@@ -500,54 +500,54 @@ def difference_to_location_xy(diff_peak, mic_positions, Fs,Vsound):#Algorith neg
 def difference_to_location_xyz(diff_peak, mic_positions_xyz, Fs,Vsound):
     diff_to_distance = [x * Vsound / Fs for x in diff_peak]
     #
-    # x1, y1, z1 = mic_positions_xyz[0]
-    # x2, y2, z2 = mic_positions_xyz[1]
-    # x3, y3, z3 = mic_positions_xyz[2]
-    # x4, y4, z4 = mic_positions_xyz[3]
-    # x5, y5, z5 = mic_positions_xyz[4]
-    #
-    # # define r_ij (Range difference)
-    # r12 = diff_to_distance[0]
-    # r13 = diff_to_distance[1]
-    # r14 = diff_to_distance[2]
-    # r15 = diff_to_distance[3]
-    # r23 = diff_to_distance[4]
-    # r24 = diff_to_distance[5]
-    # r25 = diff_to_distance[6]
-    # r34 = diff_to_distance[7]
-    # r35 = diff_to_distance[8]
-    # r45 = diff_to_distance[9]
-    #
-    # # define matrix A
-    # A = np.array([
-    #     [2 * (x2 - x1),2 * (y2 - y1),2 * (z2 - z1), 2 * r12],
-    #     [2 * (x3 - x1),2 * (y3 - y1),2 * (z3 - z1), 2 * r13],
-    #     [2 * (x4 - x1),2 * (y4 - y1),2 * (z4 - z1), 2 * r14],
-    #     [2 * (x5 - x1),2 * (y5 - y1),2 * (z5 - z1), 2 * r15]
-    # ])
-    #
-    # # magnitude / length
-    # norms = np.linalg.norm(mic_positions_xyz, axis=1)
-    #
-    # l1 = norms[0]
-    # l2 = norms[1]
-    # l3 = norms[2]
-    # l4 = norms[3]
-    # l5 = norms[4]
-    #
-    # # define matrix B
-    # B = np.array([
-    #     [-r12**2 + (x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2],
-    #     [-r13**2 + (x3 - x1)**2 + (y3 - y1)**2 + (z3 - z1)**2],
-    #     [-r14**2 + (x4 - x1)**2 + (y4 - y1)**2 + (z4 - z1)**2],
-    #     [-r15**2 + (x5 - x1)**2 + (y5 - y1)**2 + (z5 - z1)**2]
-    #
-    # ])
-    #
-    # # A*y=B solving for y:
-    # y = np.linalg.pinv(A)*B
-    # location = y
-    # return location
+    x1, y1, z1 = mic_positions_xyz[0]
+    x2, y2, z2 = mic_positions_xyz[1]
+    x3, y3, z3 = mic_positions_xyz[2]
+    x4, y4, z4 = mic_positions_xyz[3]
+    x5, y5, z5 = mic_positions_xyz[4]
+
+    # define r_ij (Range difference)
+    r12 = diff_to_distance[0]
+    r13 = diff_to_distance[1]
+    r14 = diff_to_distance[2]
+    r15 = diff_to_distance[3]
+    r23 = diff_to_distance[4]
+    r24 = diff_to_distance[5]
+    r25 = diff_to_distance[6]
+    r34 = diff_to_distance[7]
+    r35 = diff_to_distance[8]
+    r45 = diff_to_distance[9]
+
+    # define matrix A
+    A = np.array([
+        [2 * (x2 - x1),2 * (y2 - y1),2 * (z2 - z1), 2 * r12],
+        [2 * (x3 - x1),2 * (y3 - y1),2 * (z3 - z1), 2 * r13],
+        [2 * (x4 - x1),2 * (y4 - y1),2 * (z4 - z1), 2 * r14],
+        [2 * (x5 - x1),2 * (y5 - y1),2 * (z5 - z1), 2 * r15]
+    ])
+
+    # magnitude / length
+    norms = np.linalg.norm(mic_positions_xyz, axis=1)
+
+    l1 = norms[0]
+    l2 = norms[1]
+    l3 = norms[2]
+    l4 = norms[3]
+    l5 = norms[4]
+
+    # define matrix B
+    B = np.array([
+        [-r12**2 + (x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2],
+        [-r13**2 + (x3 - x1)**2 + (y3 - y1)**2 + (z3 - z1)**2],
+        [-r14**2 + (x4 - x1)**2 + (y4 - y1)**2 + (z4 - z1)**2],
+        [-r15**2 + (x5 - x1)**2 + (y5 - y1)**2 + (z5 - z1)**2]
+
+    ])
+
+    # A*y=B solving for y:
+    y = np.linalg.pinv(A)*B
+    location = y
+    return location
 
     # diff_to_distance = [x * Vsound / Fs for x in diff_peak]
     #
@@ -759,7 +759,7 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, loc
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         Only use when you have a low number of peaks
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-        # plotting_channel_response_of_every_chanel_of_every_segment(n,lowest_peak_value,h1,h2,h3,h4,h5)
+        plotting_channel_response_of_every_chanel_of_every_segment(n,lowest_peak_value,h1,h2,h3,h4,h5)
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 

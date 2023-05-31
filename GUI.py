@@ -1,24 +1,24 @@
 import tkinter as tk
-# from tkinter import ttk
 from tkinter import scrolledtext
 
 import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import ScrolledText
 from ttkbootstrap.widgets import Floodgauge, Meter
 
-import matplotlib.pyplot as plt
-import random
-from Visual_grid import visuel_grid
+from visual_grid import visuel_grid
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
-def stretch_figure():
-    # size
-    width = event.width
-    height = event.height
-    print(width)
-    print(height)
-window = ttk.Window(themename='journal')
+def kitt_switch():
+    state = KITT_connect.value()
+    print("Switch state:", state)
+    # comport['state'] = 'disabled'
+    # selected_value_combobox = comport.get()
+
+def reset():
+    pass
+
+window = ttk.Window()#themename='journal'
 window.title('KITT GUI')
 window.iconbitmap('rc-car.ico')
 
@@ -50,13 +50,13 @@ frame2.place(relx= 0.4, y = 0, relwidth = 0.6, relheight = 1)
 
 
 #frame1 layout and place
-frame1_1 = ttk.Frame(frame1, relief='raised', borderwidth=1)
-frame1_2 = ttk.Frame(frame1, relief='raised', borderwidth=1)
+frame1_1 = ttk.Frame(frame1)#, relief='raised', borderwidth=1
+frame1_2 = ttk.Frame(frame1)#, relief='raised', borderwidth=1
 frame1_1.place(x = 0, y = 0, relwidth = 1, relheight = 0.3)
 frame1_2.place(x = 0, rely=0.3, relwidth = 1, relheight = 0.7)
 
 #frame2 layout and place
-frame2_1 = ttk.Frame(frame2, relief='raised', borderwidth=1)
+frame2_1 = ttk.Frame(frame2)#, relief='raised', borderwidth=1
 frame2_2 = ttk.Frame(frame2, relief='raised', borderwidth=1)
 frame2_1.place(x = 0, y = 0, relwidth = 1, relheight = 0.3)
 frame2_2.place(x= 0, rely=0.3, relwidth = 1, relheight = 0.7)
