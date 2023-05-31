@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fft import fft, ifft
 
+
 def plotting(x, y, Fs):
 
     y_ch1 = y[0:len(y):5]
@@ -14,8 +15,8 @@ def plotting(x, y, Fs):
     t = np.arange(len(y_ch3)) / Fs
 
     # Set the time range for the plot
-    t_start =2  # Start time (seconds)
-    t_end =  2.25 # End time (seconds)
+    t_start = 2  # Start time (seconds)
+    t_end = 2.25 # End time (seconds)
 
     # Find the indices corresponding to the desired time range
     start_index = int(t_start * Fs)
@@ -77,32 +78,49 @@ def ch3(x, y, eps, Lhat):
     # h = h[0:Lhat]
     return np.real(abs(h))
 
+def find_first_pk(data, threshold):
+
+        # Normalize the data to [0, 1]
+        normalized_data = data / max(abs(data))
+
+        # Find the indices where the data crosses the threshold
+        above_threshold_indices = np.where(normalized_data > threshold)[0]
+
+        if len(above_threshold_indices) == 0:
+            return None  # No peak above the threshold
+
+        # Find the first peak index
+        first_peak_index = above_threshold_indices[0]
+
+        return first_peak_index
 
 def TDOA(x, y, Fs):
 
-    t_start = 2  # Start time (seconds)
+    t_start = 2.00  # Start time (seconds)
     t_end = 2.25  # End time (seconds)
 
-    # Find the indices corresponding to the desired time range
+    # Indices corresponding to the desired time range
     start_index = int(t_start * Fs)
     end_index = int(t_end * Fs)
 
-    y_ch1 = y[0:len(y):5][start_index:end_index]
-    y_ch3 = y[2:len(y):5][start_index:end_index]
+    # First and second channels
+    y_ch_first = y[1:len(y):5][start_index:end_index]
+    y_ch_second = y[3:len(y):5][start_index:end_index]
 
-    # Reference and measured channels
-    h_1 = ch3(x, y_ch1, 0.001, x.size)
-    h_3 = ch3(x, y_ch3, 0.001, x.size)
+    # Response of first and second channels
+    h_first = ch3(x, y_ch_first, 0.001, x.size)
+    h_second = ch3(x, y_ch_second, 0.001, x.size)
 
     # The time axis for the impulse response is
     # then created using the length of the reference
     # channel and the sampling rate.
-    t = np.linspace(0, len(h_1) / Fs, len(h_1))
+    t = np.linspace(0, len(h_first) / Fs, len(h_first))
+
     # Create subplots for each microphone channel
     fig, axs = plt.subplots(2, 1, figsize=(8, 10))
 
-    axs[0].plot(h_1, label='Microphone 1')
-    axs[1].plot(h_3, label='Microphone 3')
+    axs[0].plot(h_first, label='Microphone 1')
+    axs[1].plot(h_second, label='Microphone 3')
 
     # Adjust spacing between subplots
     plt.tight_layout()
@@ -115,17 +133,19 @@ def TDOA(x, y, Fs):
 
 
     # Find the peak of each of the impulse responses
-    # using the argmax() function. This assumes that
-    # the peak represents the arrival
-    # time of the direct sound between the two signals.
-    pk_h1 = np.argmax(h_1)
-    pk_h3 = np.argmax(h_3)
-    print(pk_h1, pk_h3)
-    axs[0].scatter(pk_h1, h_1[pk_h1], color="red")
-    axs[1].scatter(pk_h3, h_3[pk_h3], color="red")
+    # above a certain threshold.
+    pk_h1_tres = find_first_pk(h_first, 0.25)
+    pk_h3_tres = find_first_pk(h_second, 0.25)
+
+    print(f'Location of first peak h1: {pk_h1_tres}')
+    print(f'Location of first peak h3: {pk_h3_tres}\n')
+
+    axs[0].scatter(pk_h1_tres, h_first[pk_h1_tres], color="red")
+    axs[1].scatter(pk_h3_tres, h_second[pk_h3_tres], color="red")
     plt.show()
+
     # Time difference between two peaks (in samples)
-    t_diff = t[pk_h3] - t[pk_h1]
+    t_diff = t[pk_h3_tres] - t[pk_h1_tres]
 
     # Distance between two signals is obtained by
     # multiplying the time difference by speed of sound
@@ -138,7 +158,7 @@ def main():
 
     Fs = 48e3
     x = np.loadtxt('ref_sig_V1.8.txt')
-    y = np.loadtxt('Mic-Data/kitt_carrier_2250_bit_3k_240x240.txt')
+    y = np.loadtxt('Mic-Data/kitt_carrier_2250_bit_3k_240x120.txt')
 
     distance = TDOA(x, y, Fs)
     print("Distance:", distance, ' [meter]')
