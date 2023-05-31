@@ -35,15 +35,16 @@ average_peak = np.mean(data_reshaped, axis=0)
 autocorr = np.correlate(average_peak, average_peak, mode='full')
 t_autocorr = np.linspace(-t_total, t_total, len(autocorr))
 
-start_time = 0.70
-end_time = 1.0
+start_time = 0.7305
+end_time = 0.818
 start_index = int(start_time * Fs)
 end_index = int(end_time * Fs)
 
 clean_data = np.array(average_peak[start_index:end_index])
+lenght_clean_data=len(clean_data)
 clean_data = clean_data[clean_data != 0]
-
-# with open('ref_sig.txt', 'w') as f:
+lenght_clean_data_nozero =len(clean_data)
+# with open('ref_sig_V1.3.txt', 'w') as f:
 #     for i in clean_data:
 #         f.write("%s\n" % i)
 
@@ -70,7 +71,7 @@ axs[0, 1].set_ylabel("Amplitude")
 axs[0, 1].set_title("Auto-correlation of Reference Signal")
 
 # Plot cleaned reference signal
-axs[1, 0].plot(t[start_index:end_index - 7], clean_data)
+axs[1, 0].plot(t[start_index:end_index - (lenght_clean_data-lenght_clean_data_nozero)], clean_data)
 axs[1, 0].set_xlabel("Time [s]")
 axs[1, 0].set_ylabel("Amplitude")
 axs[1, 0].set_title("Reference Signal: Cleaned")

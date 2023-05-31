@@ -37,14 +37,14 @@ location_car = '140x320'
 data_recording = np.loadtxt(file_path_mic)
 
 # File path ref signal
-file_path_xref = r"ref_sig.txt"
+file_path_xref = r"ref_sig_V1.5.txt"
 
 # Load data from the text file
 xref = np.loadtxt(file_path_xref)
 print('lenght xref=',len(xref))
 
 #set eps ch3 function
-eps = 0.01
+eps = 0.002
 
 #set speed of sound
 Vsound = 343.14 #speed of sound m/s 20 degree
@@ -223,6 +223,7 @@ def plotting_channel_response_of_every_chanel_of_every_segment(n, lowest_peak_va
     # Set labels and title for each subplot
     for i in range(5):
         axs[i].set_ylabel('Amplitude')
+        axs[i].set_xlabel('Time [s]')
         axs[i].set_title('Channel ' + str(i + 1))
 
     # Set labels and title for the entire figure
@@ -239,6 +240,33 @@ def plotting_channel_response_of_every_chanel_of_every_segment(n, lowest_peak_va
 
     # Export plot
     # plt.savefig('Signals of each channels at 400x400.svg', format='svg')
+    # Display the plot
+    plt.show()
+    return
+
+def plotting_channel_response_of_every_channel_in_one_plot_each_segment(n, lowest_peak_value, h1, h2, h3, h4, h5, peak_location):
+    # Define the colors for each channel
+    colors = ['limegreen', 'lightblue', 'red', 'purple', 'blue']
+
+    # Calculate the time axis
+    #time = np.linspace((lowest_peak_value[n] - 100) / Fs, (lowest_peak_value[n] + len(h1)) / Fs, len(h1))
+
+
+    # Create a single plot for all microphone channels
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    # Plot the data for each microphone with colors corresponding to peak locations
+    for i, (h, peak) in enumerate(zip([h1, h2, h3, h4, h5], peak_location)):
+        time = np.linspace(0, len(h), len(h))
+        ax.plot(time, h, label=f'Microphone {i + 1}', color=colors[i])
+        ax.axvline(x=peak / Fs, color=colors[i], linestyle='--')
+
+    # Set labels and title
+    ax.set_xlabel('Time [s]')
+    ax.set_ylabel('Amplitude')
+    ax.set_title(f'Channel Impulse Response of Each Channel for Segment {n + 1} at Location {location_car}')
+    ax.legend()
+
     # Display the plot
     plt.show()
     return
@@ -352,6 +380,14 @@ def automatically_segment(peak_filter,lst):
 
 
 def ch3(x, y, eps,Lhat):
+    """
+    Channel estimation using deconvolution in frequency domain
+       :param x: Reference signal
+       :param y: Measured signal
+       :param lhat: Length
+       :param epsi: Threshold ignore values below this to reduce noise amplification
+       :return: Estimated channel
+    """
     lenx = x.size  # Length of x
     leny = y.size  # Length of y
 
@@ -390,6 +426,7 @@ def find_peaks(h1, h2, h3, h4, h5):
     peak_ch5 = np.argmax(h5)
 
     peak_location = np.array([peak_ch1, peak_ch2, peak_ch3, peak_ch4, peak_ch5])
+    print(peak_location)
 
     return peak_location
 def difference_peaks(location_peak):
@@ -694,12 +731,14 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, loc
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         Only use when you have a low number of peaks
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-        # plotting_channel_response_of_every_chanel_of_every_segment(n,lowest_peak_value,h1,h2,h3,h4,h5)
+        plotting_channel_response_of_every_chanel_of_every_segment(n,lowest_peak_value,h1,h2,h3,h4,h5)
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
         #find the location of the peaks
         location_peak = find_peaks(h1, h2, h3, h4, h5)
+        plotting_channel_response_of_every_channel_in_one_plot_each_segment(n, lowest_peak_value, h1, h2, h3, h4, h5, location_peak)
+
 
         #calculate the difference of the peak locations
         diff_peaks = difference_peaks(location_peak)
@@ -718,7 +757,7 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, loc
 
     return location
 
-localization(data_recording, xref, mic_positions_xyz, Fs, eps, Vsound, len(xref), location_car)
+print(localization(data_recording, xref, mic_positions_xyz, Fs, eps, Vsound, len(xref), location_car))
 
 
 
