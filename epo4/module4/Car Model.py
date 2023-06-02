@@ -42,16 +42,17 @@ def phi(steering_setting, power):
 
 # Define constants
 Fa_max = 10     # Accelerating force Max.
-Fb_max = 14     # Backwards accelerating force Max.
+Fb_max = 14     # Brake force Max.
 b = 3.81   # Constant for linear drag force
 c = 0.35  # Constant for quadratic drag force
 m = 5.6     # Mass of car
 L = 0.335   # Length of car
 
 # localizing
-x0 = np.array([int(input('x: '))/100, int(input('y: '))/100])
-alfa = np.radians(int(input('alfa: ')))
-d0 = np.array([np.cos(alfa), np.sin(alfa)])
+x0 = np.array([int(input('x: '))/100, int(input('y: '))/100])   # starting location
+alfa = np.radians(int(input('alfa: ')))     # staring orientation, angle of car with positive x-axis.
+                                            # alfa in radians, input of alfa in degrees.
+d0 = np.array([np.cos(alfa), np.sin(alfa)])     # orientation unit vector
 
 # input car settings
 power = int(input('Set motor power: ', ))
@@ -62,8 +63,10 @@ print('phi: ', phi)
 phi_rad = np.radians(phi)
 print('phi_rad: ', phi_rad)
 # estimation of R
-if phi_rad != 0:
+if phi_rad != 0 and power >=150:
     R = L/np.tan(phi_rad)
+elif phi_rad != 0 and power <= 150:
+    R = L / np.tan(phi_rad) - L*np.tan(phi_rad)
 else:
     R = 0
 print('R: ', R)
@@ -73,8 +76,8 @@ Fa = np.cos(phi_rad)*acceleration_force(Fa_max, power)
 Fb = braking_force(Fb_max, brake_power)
 
 # Set initial conditions
-dt = 0.01   # Time step for numerical integration
-drive_time = 3   # Final time
+dt = 0.001   # Time step for numerical integration
+drive_time = 3.5   # Final time
 
 # Set up arrays for velocity and time
 v = np.zeros(int(drive_time/dt)+1)
