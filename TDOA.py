@@ -3,8 +3,9 @@ import matplotlib.pyplot as plt
 from scipy.fft import fft, ifft
 
 
-def plotting(x, y, Fs):
 
+
+def plotting(x, y, Fs):
     y_ch1 = y[0:len(y):5]
     y_ch2 = y[1:len(y):5]
     y_ch3 = y[2:len(y):5]
@@ -16,7 +17,7 @@ def plotting(x, y, Fs):
 
     # Set the time range for the plot
     t_start = 2  # Start time (seconds)
-    t_end = 2.25 # End time (seconds)
+    t_end = 2.25  # End time (seconds)
 
     # Find the indices corresponding to the desired time range
     start_index = int(t_start * Fs)
@@ -76,26 +77,27 @@ def ch3(x, y, eps, Lhat):
     Hhat = np.multiply(H, G)
     h = ifft(Hhat)
     # h = h[0:Lhat]
+
     return np.real(abs(h))
 
+
 def find_first_pk(data, threshold):
+    # Normalize the data to [0, 1]
+    normalized_data = data / max(abs(data))
 
-        # Normalize the data to [0, 1]
-        normalized_data = data / max(abs(data))
+    # Find the indices where the data crosses the threshold
+    above_threshold_indices = np.where(normalized_data > threshold)[0]
 
-        # Find the indices where the data crosses the threshold
-        above_threshold_indices = np.where(normalized_data > threshold)[0]
+    if len(above_threshold_indices) == 0:
+        return None  # No peak above the threshold
 
-        if len(above_threshold_indices) == 0:
-            return None  # No peak above the threshold
+    # Find the first peak index
+    first_peak_index = above_threshold_indices[0]
 
-        # Find the first peak index
-        first_peak_index = above_threshold_indices[0]
+    return first_peak_index
 
-        return first_peak_index
 
 def TDOA(x, y, Fs):
-
     t_start = 2.00  # Start time (seconds)
     t_end = 2.25  # End time (seconds)
 
@@ -104,8 +106,8 @@ def TDOA(x, y, Fs):
     end_index = int(t_end * Fs)
 
     # First and second channels
-    y_ch_first = y[1:len(y):5][start_index:end_index]
-    y_ch_second = y[3:len(y):5][start_index:end_index]
+    y_ch_first = y[0:len(y):5][start_index:end_index]
+    y_ch_second = y[2:len(y):5][start_index:end_index]
 
     # Response of first and second channels
     h_first = ch3(x, y_ch_first, 0.001, x.size)
@@ -131,7 +133,6 @@ def TDOA(x, y, Fs):
     plt.ylabel('Amplitude')
     plt.title(f'Channel estimation recording 240x240')
 
-
     # Find the peak of each of the impulse responses
     # above a certain threshold.
     pk_h1_tres = find_first_pk(h_first, 0.25)
@@ -155,15 +156,25 @@ def TDOA(x, y, Fs):
 
 
 def main():
-
     Fs = 48e3
+
+    # Mics positions (x, y, z)
+    mic_positions = [
+        [0, 480, 50],  # Microphone 1
+        [480, 480, 50],  # Microphone 2
+        [480, 0, 50],  # Microphone 3
+        [0, 0, 0],  # Microphone 4
+        [0, 240, 80]  # Microphone 5
+    ]
+
     x = np.loadtxt('ref_sig_V1.8.txt')
-    y = np.loadtxt('Mic-Data/kitt_carrier_2250_bit_3k_240x120.txt')
+    y = np.loadtxt('Mic-Data/kitt_carrier_2250_bit_3k_80x400.txt')
 
     distance = TDOA(x, y, Fs)
     print("Distance:", distance, ' [meter]')
 
-    plotting(x, y, Fs)
+    # plotting(x, y, Fs)
+
 
 if __name__ == '__main__':
     main()
