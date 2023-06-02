@@ -1,1 +1,2 @@
-# Module 2: Reading KITT sensor data
+# Module 2: The Microphone Array & 
+# Module 3: Localization
