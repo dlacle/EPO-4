@@ -820,8 +820,8 @@ print(localization(data_recording, xref, mic_positions_xyz, Fs, eps, Vsound, len
 
 def TDOA(x, y, Fs):
     # Reference and measured channels
-    ch_ref = ch3(x, x, x.size, 0.001)
-    ch_measured = ch3(x, y, x.size, 0.001)
+    h_3 = ch3(x, data3, x.size, 0.001)
+    h_1 = ch3(x, data1, x.size, 0.001)
 
     # The time axis for the impulse response is
     # then created using the length of the reference

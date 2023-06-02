@@ -163,7 +163,7 @@ def main():
         [0, 480, 50],  # Microphone 1
         [480, 480, 50],  # Microphone 2
         [480, 0, 50],  # Microphone 3
-        [0, 0, 0],  # Microphone 4
+        [0, 0, 50],  # Microphone 4
         [0, 240, 80]  # Microphone 5
     ]
 
