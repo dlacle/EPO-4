@@ -5,7 +5,7 @@ import random
 import numpy as np
 
 
-def visuel_grid(starting_x, starting_y, orientation, waypoint_x, waypoint_y, end_x, end_y):
+def visuel_grid():#starting_x, starting_y, orientation, waypoint_x, waypoint_y, end_x, end_y
     # Create the figure and axes
     fig, ax = plt.subplots()
 
@@ -56,36 +56,36 @@ def visuel_grid(starting_x, starting_y, orientation, waypoint_x, waypoint_y, end
     for coord in coordinates:
         ax.plot(coord[0], coord[1], marker='x', color='black', markersize=8)
 
-    # Load the visuals if arguments are provided
-    if starting_x is not None and starting_y is not None and orientation is not None and end_x is not None and end_y is not None:
-        # Plot red cross at end location
-        ax.plot(end_x, end_y, marker='x', color='red', markersize=12, markeredgewidth=2)
-
-        # Add the green arrow annotation
-        arrow_length = 40
-        arrow_tail_length = 15
-        arrow_tail_width = 5
-        arrow_head_width = 12
-        arrow_head_length = 12
-
-        arrow_dx = arrow_length * np.sin(np.deg2rad(orientation))
-        arrow_dy = arrow_length * np.cos(np.deg2rad(orientation))
-
-        arrow_tail_dx = arrow_tail_length * np.sin(np.deg2rad(orientation))
-        arrow_tail_dy = arrow_tail_length * np.cos(np.deg2rad(orientation))
-
-        arrow_x = starting_x - arrow_tail_dx
-        arrow_y = starting_y - arrow_tail_dy
-
-        ax.annotate('', xy=(arrow_x, arrow_y), xytext=(arrow_x + arrow_dx, arrow_y + arrow_dy),
-                    arrowprops=dict(arrowstyle='->', linewidth=2, color='green',
-                                    shrinkA=0, shrinkB=0,
-                                    connectionstyle=f"arc3,rad={arrow_head_width / arrow_length}",
-                                    headwidth=arrow_head_width, headlength=arrow_head_length))
-
-    if waypoint_x is not None and waypoint_y is not None:
-        # Plot purple star at waypoint location
-        ax.plot(waypoint_x, waypoint_y, marker='*', color='purple', markersize=12)
+    # # Load the visuals if arguments are provided
+    # if starting_x is not None and starting_y is not None and orientation is not None and end_x is not None and end_y is not None:
+    #     # Plot red cross at end location
+    #     ax.plot(end_x, end_y, marker='x', color='red', markersize=12, markeredgewidth=2)
+    #
+    #     # Add the green arrow annotation
+    #     arrow_length = 40
+    #     arrow_tail_length = 15
+    #     arrow_tail_width = 5
+    #     arrow_head_width = 12
+    #     arrow_head_length = 12
+    #
+    #     arrow_dx = arrow_length * np.sin(np.deg2rad(orientation))
+    #     arrow_dy = arrow_length * np.cos(np.deg2rad(orientation))
+    #
+    #     arrow_tail_dx = arrow_tail_length * np.sin(np.deg2rad(orientation))
+    #     arrow_tail_dy = arrow_tail_length * np.cos(np.deg2rad(orientation))
+    #
+    #     arrow_x = starting_x - arrow_tail_dx
+    #     arrow_y = starting_y - arrow_tail_dy
+    #
+    #     ax.annotate('', xy=(arrow_x, arrow_y), xytext=(arrow_x + arrow_dx, arrow_y + arrow_dy),
+    #                 arrowprops=dict(arrowstyle='->', linewidth=2, color='green',
+    #                                 shrinkA=0, shrinkB=0,
+    #                                 connectionstyle=f"arc3,rad={arrow_head_width / arrow_length}",
+    #                                 headwidth=arrow_head_width, headlength=arrow_head_length))
+    #
+    # if waypoint_x is not None and waypoint_y is not None:
+    #     # Plot purple star at waypoint location
+    #     ax.plot(waypoint_x, waypoint_y, marker='*', color='purple', markersize=12)
 
         # # Load the RC car image
         # car_image = mpimg.imread('rc-car.ico')
