@@ -33,6 +33,13 @@ def braking_force(Fb_max, power):
     Fb = Fb_max*(power-150)/15
     return Fb
 
+def phi(steering_setting, power):
+    if (steering_setting >= 150 and power >= 150) or (steering_setting <= 150 and power <= 150):
+        phi = (steering_setting-150)/2
+    elif (steering_setting <= 150 and power >= 150) or (steering_setting >= 150 and power <= 150):
+        phi = (steering_setting - 150)/2
+    return phi
+
 # Define constants
 Fa_max = 10     # Accelerating force Max.
 Fb_max = 14     # Backwards accelerating force Max.
@@ -42,25 +49,32 @@ m = 5.6     # Mass of car
 L = 0.335   # Length of car
 
 # localizing
-x0 = np.array([int(input('x: ')), int(input('y: '))])
-alfa = int(input('alfa: '))
+x0 = np.array([int(input('x: '))/100, int(input('y: '))/100])
+alfa = np.radians(int(input('alfa: ')))
 d0 = np.array([np.cos(alfa), np.sin(alfa)])
 
 # input car settings
 power = int(input('Set motor power: ', ))
-brake_power = int(input('Set brake power: ', ))
-phi = int(input('steering angle (phi): ', ))
-
+brake_power = 145
+steering_setting = int(input('Set steering: ', ))
+phi = phi(steering_setting, power)
+print('phi: ', phi)
+phi_rad = np.radians(phi)
+print('phi_rad: ', phi_rad)
 # estimation of R
-R = int(input('estimation of R: '))
+if phi_rad != 0:
+    R = L/np.tan(phi_rad)
+else:
+    R = 0
+print('R: ', R)
 
 # determine Fa
-Fa = np.cos(phi)*acceleration_force(Fa_max, power)
+Fa = np.cos(phi_rad)*acceleration_force(Fa_max, power)
 Fb = braking_force(Fb_max, brake_power)
 
 # Set initial conditions
 dt = 0.01   # Time step for numerical integration
-drive_time = 6   # Final time
+drive_time = 3   # Final time
 
 # Set up arrays for velocity and time
 v = np.zeros(int(drive_time/dt)+1)
@@ -79,16 +93,28 @@ delta_Theta = np.zeros(int((drive_time/dt)+1))
 t = np.zeros(int((drive_time/dt)+1))
 a = np.zeros(int((drive_time/dt)+1))
 
+# create real time figure and axis
+# plt.ion()
+# fig, ax = plt.subplots()
+# ax.set_xlim(0,480)
+# ax.set_ylim(0,480)
+
 # Integrate forward in time
 for i in range(len(v)-1):
     a[i] = acceleration(v[i], Fa, m)
     v[i+1] = v[i] + a[i]*dt
     t[i+1] = t[i] + dt
 
-    delta_Theta[i] = (v[i] * np.sin(phi) / L)
-    Theta[i + 1] = (Theta[i] + delta_Theta[i] * dt)
-    d1[i + 1] = [np.cos(alfa - Theta[i + 1]), np.sin(alfa + Theta[i + 1])]
-    x1[i + 1] = [-R * (np.sin(alfa) * np.cos(Theta[i + 1]) + np.sin(Theta[i + 1]) * np.cos(alfa)), R * (np.cos(alfa) * (1 - np.cos(Theta[i + 1])) + np.sin(alfa) * np.cos(Theta[i + 1]))]
+    if phi_rad != 0:
+        delta_Theta[i] = (v[i] * np.sin(phi_rad) / L)
+        Theta[i + 1] = (Theta[i] + delta_Theta[i] * dt)
+        d1[i + 1] = [np.cos(alfa + Theta[i + 1]), np.sin(alfa + Theta[i + 1])]
+        x1[i + 1] = [R*(-np.sin(alfa)+np.sin(alfa+Theta[i+1])), R*(np.cos(alfa)-np.cos(alfa+Theta[i+1]))] + x0
+    else:
+        delta_Theta[i] = 0
+        Theta[i + 1] = (Theta[i] + delta_Theta[i] * dt)
+        d1[i + 1] = d1[i]
+        x1[i + 1] = x1[i]+v[i]*dt
 
     # time
     t[i + 1] = t[i] + dt
@@ -102,11 +128,22 @@ for i in range(len(v)-1):
     elif t[i+1] >=6 and v[i]<=0:
         Fa = 0
 
-# Plot results
-# plt.plot(t, v)
-plt.plot(x1[:,0], x1[:,1])
+    # Update plot
+    # plt.plot(x1[:i+1, 0], x1[:i+1, 1])  # Only update plot up to current point
+    # plt.pause(dt)  # Pause to give plot time to refresh
+
+# print(d1[int(drive_time/dt),:])
+# print(x1[:,:])
+# show plot
+plt.plot(100*x1[:,0], 100*x1[:,1])
+# plt.plot(t,v)
 plt.grid(True)
-plt.xlabel('Time (s)')
-plt.ylabel('Velocity (m/s)')
-plt.title('Velocity vs. Time')
+plt.xlim(0,480)
+plt.ylim(0,480)
+# plt.xlabel('Time (s)')
+# plt.ylabel('Velocity (m/s)')
+# plt.title('Velocity vs. Time')
 plt.show()
+#
+# plt.ioff()
+# plot.show()
