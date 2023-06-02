@@ -50,16 +50,40 @@ class GUI(tk.Tk):
         # security event
         self.bind('<Escape>', lambda event: self.quit())
 
+        #data
+        self.start_posx = tk.IntVar()
+        self.start_posy = tk.IntVar()
+        self.end_posx = tk.IntVar()
+        self.end_posy = tk.IntVar()
+        self.way_posx = tk.IntVar()
+        self.way_posy = tk.IntVar()
 
+        self.value_speed = tk.IntVar()
+        self.battary_level = tk.InVar()
 
 
         #widgets
-        self.frame1 = Frame1(self)
-        self.frame2 = Frame2(self)
-
+        self.frame1 = Frame1(self,
+                             self.start_posx,
+                             self.start_posy,
+                             self.end_posx,
+                             self.end_posy,
+                             self.way_posx,
+                             self.way_posy)
+        self.frame2 = Frame2(self,
+                             self.value_speed,
+                             self.battary_level)
 
         #run
         self.mainloop()
+
+        def kitt_switch(self):
+            state = Frame1_1.KITT_connect.value()
+            print("Switch state:", state)
+
+            # comport['state'] = 'disabled'
+            # selected_value_combobox = comport.get()
+            # print(selected_value_combox)
 
 class Frame1(ttk.Frame):
     def __init__(self,parent):
@@ -72,14 +96,6 @@ class Frame1(ttk.Frame):
         self.frame1_2 = Frame1_2(self)
 
 class Frame1_1(ttk.Frame):
-    # def kitt_switch(self):
-    #     state = Frame1_1.KITT_connect.value()
-    #     print("Switch state:", state)
-    #
-    #     # comport['state'] = 'disabled'
-    #     # selected_value_combobox = comport.get()
-    #     # print(selected_value_combox)
-
     def __init__(self, parent):
         super().__init__(parent)
         self.place(x=0, y=0, relwidth=1, relheight=0.3)
@@ -88,7 +104,6 @@ class Frame1_1(ttk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-
         #create the widgets
         #comport combox
         comport = ttk.Combobox(self)
@@ -103,10 +118,10 @@ class Frame1_1(ttk.Frame):
         KITT_connect = ttk.Checkbutton(
             self,
             bootstyle="success-round-toggle",
-
+            command = GUI.kitt_switch,
             onvalue = True,
             offvalue= False
-        )#command = kitt_switch,
+        )
 
 
 

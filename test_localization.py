@@ -410,8 +410,8 @@ def test_localization_xyz(kitt_test_location_xyz):
 Test localization 
 '''
 location = [240,120]
-diff = [12, 230, 218, 224, 218, 206, 212, -12, -6, 6]
-diff = [x * 343.14/ 48000 for x in diff] #240x120
+diff = [12, 230, 218, 224, 218, 206, 212, -12, -6, 6]#240x120
+diff = [x * 343.14/ 48000 for x in diff]
 #xy
 print('generated rangediff:',difference_to_location_xy(test_localization_xy(location),mic_positions_xy,48000,343.14))
 print('real range diff:',difference_to_location_xy(diff,mic_positions_xy,48000,343.14))
