@@ -1,5 +1,9 @@
 import tkinter as tk
 from tkinter import scrolledtext
+import time
+
+start_time = 0
+challenge_completed = False
 
 import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import ScrolledText
@@ -18,7 +22,7 @@ def update_combobox_state(*args):
     else:
         KITT_connect.config(state='normal')
 
-def kitt_switch():#still need to add functionalitie that check of the kitt is connected
+def kitt_switch():#still need to add functionalities that check of the kitt is connected
     comport = selected_combox_value.get()
 
     if comport == 'Select Comport':
@@ -36,11 +40,10 @@ def kitt_switch():#still need to add functionalitie that check of the kitt is co
 
     print("Switch state:", state_kitt_switch)
     print(comport)
+    return comport
     # comport['state'] = 'disabled'
     # selected_value_combobox = comport.get()
 
-def start_button():
-    pass
 
 def retrieve_entry_data():
     orientation = textbox_starting_orientation.get()
@@ -59,7 +62,7 @@ def retrieve_entry_data():
     obstacle4_x = textbox_obstacle4_x.get()
     obstacle4_y = textbox_obstacle4_y.get()
 
-    print("Starting Position:", starting_x, starting_y)
+    print("Starting Position x,y,teta:", starting_x, starting_y,orientation)
     print("End Position:", end_x, end_y)
     print("Waypoint:", waypoint_x, waypoint_y)
     print("Obstacle 1:", obstacle1_x, obstacle1_y)
@@ -68,7 +71,7 @@ def retrieve_entry_data():
     print("Obstacle 4:", obstacle4_x, obstacle4_y)
 
     # Call the visuel_grid function with the retrieved data
-    visuel_grid(starting_x, starting_y, orientation, waypoint_x, waypoint_y, end_x, end_y)
+    # visuel_grid(starting_x, starting_y, orientation, waypoint_x, waypoint_y, end_x, end_y)
 
     return orientation,starting_x,starting_y,end_x, end_y, waypoint_x,waypoint_y,obstacle1_x, obstacle1_y, obstacle2_x, obstacle2_y, obstacle3_x, obstacle3_y, obstacle4_x, obstacle4_y
 
@@ -119,11 +122,48 @@ def set_button():
         button_Set_reset.config(text='Reset', command=reset_button)
 
     # Code to set the settings
-    return selected_mode,state_real_or_sim
+    return error, selected_mode,state_real_or_sim,orientation,starting_x,starting_y,end_x, end_y, waypoint_x,waypoint_y,obstacle1_x, obstacle1_y, obstacle2_x, obstacle2_y, obstacle3_x, obstacle3_y, obstacle4_x, obstacle4_y
 
 
+def start_timer():
+    global start_time, challenge_completed
+    start_time = time.time()  # Get the current time
+    challenge_completed = False
+    update_timer()
 
+def reset_timer():
+    global start_time, challenge_completed
+    start_time = 0
+    challenge_completed = False
+    timer.config(text="00:00:0")
 
+def update_timer():
+    global start_time, challenge_completed
+    if challenge_completed:
+        return
+
+    current_time = time.time()
+    elapsed_time = current_time - start_time
+
+    # Convert elapsed time to minutes, seconds, and tenths of a second
+    minutes = int(elapsed_time / 60)
+    seconds = int(elapsed_time % 60)
+    tenths = int((elapsed_time * 10) % 10)
+
+    # Display the timer in the desired format
+    timer.config(text=f"{minutes:02}:{seconds:02}:{tenths}")
+
+    # Update the GUI to refresh the timer display
+    window.update()
+
+    # Schedule the next timer update (every 100 milliseconds)
+    window.after(100, update_timer)
+def start_button(error,select_mode):
+    run = True
+    if error == False:
+        if select_mode != 'Manual mode':
+            start_timer()
+    return run
 
 
 
@@ -146,6 +186,8 @@ def reset_button():
     message_output_text_field.insert(tk.END, output_text_var.get())  # Update with the new value
 
     selected_radio_value.set("")  # Clear the selected value
+    reset_timer()
+
     button_Set_reset.config(text='Set Settings', command=set_button)
 
 
@@ -365,7 +407,7 @@ button_Set_reset = ttk.Button(frame1_2, text = 'Set Settings',command=set_button
 button_Start.grid(row=3,column=0)
 button_Set_reset.grid(row=3,column=1)
 
-timer = ttk.Label(frame1_2, text= "Timer value")
+timer = ttk.Label(frame1_2, text= "Timer 00:00:0")
 timer.grid(row=4,column=0,columnspan=2,sticky='n')
 
 
@@ -420,7 +462,8 @@ message_output_text_field.grid(row=1,column=0,columnspan=2, padx=10, pady=2)
 
 #frame2_2 widgets
 # Create a FigureCanvasTkAgg object to display the plot
-canvas = FigureCanvasTkAgg(visuel_grid(starting_x, starting_y,orientation,waypoint_x,waypoint_y,end_x,end_y),
+
+canvas = FigureCanvasTkAgg(visuel_grid(),
                            master=frame2_2)
 canvas.draw()
 canvas.get_tk_widget().pack(side= 'top')
