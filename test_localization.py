@@ -306,7 +306,7 @@ mic_positions_xy = np.array(
     ]
 )
 
-mic_positions_xy_only_4 = np.array(
+mic_positions_xy_only_4_mics_mics_mics_mics_mics_mics_mics = np.array(
     [
         [0, 480],  # mic 1 (bottom left corner)
         [480, 480],  # mic 2 (top left corner)
@@ -340,8 +340,8 @@ def test_localization_xy(kitt_test_location_xy):
         for j in range(i + 1, 4):
             # Using the known coordinates, use the Pythagorean theorem to determine the distance between KITT
             # and each microphone
-            d_i = math.dist(mic_positions_xy_only_4[i], kitt_test_location_xy)
-            d_j = math.dist(mic_positions_xy_only_4[j], kitt_test_location_xy)
+            d_i = math.dist(mic_positions_xy_only_4_mics_mics_mics_mics_mics_mics_mics[i], kitt_test_location_xy)
+            d_j = math.dist(mic_positions_xy_only_4_mics_mics_mics_mics_mics_mics_mics[j], kitt_test_location_xy)
             r_ij.append(d_j - d_i)
     r_ij = np.array(r_ij)
     print(f'{r_ij}\n')
@@ -429,16 +429,22 @@ def main():
     diff = [12, 230, 218, 224, 218, 206, 212, -12]
     diff = [x * 343.14 / 48000 for x in diff]  # 240x120
 
-
-
-    # Computed range difference
-    print(f'Computed range difference:\n'
-          f'{difference_to_location_xy(test_localization_xy(location), mic_positions_xy_only_4, Fs, v_sound)}'
+    # Computed location
+    location_comp = difference_to_location_xy(test_localization_xy(location), mic_positions_xy_only_4_mics_mics_mics_mics_mics_mics_mics, Fs, v_sound)
+    print(f'Computed location [cm]:\n'
+          f'{location_comp}'
           f'\n')
 
-    # Real range difference
-    print(f'Real range difference:\n'
-          f'{difference_to_location_xy(diff, mic_positions_xy_only_4, Fs, v_sound)}'
+    # Actual location
+    location_actual = difference_to_location_xy(diff, mic_positions_xy_only_4_mics_mics_mics_mics_mics_mics_mics, Fs, v_sound)
+    print(f'Actual location [cm]:\n'
+          f'{location_actual}'
+          f'\n')
+
+    # Error margin
+    error_margin = abs(location_comp - location_actual)
+    print(f'Error margin [cm]:\n'
+          f'{error_margin[0][0], error_margin[1][0]}'
           f'\n')
 
     return
