@@ -3,8 +3,6 @@ import matplotlib.pyplot as plt
 from scipy.fft import fft, ifft
 
 
-
-
 def plotting(x, y, Fs):
     y_ch1 = y[0:len(y):5]
     y_ch2 = y[1:len(y):5]
@@ -98,8 +96,9 @@ def find_first_pk(data, threshold):
 
 
 def TDOA(x, y, Fs):
-    t_start = 2.00  # Start time (seconds)
-    t_end = 2.25  # End time (seconds)
+    # Start and end time
+    t_start = 2.00
+    t_end = 2.25
 
     # Indices corresponding to the desired time range
     start_index = int(t_start * Fs)
@@ -114,39 +113,49 @@ def TDOA(x, y, Fs):
     h_second = ch3(x, y_ch_second, 0.001, x.size)
 
     # The time axis for the impulse response is
-    # then created using the length of the reference
-    # channel and the sampling rate.
+    # then created using the length of the first
+    # channel and the sampling rate
     t = np.linspace(0, len(h_first) / Fs, len(h_first))
+
+    # Find the peak of each of the impulse responses
+    # above a certain threshold
+    pk_h_first_thresh = find_first_pk(h_first, 0.25)
+    pk_h_second_thresh = find_first_pk(h_second, 0.25)
+
+    # Print first peak locations
+    print(f'Location of first peak h1: {pk_h_first_thresh}')
+    print(f'Location of first peak h2: {pk_h_second_thresh}\n')
 
     # Create subplots for each microphone channel
     fig, axs = plt.subplots(2, 1, figsize=(8, 10))
 
-    axs[0].plot(h_first, label='Microphone 1')
-    axs[1].plot(h_second, label='Microphone 3')
+    # Add a title to the figure
+    fig.suptitle('Channel impulse responses')
 
-    # Adjust spacing between subplots
-    plt.tight_layout()
-    # axs.grid
+    # Plot implulse responses
+    axs[0].plot(h_first)
+    axs[1].plot(h_second)
 
-    # Plot the data
-    plt.xlabel('Time (s)')
-    plt.ylabel('Amplitude')
-    plt.title(f'Channel estimation recording 240x240')
+    # Add titles to each subplot
+    axs[0].set_title('First channel')
+    axs[1].set_title('Second channel')
 
-    # Find the peak of each of the impulse responses
-    # above a certain threshold.
-    pk_h1_tres = find_first_pk(h_first, 0.25)
-    pk_h3_tres = find_first_pk(h_second, 0.25)
+    # Set common labels
+    fig.supxlabel('')
+    fig.supylabel('Amplitude')
 
-    print(f'Location of first peak h1: {pk_h1_tres}')
-    print(f'Location of first peak h3: {pk_h3_tres}\n')
+    # Include grid
+    axs[0].grid()
+    axs[1].grid()
 
-    axs[0].scatter(pk_h1_tres, h_first[pk_h1_tres], color="red")
-    axs[1].scatter(pk_h3_tres, h_second[pk_h3_tres], color="red")
+    # Add red dots at the first peaks
+    axs[0].scatter(pk_h_first_thresh, h_first[pk_h_first_thresh], color="red")
+    axs[1].scatter(pk_h_second_thresh, h_second[pk_h_second_thresh], color="red")
+
     plt.show()
 
     # Time difference between two peaks (in samples)
-    t_diff = t[pk_h3_tres] - t[pk_h1_tres]
+    t_diff = t[pk_h_second_thresh] - t[pk_h_first_thresh]
 
     # Distance between two signals is obtained by
     # multiplying the time difference by speed of sound
@@ -156,6 +165,8 @@ def TDOA(x, y, Fs):
 
 
 def main():
+
+    # Sampling frequency
     Fs = 48e3
 
     # Mics positions (x, y, z)
@@ -167,11 +178,15 @@ def main():
         [0, 240, 80]  # Microphone 5
     ]
 
+    # Reference signal
     x = np.loadtxt('ref_sig_V1.8.txt')
+
+    # Beacon signal location
     y = np.loadtxt('Mic-Data/kitt_carrier_2250_bit_3k_80x400.txt')
 
+    # Compute TDOA
     distance = TDOA(x, y, Fs)
-    print("Distance:", distance, ' [meter]')
+    print(f'Distance {distance} [meter]')
 
     # plotting(x, y, Fs)
 
