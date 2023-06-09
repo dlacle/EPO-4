@@ -2,27 +2,27 @@ import ast
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-
+from check_reachability_endpoint import check_endpoint_reachability
 from circle_line_function import circle_line_function
 
 # Assuming max steering angle is 35 degrees in both directions
 L = 34.5  # Length of the car in cm's
 # init_or = float(input('Give the initial orientation (angle to positive x-axis): '))
-init_or = 335
+init_or = 70
 # start = input('Coordinates of Start (example: [0, 0]): ')
 # x_init, y_init = ast.literal_eval(start)
-x_init = 400
-y_init = 400
+x_init = 0
+y_init = 0
 # This should draw things in the GUI
 # waypoint = input('Coordinates of Waypoint (example: [0, 0]): ')
 # w_x, w_y = ast.literal_eval(waypoint)
-w_x = 300
-w_y = 300
+w_x = 100
+w_y = 100
 
 # final = input('Coordinates of Final Destination (example: [0, 0]): ')
 # f_x, f_y = ast.literal_eval(final)
 f_x = 250
-f_y = 200
+f_y = 100
 v1 = [w_x - x_init, w_y - y_init]
 v2 = [f_x - w_x, f_y - w_y]
 phase_v1 = math.degrees(math.atan2(v1[1], v1[0]))  # Angle displacement vector
@@ -67,15 +67,29 @@ y_dest = w_y
 
 # radius of circle will be constant assuming steering angle is 35 degrees
 r = L / math.sin(math.radians(35))
+r = 100
 print("Radius:",r)
 
-new_or,x_start,y_start,alpha,_,_,l_r,x_mirror,y_mirror,both_mirror,l1_vector = circle_line_function(phase_v1, new_or,r,x_init,y_init,x_dest,y_dest)
+if check_endpoint_reachability(x_init, y_init, new_or, r, w_x, w_y):
+    # Execute circle_line_function
+    new_or,x_start,y_start,alpha,_,_,l_r,x_mirror,y_mirror,both_mirror,l1_vector = circle_line_function(phase_v1, new_or,r,x_init,y_init,x_dest,y_dest)
 
-# Calculate the angle in degrees
-final_angle = np.degrees(np.arctan2(l1_vector[1], l1_vector[0]))
-print(final_angle)
+    # Calculate the angle in degrees
+    final_angle = np.degrees(np.arctan2(l1_vector[1], l1_vector[0]))
+    print(final_angle)
 
-# new_or,x_start,y_start,alpha,_,_,l_r,x_mirror,y_mirror,both_mirror = circle_line_function(phase_v2, final_angle,r,w_x,w_y,f_x,f_y)
+    # if check_endpoint_reachability(w_x, w_y, final_angle, r, f_x, f_y):
+    #     new_or, x_start, y_start, alpha, _, _, l_r, x_mirror, y_mirror, both_mirror, l1_vector = circle_line_function(
+    #         phase_v2, final_angle, r, w_x, w_y, f_x, f_y)
+    # else:
+    #     print("Second point not reachable")
+else:
+    print("First point not reachable")
+
+
+
+
+
 # Set the axis limits
 # plt.axis([0, 480, 0, 480])
 plt.show()

@@ -124,6 +124,7 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
     #line_coords = np.array([l1],[0])
     #line_coords = rotate(line_coords,new_or-alpha) + intersect
 
+
     #the boundary points have to be between intersect and start point
     if new_or > phase_v:
         # upper bovel
@@ -141,15 +142,15 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
         # indices = np.mod(np.arange(np.abs(90 + new_or - np.round(alpha)), np.abs(90 + new_or)), 360).astype(int)
         # # Use the indices for slicing
         # y_short = y[indices]
-        x_short = x[int(np.mod(np.abs(90 + new_or - np.round(alpha)), 360)):int(np.mod(np.abs(90 + new_or), 360))]
-        y_short = y[int(np.mod(np.abs(90 + new_or - np.round(alpha)), 360)):int(np.mod(np.abs(90 + new_or), 360))]
-        new_or = new_or - np.round(alpha)
+        x_short = x[int(np.mod(np.abs(90 + new_or - np.round(np.rad2deg(alpha))), 360)):int(np.mod(np.abs(90 + new_or), 360))]
+        y_short = y[int(np.mod(np.abs(90 + new_or - np.round(np.rad2deg(alpha))), 360)):int(np.mod(np.abs(90 + new_or), 360))]
+        new_or = new_or - np.round(np.rad2deg(alpha))
     else:
         # lower bovel
         print('lower bovel')
-        x_short = x[int(np.mod(np.abs(180 + new_or), 360)):int(np.mod(np.abs(180 + new_or + np.round(alpha)), 360))]
-        y_short = y[int(np.mod(np.abs(180 + new_or), 360)):int(np.mod(np.abs(180 + new_or + np.round(alpha))), 360)]
-        new_or = new_or + np.round(alpha)
+        x_short = x[int(np.mod(np.abs(180 + new_or), 360)):int(np.mod(np.abs(180 + new_or + np.round(np.rad2deg(alpha))), 360))]
+        y_short = y[int(np.mod(np.abs(180 + new_or), 360)):int(np.mod(np.abs(180 + new_or + np.round(np.rad2deg(alpha)))), 360)]
+        new_or = new_or + np.round(np.rad2deg(alpha))
 
     # if new_or > phase_v:
     #
@@ -180,7 +181,7 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
         # beta has to be recalculated for when there is mirroring
         beta = phase_v - new_or
         new_or = new_or + 2 * beta
-        for i in range(round(alpha)):
+        for i in range(round(np.rad2deg(alpha))):
             x_short[i] = x_short[i] - x_start
             y_short[i] = y_short[i] - y_start
             # then rotate the points by the appropriate angle (each point has a different angle)
@@ -193,7 +194,7 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
         x_dest = x_dest + 2 * (x_start - x_dest)
         new_or = 180 - new_or
         new_or = new_or % 360
-        for i in range(round(alpha)):
+        for i in range(round(np.rad2deg(alpha))):
             x_short[i] = x_short[i] - x_start
             y_short[i] = y_short[i] - y_start
 
@@ -207,7 +208,7 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
         y_dest = y_dest + 2 * (y_start - y_dest)
         new_or = -new_or
         new_or = new_or % 360
-        for i in range(round(alpha)):
+        for i in range(round(np.rad2deg(alpha))):
             x_short[i] = x_short[i] - x_start
             y_short[i] = y_short[i] - y_start
 
@@ -222,7 +223,7 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
         y_dest = y_dest + 2 * (y_start - y_dest)
         new_or = 180 - new_or
         new_or = new_or % 360
-        for i in range(round(alpha)):
+        for i in range(round(np.rad2deg(alpha))):
             x_short[i] = x_short[i] - x_start
             y_short[i] = y_short[i] - y_start
 
@@ -236,7 +237,7 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
     x_short = x_short.flatten() #reshapes x_short into a column vector
     y_short = y_short.flatten() #reshapes x_short into a column vector
     plt.plot(x_short, y_short, 'r--')
-    plt.plot([x_dest, x_short[0]], [y_dest, y_short[0]], 'r--')
+    plt.plot([x_dest, x_short[0]], [y_dest, y_short[0]], 'g--')
 
     x_start = x_dest
     y_start = y_dest
