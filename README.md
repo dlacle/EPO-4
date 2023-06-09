@@ -1,1 +1,2 @@
-# EPO-4 "KITT" Project BSc EE
+# Module 2: The Microphone Array & 
+# Module 3: Localization
