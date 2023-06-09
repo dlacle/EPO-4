@@ -96,7 +96,7 @@ def mic_recording():
     # Recording and storing mic data
     samples = stream.read(N)
     data = np.frombuffer(samples, dtype='int16')
-    with open("Mic-Data/data_mics_kitt_140x320.txt", 'w') as file:
+    with open("epo4/Module2/Module2_mic_array/Mic-Data/data_mics_kitt_140x320.txt", 'w') as file:
         for sample in data:
             file.write("%s\n" % sample)
         print("data stored")
@@ -105,7 +105,7 @@ def mic_recording():
 
 def plotting():
     # Plotting the microphone data
-    dataTotal = np.loadtxt('Mic-Data/data_mics_kitt_140x320.txt')
+    dataTotal = np.loadtxt('epo4/Module2/Module2_mic_array/Mic-Data/data_mics_kitt_140x320.txt')
 
     data0 = dataTotal[0:N_total:5]
     data1 = dataTotal[1:N_total:5]
