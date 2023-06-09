@@ -6,9 +6,9 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
     mirror_or = 0
     x_mirror = 0
     y_mirror = 0
-    x_mirror_orig = 0
-    y_mirror_orig = 0
-    both_mirror = 0
+    # x_mirror_orig = 0
+    # y_mirror_orig = 0
+    # both_mirror = 0
 
     # # Convert new_or to a NumPy array
     # new_or_arrow = np.array(new_or)
@@ -17,7 +17,7 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
     arrow_length = 34.5
     arrow_dx = arrow_length * np.cos(np.deg2rad(new_or))
     arrow_dy = arrow_length * np.sin(np.deg2rad(new_or))
-    plt.arrow(x_start, y_start, arrow_dx, arrow_dy, color='black', width=0.01)
+    plt.arrow(x_start, y_start, arrow_dx, arrow_dy, color='black', width=0.8)
 
 
     phase_v = phase_v % 360
@@ -246,7 +246,7 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
         l_r = 'l'
     else:
         l_r = 'r'
-
+    print('turn',l_r)
     return new_or, x_start,y_start,alpha,x_short,y_short,l_r,x_mirror,y_mirror,both_mirror, l1_vector
 
 
