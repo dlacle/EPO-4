@@ -64,47 +64,44 @@ def path_finder(theta_degree, x0, y0, x1, y1, r):
         # Calculate the angle of the car at the final position
         angle_l_straight_line = math.atan((y1 - intersect1_y) / (x1 - intersect1_x))
         print('angle straight line rad:',angle_l_straight_line)
-    return (x_center, y_center, intersect1_x, intersect1_y, l_straight_line, turning_angle,
+    return (x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y, l_straight_line, turning_angle,
             angle_l_straight_line)
-def reflect_wrt_displacement(x0, y0, x1, y1, x_center, y_center, intersect1_x, intersect1_y, angle_l_straight_line):
+def reflect_wrt_displacement(x0, y0, x1, y1, x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y,angle_l_straight_line):
     # Reflect the center and intersection points with respect to the displacement vector
     reflected_x_center,reflected_y_center = reflect_point(x_center,y_center,x0,y0,x1,y1)
     reflected_intersect1_x, reflected_intersect1_y = reflect_point(intersect1_x, intersect1_y, x0, y0, x1, y1)
-    # reflected_intersect2_x, reflected_intersect2_y = reflect_point(intersect2_x, intersect2_y, x0, y0, x1, y1)
+    reflected_intersect2_x, reflected_intersect2_y = reflect_point(intersect2_x, intersect2_y, x0, y0, x1, y1)
 
     # Calculate the reflected turning angle
     turning_angle = 2 * math.asin(math.sqrt((x0 - intersect1_x) ** 2 + (y0 - intersect1_y) ** 2) / (2 * r))
     reflected_turning_angle = math.pi - turning_angle
     print(f'turning_angle rad:{turning_angle}, reflected: {reflected_turning_angle}, reflected degree:{math.degrees(reflected_turning_angle)}')
-
     # Calculate the reflected angle of the car at the final position
-    angle_displacement = math.atan((y1 - y0) / (x1 - x0))
-    # Calculate the angle between the displacement vector and the angle to be reflected
-    angle_diff = angle_l_straight_line - angle_displacement
-
-    # Reflect the angle with respect to the displacement vector
-    reflected_angle_l_straight_line = angle_displacement - angle_diff
-    print(f'reflected angle straight line rad: {reflected_angle_l_straight_line}, degree: {math.degrees(reflected_angle_l_straight_line)}')
+    reflected_angle_l_straight_line = -angle_l_straight_line
+    print('reflected angle straight line rad:',reflected_angle_l_straight_line)
     # Return the reflected results
     return (
-        reflected_x_center, reflected_y_center, reflected_intersect1_x, reflected_intersect1_y,reflected_turning_angle,
+        reflected_x_center, reflected_y_center, reflected_intersect1_x, reflected_intersect1_y,
+        reflected_intersect2_x, reflected_intersect2_y, l_straight_line, reflected_turning_angle,
         reflected_angle_l_straight_line
     )
-def reflect_wrt_vertical(x0, x_center, y_center, intersect1_x, intersect1_y,angle_l_straight_line):
+def reflect_wrt_vertical(x0, x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y,angle_l_straight_line):
     # Reflect the center and intersection points with respect to the vertical line through (x0,y0)
     x_center_reflected_wrt_vertical, y_center_reflected_wrt_vertical = reflect_point_wrt_vertical(x_center, y_center, x0)
     intersect1_x_reflected_wrt_vertical, intersect1_y_reflected_wrt_vertical = reflect_point_wrt_vertical(intersect1_x, intersect1_y, x0)
-    # intersect2_x_reflected_wrt_vertical, intersect2_y_reflected_wrt_vertical = reflect_point_wrt_vertical(intersect2_x, intersect2_y, x0)
+    intersect2_x_reflected_wrt_vertical, intersect2_y_reflected_wrt_vertical = reflect_point_wrt_vertical(intersect2_x, intersect2_y, x0)
 
     # Calculate the reflected angle of the car at the final position
     reflected_angle_l_straight_line = -angle_l_straight_line
-    print(f'reflected angle straight line rad: {reflected_angle_l_straight_line}, degree: {math.degrees(reflected_angle_l_straight_line)}')
+    print('reflected angle straight line rad:', reflected_angle_l_straight_line)
     # Return the reflected results
     return (
         x_center_reflected_wrt_vertical, y_center_reflected_wrt_vertical, intersect1_x_reflected_wrt_vertical, intersect1_y_reflected_wrt_vertical,
-        reflected_angle_l_straight_line
+        intersect2_x_reflected_wrt_vertical, intersect2_y_reflected_wrt_vertical,reflected_angle_l_straight_line
     )
-def plot_path(theta, x_center, y_center, intersect1_x, intersect1_y,turning_angle,title):
+def plot_path(theta, x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y, l_straight_line,
+              turning_angle,
+              angle_l_straight_line,title):
     # Plot the straight line and the circular path
     fig, ax = plt.subplots()
 
@@ -114,7 +111,7 @@ def plot_path(theta, x_center, y_center, intersect1_x, intersect1_y,turning_angl
     # Calculate the start and end angles for the arc
     start_angle = math.degrees(math.atan2(intersect1_y - y_center, intersect1_x - x_center))
     end_angle = start_angle + math.degrees(turning_angle)  # Calculate the end angle based on the turning angle
-    # print(start_angle)
+    print(start_angle)
     # Calculate the angle of the arc
     arc_angle = end_angle - start_angle
 
@@ -126,6 +123,13 @@ def plot_path(theta, x_center, y_center, intersect1_x, intersect1_y,turning_angl
     arc = patches.Arc(center, width, height, angle=angle, theta1=start_angle, theta2=end_angle, linewidth=1,
                       edgecolor='r', linestyle='--')
     ax.add_patch(arc)
+    # # Calculate the start and end angles for the arc
+    # start_angle = math.degrees(math.atan2(intersect1_y - y_center, intersect1_x - x_center))
+    # # print(start_angle)
+    # end_angle = math.degrees(math.atan2(y0 - y_center, x0 - x_center))
+    # # print(end_angle)
+    # # Calculate the angle of the arc
+    # arc_angle = end_angle - start_angle
 
     # Print the angle of the arc
     print("Angle of the arc: {:.2f} degrees".format(arc_angle))
@@ -159,7 +163,9 @@ def plot_path(theta, x_center, y_center, intersect1_x, intersect1_y,turning_angl
     ax.legend()
     plt.show()
     return
-def plot_path_re_mirrored(theta, x_center, y_center, intersect1_x, intersect1_y,turning_angle,title):
+def plot_path_re_mirrored(theta, x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y, l_straight_line,
+              turning_angle,
+              angle_l_straight_line,title):
     # Plot the straight line and the circular path
     fig, ax = plt.subplots()
 
@@ -167,11 +173,10 @@ def plot_path_re_mirrored(theta, x_center, y_center, intersect1_x, intersect1_y,
     ax.plot([intersect1_x, x1], [intersect1_y, y1], 'b--', label='Trajectory')
     # Create the Arc patch
     # Calculate the start and end angles for the arc
-    start_angle = math.degrees(turning_angle) + 180  # Calculate the start angle based on the reflected turning angle
-    end_angle = math.degrees(math.atan2(intersect1_y - y_center, intersect1_x - x_center))
-    print(end_angle)
+    end_angle= math.degrees(math.atan2(intersect1_y - y_center, intersect1_x - x_center))
 
-    # print(start_angle)
+    start_angle= end_angle + math.degrees(turning_angle)  # Calculate the end angle based on the turning angle
+    print(start_angle)
     # Calculate the angle of the arc
     arc_angle = end_angle - start_angle
 
@@ -183,6 +188,13 @@ def plot_path_re_mirrored(theta, x_center, y_center, intersect1_x, intersect1_y,
     arc = patches.Arc(center, width, height, angle=angle, theta1=start_angle, theta2=end_angle, linewidth=1,
                       edgecolor='r', linestyle='--')
     ax.add_patch(arc)
+    # # Calculate the start and end angles for the arc
+    # start_angle = math.degrees(math.atan2(intersect1_y - y_center, intersect1_x - x_center))
+    # # print(start_angle)
+    # end_angle = math.degrees(math.atan2(y0 - y_center, x0 - x_center))
+    # # print(end_angle)
+    # # Calculate the angle of the arc
+    # arc_angle = end_angle - start_angle
 
     # Print the angle of the arc
     print("Angle of the arc: {:.2f} degrees".format(arc_angle))
@@ -191,7 +203,7 @@ def plot_path_re_mirrored(theta, x_center, y_center, intersect1_x, intersect1_y,
     width = 2 * r
     height = 2 * r
     # angle = 0# math.degrees(angle_l_straight_line) #theta_degree + math.degrees(angle_displacement)#
-    angle = 0  # theta_degree + math.degrees(angle_displacement)
+    angle = 90  # theta_degree + math.degrees(angle_displacement)
     arc = patches.Arc(center, width, height, angle=angle, theta1=start_angle, theta2=end_angle, linewidth=1,
                       edgecolor='r',
                       linestyle='--')
@@ -218,7 +230,7 @@ def plot_path_re_mirrored(theta, x_center, y_center, intersect1_x, intersect1_y,
     return
 
 # Define the values
-theta_degree = 80
+theta_degree = -20
 theta = math.radians(theta_degree)
 
 # Adjust the angle to be within [0:2π]
@@ -233,7 +245,7 @@ print(f'theta rad: {theta}, degree: {theta_degree}')
 
 x0 = 0
 y0 = 0
-x1 = -2
+x1 = 2
 y1 = 2
 r = 1
 
@@ -279,7 +291,7 @@ if get_quadrant(x0, y0, x1, y1) == "Q1":
         l_straight_line = math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
     elif angle_displacement < theta < angle_displacement + math.pi:
         print('normal Q1')
-        x_center, y_center, intersect1_x, intersect1_y, l_straight_line, turning_angle, \
+        x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y, l_straight_line, turning_angle, \
         angle_l_straight_line = path_finder(theta_degree = theta_degree,
                                             x0 = x0,
                                             y0 = y0,
@@ -287,21 +299,15 @@ if get_quadrant(x0, y0, x1, y1) == "Q1":
                                             y1 = y1,
                                             r  = r)
 
-        plot_path(theta = theta,
-                x_center = x_center,
-                y_center = y_center,
-                intersect1_x = intersect1_x,
-                intersect1_y = intersect1_y,
-                turning_angle = turning_angle,
-                title = "Path Q1"
-                  )
-
+        plot_path(theta, x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y, l_straight_line,
+                  turning_angle,
+                  angle_l_straight_line,"Path Q1")
     else:  # angle_displacement > theta
         print('mirror displacement vector Q1')
         theta_mirror = angle_displacement - theta + angle_displacement
         theta_mirror_degree = math.degrees(theta_mirror)
 
-        x_center, y_center, intersect1_x, intersect1_y, l_straight_line, turning_angle, \
+        x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y, l_straight_line, turning_angle, \
         angle_l_straight_line = path_finder(theta_degree = theta_mirror_degree,
                                             x0 = x0,
                                             y0 = y0,
@@ -314,21 +320,19 @@ if get_quadrant(x0, y0, x1, y1) == "Q1":
                   y_center = y_center,
                   intersect1_x = intersect1_x ,
                   intersect1_y = intersect1_y,
+                  intersect2_x = intersect2_x,
+                  intersect2_y = intersect2_y,
+                  l_straight_line = l_straight_line,
                   turning_angle = turning_angle,
                   title = "Path Q1 using mirrored orientation")
 
 
 
-        reflected_x_center, reflected_y_center, reflected_intersect1_x, reflected_intersect1_y, reflected_turning_angle,reflected_angle_l_straight_line \
-        = reflect_wrt_displacement(x0, y0, x1, y1, x_center, y_center, intersect1_x, intersect1_y,angle_l_straight_line)
+        reflected_x_center, reflected_y_center, reflected_intersect1_x, reflected_intersect1_y, reflected_intersect2_x, reflected_intersect2_y, l_straight_line, reflected_turning_angle,reflected_angle_l_straight_line = reflect_wrt_displacement(x0, y0, x1, y1, x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y,angle_l_straight_line)
 
-        plot_path_re_mirrored(theta = theta,
-                              x_center = reflected_x_center,
-                              y_center = reflected_y_center,
-                              intersect1_x = reflected_intersect1_x,
-                              intersect1_y = reflected_intersect1_y,
-                              turning_angle = turning_angle,
-                              title = "Final path Q1 after re-mirroring")
+        plot_path(theta, reflected_x_center, reflected_y_center,  reflected_intersect1_x, reflected_intersect1_y, reflected_intersect2_x, reflected_intersect2_y, l_straight_line,
+                  reflected_turning_angle,
+                  reflected_angle_l_straight_line,"Final path Q1 after re-mirroring")
 
 
 elif get_quadrant(x0, y0, x1, y1) == "Q2":
@@ -345,40 +349,23 @@ elif get_quadrant(x0, y0, x1, y1) == "Q2":
 
         reflected_x1, reflected_y1 = reflect_point_wrt_vertical(x1, y1, x0)
 
-        if angle_displacement < theta_mirror_yaxis < angle_displacement + math.pi:
-            print('normal Q1')
-            x_center, y_center, intersect1_x, intersect1_y, l_straight_line, turning_angle, \
-                angle_l_straight_line = path_finder(theta_degree = theta_mirror_yaxis_degree,
-                                                    x0 = x0,
-                                                    y0 = y0,
-                                                    x1 = reflected_x1,
-                                                    y1 = reflected_y1,
-                                                    r = r)
+        if theta_mirror_yaxis > angle_displacement:
+            x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y, l_straight_line, turning_angle, \
+                angle_l_straight_line = path_finder(theta_mirror_yaxis_degree, x0, y0, reflected_x1, reflected_y1, r)
 
-            plot_path(theta = theta_mirror_yaxis,
-                      x_center = x_center,
-                      y_center = y_center,
-                      intersect1_x = intersect1_x,
-                      intersect1_y = intersect1_y,
-                    turning_angle = turning_angle,
-                      title= "Path after mirroring destination with y-axis")
+            plot_path_wrt_disvector(theta_mirror_yaxis, x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y, l_straight_line,
+                    turning_angle,
+                    angle_l_straight_line)
 
             x_center_reflected_wrt_vertical, y_center_reflected_wrt_vertical, intersect1_x_reflected_wrt_vertical, \
-            intersect1_y_reflected_wrt_vertical, angle_l_straight_line_wrt_vertical \
-            = reflect_wrt_vertical(x0 =x0,
-                                   x_center = x_center,
-                                   y_center = y_center,
-                                   intersect1_x = intersect1_x,
-                                   intersect1_y = intersect1_y,
-                                   angle_l_straight_line = angle_l_straight_line)
+            intersect1_y_reflected_wrt_vertical, intersect2_x_reflected_wrt_vertical, \
+            intersect2_y_reflected_wrt_vertical, reflected_angle_l_straight_line \
+            = reflect_wrt_vertical(x0, x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y,angle_l_straight_line)
 
-            plot_path_re_mirrored(theta = theta,
-                                  x_center = x_center_reflected_wrt_vertical ,
-                                  y_center = y_center_reflected_wrt_vertical,
-                                  intersect1_x = intersect1_x_reflected_wrt_vertical,
-                                  intersect1_y = intersect1_y_reflected_wrt_vertical,
-                                  turning_angle = turning_angle,
-                                  title = "Final path after re-mirroring")
+            plot_path_wrt_disvector(theta, x_center_reflected_wrt_vertical, y_center_reflected_wrt_vertical, intersect1_x_reflected_wrt_vertical,
+                                    intersect1_y_reflected_wrt_vertical, intersect2_x_reflected_wrt_vertical, intersect2_y_reflected_wrt_vertical,
+                                    l_straight_line,turning_angle,
+                                    reflected_angle_l_straight_line)
 
 
 
@@ -387,50 +374,37 @@ elif get_quadrant(x0, y0, x1, y1) == "Q2":
             theta_mirror = angle_displacement - theta_mirror_yaxis + angle_displacement
             theta_mirror_degree = math.degrees(theta_mirror)
 
-            x_center, y_center, intersect1_x, intersect1_y,l_straight_line, turning_angle, angle_l_straight_line\
-            = path_finder(theta_degree=theta_mirror_degree,
-                        x0=x0,
-                        y0=y0,
-                        x1=reflected_x1,
-                        y1=reflected_y1,
-                        r=r)
+            x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y, l_straight_line, turning_angle, \
+                angle_l_straight_line = path_finder(theta_mirror_degree, x0, y0, reflected_x1, reflected_y1, r)
 
-            plot_path(theta=theta_mirror,
-                      x_center=x_center,
-                      y_center=y_center,
-                      intersect1_x=intersect1_x,
-                      intersect1_y=intersect1_y,
-                      turning_angle=turning_angle,
-                      title="Path after mirroring destination with y-axis")
+            plot_path(theta_mirror, x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y,
+                    l_straight_line,
+                    turning_angle,
+                    l_straight_line)
 
-
-            reflected_x_center, reflected_y_center, reflected_intersect1_x, reflected_intersect1_y,\
-                reflected_turning_angle, reflected_angle_l_straight_line \
+            reflected_x_center, reflected_y_center, reflected_intersect1_x, reflected_intersect1_y, reflected_intersect2_x, \
+                reflected_intersect2_y, l_straight_line, reflected_turning_angle, reflected_angle_l_straight_line \
                 = reflect_wrt_displacement(
-                x0, y0, reflected_x1, reflected_y1, x_center, y_center, intersect1_x, intersect1_y,
+                x0, y0, reflected_x1, reflected_y1, x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y,
                 angle_l_straight_line)
 
-            plot_path(theta=theta_mirror_yaxis,
-                      x_center=reflected_x_center,
-                      y_center=reflected_y_center,
-                      intersect1_x=reflected_intersect1_x,
-                      intersect1_y=reflected_intersect1_y,
-                      turning_angle=turning_angle,
-                      title="Path after mirroring w.r.t displacement vector")
-
+            plot_path(theta_mirror_yaxis, reflected_x_center, reflected_y_center, reflected_intersect1_x,
+                                reflected_intersect1_y, reflected_intersect2_x, reflected_intersect2_y, l_straight_line,
+                                reflected_turning_angle,
+                                reflected_angle_l_straight_line)
 
             reflected_x_center_reflected_wrt_vertical, reflected_y_center_reflected_wrt_vertical, reflected_intersect1_x_reflected_wrt_vertical, \
-                reflected_intersect1_y_reflected_wrt_vertical,  \
-                reflected_angle_l_straight_line_wrt_vertical \
-                = reflect_wrt_vertical(x0, reflected_x_center, reflected_y_center, reflected_intersect1_x, reflected_intersect1_y,
-                                       reflected_angle_l_straight_line)
+                reflected_intersect1_y_reflected_wrt_vertical, reflected_intersect2_x_reflected_wrt_vertical, \
+                reflected_intersect2_y_reflected_wrt_vertical, reflected_angle_l_straight_line \
+                = reflect_wrt_vertical(x0, x_center, y_center, intersect1_x, intersect1_y, intersect2_x, intersect2_y,
+                                       angle_l_straight_line)
 
-            plot_path_re_mirrored(theta= theta,
-                      x_center=reflected_x_center_reflected_wrt_vertical,
-                      y_center=reflected_y_center_reflected_wrt_vertical,
-                      intersect1_x=reflected_intersect1_x_reflected_wrt_vertical,
-                      intersect1_y=reflected_intersect1_y_reflected_wrt_vertical,
-                      turning_angle=turning_angle,
-                      title= "Final path after re-mirroring")
+            plot_path(theta, reflected_x_center_reflected_wrt_vertical, reflected_y_center_reflected_wrt_vertical,
+                                    reflected_intersect1_x_reflected_wrt_vertical,
+                                    reflected_intersect1_y_reflected_wrt_vertical, reflected_intersect2_x_reflected_wrt_vertical,
+                                    reflected_intersect2_y_reflected_wrt_vertical,
+                                    l_straight_line, turning_angle,
+                                    reflected_angle_l_straight_line)
+
 
 
