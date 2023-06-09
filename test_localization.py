@@ -342,7 +342,7 @@ def test_localization_xy(kitt_test_location_xy):
             # and each microphone
             d_i = math.dist(mic_positions_xy[i], kitt_test_location_xy)
             d_j = math.dist(mic_positions_xy[j], kitt_test_location_xy)
-            r_ij.append(d_j - d_i)
+            r_ij.append(d_i - d_j)
     r_ij = np.array(r_ij)
     print(f'r_ij:\n'
           f'{r_ij}\n')
@@ -427,7 +427,7 @@ def main():
 
     # Measured range value r_ij from deconvolution func
     diff = [12, 230, 218, 224, 218, 206, 212, -12, -6, 6]
-    diff = [x * 343.14 / 48000 for x in diff]  # 240x120
+    diff_calc = [x * 343.14 / 48000 for x in diff]  # 240x120
 
     # Computed location
     location_comp = difference_to_location_xy(test_localization_xy(location), mic_positions_xy, Fs, v_sound)
@@ -436,7 +436,7 @@ def main():
           f'\n')
 
     # Actual location
-    location_actual = difference_to_location_xy(diff, mic_positions_xy, Fs, v_sound)
+    location_actual = difference_to_location_xy(diff_calc, mic_positions_xy, Fs, v_sound)
     print(f'Actual location [cm]:\n'
           f'{location_actual}'
           f'\n')
