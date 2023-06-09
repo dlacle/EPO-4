@@ -113,7 +113,7 @@ def mic_recording():
 
 def plotting():
     # Plotting the microphone data
-    dataTotal = np.loadtxt(f'Mic-Data/{filename}.txt')
+    dataTotal = np.loadtxt(f'epo4/Module2/Module2_mic_array/Mic-Data/{filename}.txt')
 
     data0 = dataTotal[0:N_total:5]
     data1 = dataTotal[1:N_total:5]
@@ -155,7 +155,7 @@ def plotting():
     # Adjust spacing between subplots
     plt.tight_layout()
 
-    with open(f'ref_ch3_V1.txt', 'w') as file:
+    with open(f'../../../ref_ch3_V1.txt', 'w') as file:
         for sample in data2:
             file.write("%s\n" % sample)
         print("Data stored")
