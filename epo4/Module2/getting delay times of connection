@@ -1,0 +1,25 @@
+import serial
+import time
+
+# transmitting connection takes place over port 6
+comport = 'COM6'
+
+# getting access to bluetooth link
+serial_port = serial.Serial(comport, 115200, rtscts=True)
+
+# setting speed to neutral 155 (range 135-165)
+speed = 157
+fspeed = f"M{speed}\n"              # using f string for speed command
+
+# perform the movement
+serial_port.write(fspeed.encode())
+
+for i in range(100):                 #doing 100 measurements
+    start = time.time()
+    serial_port.write(b'Sd\n')
+    serial_port.read_until(b'\x04')
+    end = time.time()
+    print(end - start)
+
+# Shut down bluetooth connection with car
+serial_port.close()
