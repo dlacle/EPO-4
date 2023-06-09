@@ -2,65 +2,51 @@ import numpy as np
 import math
 
 
-def difference_to_location_xy(diff_peak, mic_positions_xy, Fs, Vsound):  # Algorith neglect height
+def difference_to_location_xy(diff_peak, mic_positions, Fs, Vsound):  # Algorith neglect height
     # diff_to_distance = [x * Vsound/ Fs for x in diff_peak]
     diff_to_distance = diff_peak
 
     # Ensure r_ij and receiver_positions have the correct dimensions
     # assert len(diff_to_distance) == 10, "Invalid range difference input"
-    # assert mic_positions_xy.shape == (5, 2), "Invalid receiver positions input"
+    # assert mic_positions.shape == (5, 2), "Invalid receiver positions input"
 
-    x1, y1 = mic_positions_xy[0]
-    x2, y2 = mic_positions_xy[1]
-    x3, y3 = mic_positions_xy[2]
-    x4, y4 = mic_positions_xy[3]
-    x5, y5 = mic_positions_xy[4]
+    x1, y1 = mic_positions[0]
+    x2, y2 = mic_positions[1]
+    x3, y3 = mic_positions[2]
+    x4, y4 = mic_positions[3]
 
     # define r_ij (Range difference)
     r12 = diff_to_distance[0]
     r13 = diff_to_distance[1]
     r14 = diff_to_distance[2]
-    r15 = diff_to_distance[3]
-    r23 = diff_to_distance[4]
-    r24 = diff_to_distance[5]
-    r25 = diff_to_distance[6]
-    r34 = diff_to_distance[7]
-    r35 = diff_to_distance[8]
-    r45 = diff_to_distance[9]
+    r23 = diff_to_distance[3]
+    r24 = diff_to_distance[4]
+    r34 = diff_to_distance[5]
 
     # define matrix A
     A = np.array([
         [2 * (x2 - x1), 2 * (y2 - y1), -2 * r12, 0, 0, 0],
         [2 * (x3 - x1), 2 * (y3 - y1), 0, -2 * r13, 0, 0],
         [2 * (x4 - x1), 2 * (y4 - y1), 0, 0, -2 * r14, 0],
-        [2 * (x5 - x1), 2 * (y5 - y1), 0, 0, 0, -2 * r15],
         [2 * (x3 - x2), 2 * (y3 - y2), 0, -2 * r23, 0, 0],
         [2 * (x4 - x2), 2 * (y4 - y2), 0, 0, -2 * r24, 0],
-        [2 * (x5 - x2), 2 * (y5 - y2), 0, 0, 0, -2 * r25],
         [2 * (x4 - x3), 2 * (y4 - y3), 0, 0, -2 * r34, 0],
-        [2 * (x5 - x3), 2 * (y5 - y3), 0, 0, 0, -2 * r35],
-        [2 * (x5 - x4), 2 * (y5 - y4), 0, 0, 0, -2 * r45]
     ])
 
     # magnitude / length
-    l1 = np.linalg.norm(mic_positions_xy[0])
-    l2 = np.linalg.norm(mic_positions_xy[1])
-    l3 = np.linalg.norm(mic_positions_xy[2])
-    l4 = np.linalg.norm(mic_positions_xy[3])
-    l5 = np.linalg.norm(mic_positions_xy[4])
+    l1 = np.linalg.norm(mic_positions[0])
+    l2 = np.linalg.norm(mic_positions[1])
+    l3 = np.linalg.norm(mic_positions[2])
+    l4 = np.linalg.norm(mic_positions[3])
 
     # define matrix B
     B = np.array([
         [r12 ** 2 - l1 ** 2 + l2 ** 2],
         [r13 ** 2 - l1 ** 2 + l3 ** 2],
         [r14 ** 2 - l1 ** 2 + l4 ** 2],
-        [r15 ** 2 - l1 ** 2 + l5 ** 2],
         [r23 ** 2 - l2 ** 2 + l3 ** 2],
         [r24 ** 2 - l2 ** 2 + l4 ** 2],
-        [r25 ** 2 - l2 ** 2 + l5 ** 2],
         [r34 ** 2 - l3 ** 2 + l4 ** 2],
-        [r35 ** 2 - l3 ** 2 + l5 ** 2],
-        [r45 ** 2 - l4 ** 2 + l5 ** 2]
     ])
 
     # A*y=B solving for y:
@@ -337,11 +323,11 @@ def test_localization_xy(kitt_test_location_xy):
 
     r_ij = []
     for i in range(4):
-        for j in range(i + 1, 5):
+        for j in range(i + 1, 4):
             # Using the known coordinates, use the Pythagorean theorem to determine the distance between KITT
             # and each microphone
-            d_i = math.dist(mic_positions_xy[i], kitt_test_location_xy)
-            d_j = math.dist(mic_positions_xy[j], kitt_test_location_xy)
+            d_i = math.dist(mic_positions_xy_only_4_mics[i], kitt_test_location_xy)
+            d_j = math.dist(mic_positions_xy_only_4_mics[j], kitt_test_location_xy)
             r_ij.append(d_j - d_i)
     r_ij = np.array(r_ij)
     print(f'r_ij:\n'
@@ -426,17 +412,17 @@ def main():
     location = [240, 120]
 
     # Measured range value r_ij from deconvolution func
-    diff = [12, 230, 218, 224, 218, 206, 212, -12, -6, 6]
+    diff = [12, 230, 218, 218, 206, -12]
     diff = [x * 343.14 / 48000 for x in diff]  # 240x120
 
     # Computed location
-    location_comp = difference_to_location_xy(test_localization_xy(location), mic_positions_xy, Fs, v_sound)
+    location_comp = difference_to_location_xy(test_localization_xy(location), mic_positions_xy_only_4_mics, Fs, v_sound)
     print(f'Computed location [cm]:\n'
           f'{location_comp}'
           f'\n')
 
     # Actual location
-    location_actual = difference_to_location_xy(diff, mic_positions_xy, Fs, v_sound)
+    location_actual = difference_to_location_xy(diff, mic_positions_xy_only_4_mics, Fs, v_sound)
     print(f'Actual location [cm]:\n'
           f'{location_actual}'
           f'\n')
