@@ -5,6 +5,9 @@ from epo4.Module2.Module2_mic_array.Deconvolution import localization
 Fs = int(48e3)
 ref = np.loadtxt('epo4/Module2/Module2_mic_array/ref_sig_V1.8.txt')
 filename = 'Callback'
+channels = 5  # Update with the appropriate number of channels
+
+data = np.array([])  # Declare data as a global variable
 
 
 def mic_recording():
@@ -33,7 +36,10 @@ def mic_recording():
                                  channels=5,
                                  format=pyaudio.paInt16,
                                  rate=Fs,
-                                 input=True)
+                                 input=True,
+                                 frames_per_buffer=2048,
+                                 stream_callback=callback)
+    stream.start_stream()
 
     # Recording and storing mic data
     N = 10 * Fs  # samples
@@ -43,6 +49,9 @@ def mic_recording():
         for sample in data:
             file.write("%s\n" % sample)
         print("Data stored")
+
+    stream.stop_stream()
+    pyaudio_handle.terminate()
     return data
 
 
@@ -51,8 +60,10 @@ def callback(in_data, frame_count, time_info, status=0):
     new_frames = np.frombuffer(in_data, dtype='int16').reshape(frame_count, channels)
     global location
     global new_location
+    global data  # Access the global data variable
     data = np.append(data, new_frames, axis=0)
-    if data.shape[0] > 96e3:
-        data = data[(data.shape[0] - 96e3):]
+    if data.shape[0] > int(96e3):
+        data = data[(data.shape[0] - int(96e3)):]
 
     return in_data, pyaudio.paContinue
+

@@ -37,7 +37,7 @@ location_car = '80x400'
 data_recording = np.loadtxt(file_path_mic)
 
 # File path ref signal
-file_path_xref = r"ref_sig_V1.8.txt"
+file_path_xref = r"C:\Users\ZA\Desktop\EPO-4\EPO-4-Python\epo4\Module2\Module2_mic_array\ref_sig_V1.8.txt"
 
 # Load data from the text file
 xref = np.loadtxt(file_path_xref)
