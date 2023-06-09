@@ -30,8 +30,8 @@ mic_positions_xy = np.array(
 Fs = 48000
 
 # File path mic data
-file_path_mic = r'Mic-Data/kitt_carrier_2250_bit_3k_240x120.txt'
-location_car = '240x120'
+file_path_mic = r'Mic-Data/kitt_carrier_2250_bit_3k_80x400.txt'
+location_car = '80x400'
 
 # Load data from the text file
 data_recording = np.loadtxt(file_path_mic)

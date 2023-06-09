@@ -23,12 +23,12 @@ def difference_to_location_xy(r_ij_vec, mic_positions, Fs, Vsound):
 
     # define matrix A
     A = np.array([
-        [2 * (x2 - x1), 2 * (y2 - y1), -2 * r12, 0, 0, 0],
-        [2 * (x3 - x1), 2 * (y3 - y1), 0, -2 * r13, 0, 0],
-        [2 * (x4 - x1), 2 * (y4 - y1), 0, 0, -2 * r14, 0],
-        [2 * (x3 - x2), 2 * (y3 - y2), 0, -2 * r23, 0, 0],
-        [2 * (x4 - x2), 2 * (y4 - y2), 0, 0, -2 * r24, 0],
-        [2 * (x4 - x3), 2 * (y4 - y3), 0, 0, -2 * r34, 0],
+        [2 * (x2 - x1), 2 * (y2 - y1), -2 * r12, 0, 0],
+        [2 * (x3 - x1), 2 * (y3 - y1), 0, -2 * r13, 0],
+        [2 * (x4 - x1), 2 * (y4 - y1), 0, 0, -2 * r14],
+        [2 * (x3 - x2), 2 * (y3 - y2), 0, -2 * r23, 0],
+        [2 * (x4 - x2), 2 * (y4 - y2), 0, 0, -2 * r24],
+        [2 * (x4 - x3), 2 * (y4 - y3), 0, 0, -2 * r34],
     ])
 
     # magnitude / length
@@ -357,10 +357,11 @@ def main():
     v_sound = 343.14
 
     # KITT location
-    location = [240, 120]
+    location = [80, 400]
 
     # Measured range value r_ij from deconvolution func
-    diff = [12, 230, 218, 218, 206, -120]
+    # diff = [12, 230, 218, 218, 206, -12]
+    diff =[-398, -675, -410, -277, -12, 265] #80X400
     diff_calc = [x * 343.14 / 48000 for x in diff]  # 240x120
 
     # Computed location
