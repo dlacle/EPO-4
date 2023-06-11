@@ -4,20 +4,36 @@ import matplotlib.pyplot as plt
 import numpy as np
 from check_reachability_endpoint import check_endpoint_reachability
 from circle_line_function import circle_line_function
+# def map_orientation(phase_v,orientation):
+#     if orientation >= 0:
+#         mapped_orientation = orientation % 360
+#         if mapped_orientation > phase_v: #180
+#             mapped_orientation -= 360
+#     else:
+#         mapped_orientation = (orientation % 360) - 360
+#         if mapped_orientation < -phase_v: #-180
+#             mapped_orientation += 360
+#     return mapped_orientation
+# def adjust_orientation(orientation, phase_v):
+#     if orientation < phase_v and orientation > phase_v + 180:
+#         return orientation
+#     else:
+#         return -1 * orientation
 
 # Assuming max steering angle is 35 degrees in both directions
 L = 34.5  # Length of the car in cm's
 # init_or = float(input('Give the initial orientation (angle to positive x-axis): '))
-init_or = 180
+init_or = 160
+
 # start = input('Coordinates of Start (example: [0, 0]): ')
 # x_init, y_init = ast.literal_eval(start)
-x_init = 0
-y_init = 0
+x_init = 100
+y_init = 100
 
 # waypoint = input('Coordinates of Waypoint (example: [0, 0]): ')
 # w_x, w_y = ast.literal_eval(waypoint)
-w_x = 100
-w_y = 0
+w_x = 300
+w_y = 300
 
 # final = input('Coordinates of Final Destination (example: [0, 0]): ')
 # f_x, f_y = ast.literal_eval(final)
@@ -27,6 +43,12 @@ v1 = [w_x - x_init, w_y - y_init]
 v2 = [f_x - w_x, f_y - w_y]
 phase_v1 = math.degrees(math.atan2(v1[1], v1[0]))  # Angle displacement vector
 phase_v2 = math.degrees(math.atan2(v2[1], v2[0]))
+print('angle displacement vector:', phase_v1)
+
+# init_or = adjust_orientation(init_or,phase_v1)
+# init_or = map_orientation(phase_v1,init_or)
+print('init_or',init_or)
+print('diff',abs(init_or-phase_v1))
 
 def straight_line(phase_v,new_or, x_start,y_start,x_dest,y_dest):
     l1_lenght = math.sqrt((x_dest - x_start) ** 2 + (y_dest - y_start) ** 2)
@@ -40,16 +62,18 @@ def straight_line(phase_v,new_or, x_start,y_start,x_dest,y_dest):
 
     return l1_lenght,Mdir
 
+#check driving in a straight line
 if phase_v1 == init_or or phase_v1 == (180+init_or)%360:
     l1_lenght, Mdir = straight_line(phase_v1, init_or, x_init, y_init, w_x, w_y)
     print(f'l1_lenght {l1_lenght},Mdir {Mdir}')
 
 else:
 
-    if v1[0] < 0:
-        phase_v1 += 180
-    if v2[0] < 0:
-        phase_v2 += 180
+    # if v1[0] < 0:
+    #     print('test')
+    #     phase_v1 += 180
+    # if v2[0] < 0:
+    #     phase_v2 += 180
 
     # Create a square figure
     fig = plt.figure(figsize=(6, 6))
