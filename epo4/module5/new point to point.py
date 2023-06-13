@@ -15,13 +15,14 @@ def relative_loc(x0, x1, alpha):
     dx = np.sqrt(pow(dx_vector[0],2)+pow(dx_vector[1],2))       # distance to location 1
     angle_beta = beta(x0[0], x0[1], x1[0], x1[1])               # angle between dx_vector and positive x-axis
     omega = angle_beta - alpha                                  # angle between dx_vector and d0
+    omega = call_angle(omega)
     return dx, omega
 
 # measure location according to the car model
-# dt, t, v, x0, d0, alpha = measure_loc(dt, t, v, Fa, m, turn, L, alpha, power, x0)
+# dt, t, v, x0, d0, alpha, plot = measure_loc(dt, t, v, Fa, m, turn, L, alpha, power, x0)
 def measure_loc(dt, t, v_old, m, Turn, L, alpha, power, old_x0):
     DT, T = set_time(start_time, t)
-    PHI = phi(Turn, power, phi_max)
+    PHI = phi(Turn, phi_max)
     phi_rad = np.radians(PHI)
     Fa = np.cos(phi_rad)*acceleration_force(Fa_max, power)
     a = acceleration(v_old, Fa, m)
@@ -36,13 +37,15 @@ def measure_loc(dt, t, v_old, m, Turn, L, alpha, power, old_x0):
                  R * (np.cos(alpha) - np.cos(alpha + theta))] + old_x0
     else:
         d_new = d0
-        x_new = x0 + v * dt
+        x_new = old_x0 + v * dt
         theta = 0
 
     X0 = x_new
     D0 = d_new
     Alpha = alpha + theta
-    return DT, T, v, X0, D0, Alpha
+    Alpha = call_angle(Alpha)
+    plot = plt.plot(x_new[0], x_new[1], marker='.')
+    return DT, T, v, X0, D0, Alpha, plot
 
 # Define radius
 def radius(phi_rad, power):
@@ -87,15 +90,15 @@ def braking_force(Fb_max, power):
     Fb = Fb_max*(power-150)/15
     return Fb
 
-def phi(steering_setting, power, phi_max):
-    if (steering_setting >= 150 and power >= 150) or (steering_setting <= 150 and power <= 150):
-        phi = phi_max*(steering_setting-150)/50
-    elif (steering_setting <= 150 and power >= 150) or (steering_setting >= 150 and power <= 150):
-        phi = phi_max*(steering_setting - 150)/2
+def phi(steering_setting,phi_max):
+    if steering_setting > 150:
+        Phi = phi_max*(steering_setting-150)/50
+    elif steering_setting < 150:
+        Phi = phi_max*(steering_setting - 150)/2
     else:
-        phi = 0
-    phi = call_angle(phi)
-    return phi
+        Phi = 0
+    Phi = call_angle(Phi)
+    return Phi
 
 # determining location x1 with respect to x0
 def beta(x0, y0, x1, y1):
@@ -110,7 +113,9 @@ def call_angle(angle):
         angle = angle - 2 * np.pi
     while angle < np.pi:
         angle = angle + 2 * np.pi
+    angle = angle
     return angle
+
 class KITT:
     def __init__(self, comport):        # called when the class is used to create a new object
         self.serial = serial.Serial(comport, baudrate=115200, rtscts=True)
@@ -147,21 +152,22 @@ class KITT:
         self.serial.close()
 
 # Define constants
-Fa_max = 10.615     # Accelerating force Max.
-Fb_max = 14.318     # Brake force Max.
-b = 3.81            # Constant for linear drag force
-c = 0.35            # Constant for quadratic drag force
-m = 5.6             # Mass of car
-L = 0.335           # Length of car
-phi_max = 24.5      # Max. steering angle
+# Fa_max = 10.615                 # Accelerating force Max.
+Fb_max = 14.318                 # Brake force Max.
+b = 2.7                        # Constant for linear drag force
+c = 0.27                        # Constant for quadratic drag force
+Fa_max = b*2.2+c*pow(2.2, 2)    # Accelerating force Max.
+m = 5.6                         # Mass of car
+L = 0.335                       # Length of car
+phi_max = 24.5                  # Max. steering angle
 
 # limit conditions
 R_min_forward = radius(np.radians(phi_max), 165)
 R_min_backward = radius(np.radians(phi_max), 135)
 
 # transmitting connection takes place over port 6
-comport = 'COM8'
-kitt = KITT(comport)                                                    # create KITT object
+# comport = 'COM8'
+# kitt = KITT(comport)                                                    # create KITT object
 
 # determine begin and end location
 x0 = np.array([int(input('x0: ', ))/100, int(input('y0: ', ))/100])     # [x0,y0] starting location
@@ -182,67 +188,71 @@ Fa = 0
 plt.plot(x0[0], x0[1], marker='o')
 plt.plot(x1[0], x1[0], marker='o')
 
+
 # drive from point to point
-while dx <= 0.18:
+while dx >= 0.18:
+    time.sleep(0.04)
     dx, omega = relative_loc(x0, x1, alpha)
 
     # check for barriers
-    if x0[0] <= 0.25:       # barrier left
-        power = 142
-        turn = 150
-        kitt.drive(power, turn)
-        time.sleep(0.5)
-        if -0.5 * np.pi > alpha >= -np.pi:
-            turn = 100
-        else:
-            turn = 200
-        while alpha >= 0.5 * np.pi or alpha <= -0.5 * np.pi:
-            kitt.drive(power, turn)
-            dt, t, v, x0, d0, alpha = measure_loc(dt, t, v, m, turn, L, alpha, power, x0)
-            dx, omega = relative_loc(x0, x1, alpha)
-            plt.plot(x0[0], x0[1], marker='.')
-    elif x0[0] >= 4.55:      # barrier right
-        power = 142
-        turn = 150
-        kitt.drive(power, turn)
-        time.sleep(0.5)
-        if 0.5 * np.pi > alpha >= 0:
-            turn = 100
-        else:
-            turn = 200
-        while alpha <= 0.5 * np.pi or alpha >= -0.5 * np.pi:
-            kitt.drive(power, turn)
-            dt, t, v, x0, d0, alpha = measure_loc(dt, t, v, m, turn, L, alpha, power, x0)
-            dx, omega = relative_loc(x0, x1, alpha)
-            plt.plot(x0[0], x0[1], marker='.')
-    elif x0[1] <= 0.25:     # barrier below
-        power = 142
-        turn = 150
-        kitt.drive(power, turn)
-        time.sleep(0.5)
-        if -0.5 * np.pi < alpha <= 0:
-            turn = 100
-        else:
-            turn = 200
-        while 0 >= alpha >= -np.pi:
-            kitt.drive(power, turn)
-            dt, t, v, x0, d0, alpha = measure_loc(dt, t, v, m, turn, L, alpha, power, x0)
-            dx, omega = relative_loc(x0, x1, alpha)
-            plt.plot(x0[0], x0[1], marker='.')
-    elif x0[1] >= 4.55:     # barrier above
-        power = 142
-        turn = 150
-        kitt.drive(power, turn)
-        time.sleep(0.5)
-        if 0.5 * np.pi < alpha <= np.pi:
-            turn = 100
-        else:
-            turn = 200
-        while np.pi >= alpha >= 0:
-            kitt.drive(power, turn)
-            dt, t, v, x0, d0, alpha = measure_loc(dt, t, v, m, turn, L, alpha, power, x0)
-            dx, omega = relative_loc(x0, x1, alpha)
-            plt.plot(x0[0], x0[1], marker='.')
+    # if x0[0] <= 0.25 and (alpha >= 0.5 * np.pi or alpha <= -0.5 * np.pi):       # barrier left
+    #     power = 142
+    #     turn = 150
+    #     # kitt.drive(power, turn)
+    #     time.sleep(0.5)
+    #     plt.show()
+    #     if -0.5 * np.pi > alpha >= -np.pi:
+    #         turn = 100
+    #     else:
+    #         turn = 200
+    #     while alpha >= 0.5 * np.pi or alpha <= -0.5 * np.pi:
+    #         # kitt.drive(power, turn)
+    #         dt, t, v, x0, d0, alpha, plot = measure_loc(dt, t, v, m, turn, L, alpha, power, x0)
+    #         dx, omega = relative_loc(x0, x1, alpha)
+    #         print('barrier left')
+    #         print('alpha: ', alpha)
+    # elif x0[0] >= 4.55 and (alpha <= 0.5 * np.pi or alpha >= -0.5 * np.pi):      # barrier right
+    #     power = 142
+    #     turn = 150
+    #     # kitt.drive(power, turn)
+    #     time.sleep(0.5)
+    #     if 0.5 * np.pi > alpha >= 0:
+    #         turn = 100
+    #     else:
+    #         turn = 200
+    #     while alpha <= 0.5 * np.pi or alpha >= -0.5 * np.pi:
+    #         # kitt.drive(power, turn)
+    #         dt, t, v, x0, d0, alpha, plot = measure_loc(dt, t, v, m, turn, L, alpha, power, x0)
+    #         dx, omega = relative_loc(x0, x1, alpha)
+    #         print('barrier right')
+    # elif x0[1] <= 0.25 and 0 >= alpha >= -np.pi:     # barrier below
+    #     power = 142
+    #     turn = 150
+    #     # kitt.drive(power, turn)
+    #     time.sleep(0.5)
+    #     if -0.5 * np.pi < alpha <= 0:
+    #         turn = 100
+    #     else:
+    #         turn = 200
+    #     while 0 >= alpha >= -np.pi:
+    #         # kitt.drive(power, turn)
+    #         dt, t, v, x0, d0, alpha, plot = measure_loc(dt, t, v, m, turn, L, alpha, power, x0)
+    #         dx, omega = relative_loc(x0, x1, alpha)
+    #         print('barrier below')
+    # elif x0[1] >= 4.55 and (np.pi >= alpha >= 0):     # barrier above
+    #     power = 142
+    #     turn = 150
+    #     # kitt.drive(power, turn)
+    #     time.sleep(0.5)
+    #     if 0.5 * np.pi < alpha <= np.pi:
+    #         turn = 100
+    #     else:
+    #         turn = 200
+    #     while np.pi >= alpha >= 0:
+    #         # kitt.drive(power, turn)
+    #         dt, t, v, x0, d0, alpha, plot = measure_loc(dt, t, v, m, turn, L, alpha, power, x0)
+    #         dx, omega = relative_loc(x0, x1, alpha)
+    #         print('barrier above')
 
     # check for obstacles
     #######
@@ -250,46 +260,56 @@ while dx <= 0.18:
     #######
 
     # get minimal distance to get to end location with only one setting (10cm buffer in radius)
-    elif dx * np.abs(np.sin(omega)) < 2 * (R_min_forward+0.1) * np.abs(np.sin(omega)):
+    if dx * np.abs(np.sin(omega)) < 2 * (R_min_forward+0.1) * np.abs(np.sin(omega)):
         if omega >= 0:      # end location lies left of current orientation
             power = 142     # forward
             turn = 100      # right
-            kitt.drive(power, turn)
         else:               # end location lies right of current orientation
             power = 142     # forward
             turn = 200      # left
-            kitt.drive(power, turn)
+        # kitt.drive(power, turn)
+        print('get minimal distance')
 
     # end-location lies in-front or next to the car
     else:
-        if omega >= np.pi - 0.01388 * np.pi or omega <= -np.pi + 0.01388 * np.pi:   # end location, directly behind car
-            power = 142     # forward
-            turn = 149      # straight (but slightly turning against off-set, noticeable only when driving backward)
-            kitt.drive(power, turn)
-        elif -0.01388 * np.pi <= omega <= 0.01388 * np.pi:      # end location, directly in-front of car
+        # if omega >= (np.pi - 0.01388 * np.pi) or omega <= (-np.pi + 0.01388 * np.pi):   # end location, directly behind car
+        #     power = 142     # forward
+        #     turn = 149      # straight (but slightly turning against off-set, only noticeable when driving backward)
+        #     # kitt.drive(power, turn)
+        #     turn = 150      # needed for measurements/calculations
+        if -0.01388 * np.pi <= omega <= 0.01388 * np.pi:      # end location, directly in-front of car
             power = 158     # forward
             turn = 150      # straight
-            kitt.drive(power, turn)
+            # kitt.drive(power, turn)
         elif omega > 0.01388 * np.pi:                           # end location, left of car
             power = 158     # forward
             turn = 200      # left
+            # kitt.drive(power, turn)
         elif omega < 0.01388 * np.pi:                           # end location, right of car
             power = 158     # forward
             turn = 100      # right
-        else:   # do nothing
-            power, turn = kitt.stop()
-
-    dt, t, v, x0, d0, alpha = measure_loc(dt, t, v, m, turn, L, alpha, power, x0)
-    plt.plot(x0[0], x0[1], marker='.')
+            # kitt.drive(power, turn)
+        # else:   # do nothing
+            # power, turn = kitt.stop()
+        print('drive to destination')
+        print('x0: ', x0)
+        print('d0: ', d0)
+        print('omega', omega)
+        print('turn ', turn)
+        print('power ', power)
+    dt, t, v, x0, d0, alpha, plot = measure_loc(dt, t, v, m, turn, L, alpha, power, x0)
 
 # stop at location
-kitt.brake(v, v/2.3)
-kitt.stop()
+# kitt.brake(v, v/2.3)
+# kitt.stop()
+
+# del kitt        # disconnect from kitt
 
 # plot trajectory
 plt.grid(True)
-plt.xlim(0,480)
-plt.ylim(0,480)
-plt.show()
+plt.xlim(0,4.80)
+plt.ylim(0,4.80)
 
-del kitt        # disconnect from kitt
+
+
+plt.show()
