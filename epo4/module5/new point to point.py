@@ -41,7 +41,7 @@ def measure_loc(dt, t, v_old, m, Turn, L, alpha, power, old_x0):
                           R * (np.cos(alpha) - np.cos(alpha + theta))]) + old_x0
     else:                       # if the car drives straight
         d_new = d0
-        x_new = np.array([old_x0[0] + v * dt *d0[0], old_x0[1] + v * dt *d0[1]])
+        x_new = old_x0 + v * dt * d0
         theta = 0
 
     X0 = x_new
@@ -316,7 +316,7 @@ while dx >= 0.18:
             power = 158  # forward
             turn = 200  # left
             # kitt.drive(power, turn)
-        elif omega < 0.01 * np.pi:  # end location, right of car
+        elif omega < -0.01 * np.pi:  # end location, right of car
             power = 158  # forward
             turn = 100  # right
             # kitt.drive(power, turn)
