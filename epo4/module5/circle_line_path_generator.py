@@ -23,7 +23,7 @@ from circle_line_function import circle_line_function
 # Assuming max steering angle is 35 degrees in both directions
 L = 34.5  # Length of the car in cm's
 # init_or = float(input('Give the initial orientation (angle to positive x-axis): '))
-init_or = 160
+init_or = 270
 
 # start = input('Coordinates of Start (example: [0, 0]): ')
 # x_init, y_init = ast.literal_eval(start)
