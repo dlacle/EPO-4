@@ -71,19 +71,24 @@ def recording():
     # try:
     while stream.is_active():
         time.sleep(0.1)
-        if data.shape != np.array([]).shape:
-            data = np.append(data, new_frame, axis=0)
-            print(data)
         # TODO: move localization to here
-        if data.shape[0] == int(125000):
-            returned_locations = localization(data, xref,
-                                              mic_positions_xyz,
-                                              Fs, eps, Vsound,
-                                              len(xref), location_car,
-                                              threshold)
+        previous_size = 0  # Initialize the previous size
+        trigger_size_data_location = 51000
+        data_size = len(data)
+        if data_size - previous_size >= trigger_size_data_location:
+            data_for_live_loc = data[previous_size:trigger_size_data_location]
+            live_locations = localization(data_for_live_loc, xref,
+                                          mic_positions_xyz,
+                                          Fs, eps, Vsound,
+                                          len(xref), location_car,
+                                          threshold)
+            previous_size = data_size
+
+
 
         localizations = np.append(locations, returned_locations, axis=0)
         print("location test", localizations)
+
 
     # Add this line after the loop to print the locations
     # print("Locations:", localizations)
