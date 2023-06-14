@@ -1,18 +1,26 @@
 """
-Testing callback mode
+Testing callback mode, 2nd version
 """
 import serial.tools.list_ports
-
 from epo4.Module2.Module2_mic_array.Deconvolution import *
-from epo4.Module2.Module2_mic_array.test_localization import *
 
-# Sampling data
+# Sampling freq
 Fs = 48000
-Time_recording = 10  # in seconds
-N_mic = 5  # number of mics/channels
-N = Time_recording * Fs  # number of frames per mic
-N_total = N_mic * N  # total number of samples
-filename = 'epo4/Module2/Module2_mic_array/Mic-Data/kitt_carrier_2250_bit_3k_ref.txt'
+
+# Recording time in seconds
+recording_time = 10
+
+# Number of mics/channels
+num_mics = 5
+
+# Number of frames per mic
+n = recording_time * Fs
+
+# Total number of samples
+n_total = num_mics * n
+
+# Reference signal
+filename = 'kitt_carrier_2250_bit_3k_240x240'
 
 new_frame = np.array([])
 data = np.array([])
@@ -23,9 +31,9 @@ def recording():
     def callback(in_data, frame_count, time_info, status=0):
         data = np.frombuffer(in_data, dtype='int16').reshape(frame_count, 1)
 
-        # print("data test", data)
+        print('Data test', data) # doesn't get printed
 
-        # TODO: save date txt
+        # TODO: save date as txt
 
         return (data, pyaudio.paContinue)
 
@@ -52,13 +60,6 @@ def recording():
 
     input("Device found, starting stream")
 
-    # # Open stream using callback (3)
-    # stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
-    #                 channels=wf.getnchannels(),
-    #                 rate=wf.getframerate(),
-    #                 output=True,
-    #                 stream_callback=callback)
-
     stream = p.open(input_device_index=device_index,
                     channels=5,
                     format=pyaudio.paInt16,
@@ -69,32 +70,23 @@ def recording():
 
     stream.start_stream()
 
-    # try:
     while stream.is_active():
         time.sleep(0.1)
-        # TODO: move localization to here
-        previous_size = 0  # Initialize the previous size
+        previous_size = 0
         trigger_size_data_location = 51000
         data_size = len(stream.read(1000))
         if data_size - previous_size >= trigger_size_data_location:
             data_for_live_loc = data[previous_size:trigger_size_data_location]
             live_locations = localization(data_for_live_loc, xref,
-                                          mic_positions_xyz,
+                                          mic_positions_xy,
                                           Fs, eps, Vsound,
                                           len(xref), location_car,
                                           threshold)
             previous_size = data_size
 
-        localizations = np.append(locations, returned_locations, axis=0)
-        print("location test", localizations)
+        localizations = np.append(locations, live_locations, axis=0)
+        print(f"Location test: {localizations}")
         print(data)
-
-    # Add this line after the loop to print the locations
-    # print("Locations:", localizations)
-
-    #
-    # except KeyboardInterrupt:
-    #     pass
 
     stream.stop_stream()
     p.terminate()
@@ -111,7 +103,6 @@ def start_pairing():
     for i in range(len(ports)):
         print(f"{i} - {ports[i].description}")
     comport = 'COM7'
-    # comport = ports[int(input(f"Enter device index: \n"))].device
 
     # global comport
     global serial_port
@@ -125,12 +116,12 @@ def start_pairing():
     else:
         print("connected, serial port opened")
 
-    # Carrier freq = 7 kHz
+    # Carrier freq
     carrier_frequency = (2250).to_bytes(2, byteorder='big')
     serial_port.write(b'F' + carrier_frequency + b'\n')
     time.sleep(0.1)
 
-    # Bit freq = 2 kHz
+    # Bit freq
     bit_frequency = (3000).to_bytes(2, byteorder='big')
     serial_port.write(b'B' + bit_frequency + b'\n')
     time.sleep(0.1)
@@ -158,11 +149,11 @@ def plotting():
     # Plotting the microphone data
     dataTotal = np.loadtxt(f'epo4/Module2/Module2_mic_array/Mic-Data/{filename}.txt')
 
-    data0 = dataTotal[0:N_total:5]
-    data1 = dataTotal[1:N_total:5]
-    data2 = dataTotal[2:N_total:5]
-    data3 = dataTotal[3:N_total:5]
-    data4 = dataTotal[4:N_total:5]
+    data0 = dataTotal[0:n_total:5]
+    data1 = dataTotal[1:n_total:5]
+    data2 = dataTotal[2:n_total:5]
+    data3 = dataTotal[3:n_total:5]
+    data4 = dataTotal[4:n_total:5]
 
     # Create an array for time based on the length of the data
     time_total = np.arange(len(dataTotal)) / Fs
@@ -220,7 +211,7 @@ def stop_pairing():
 
 def main():
     start_pairing()
-    recording()
+    recording() # Recording and callback mode
 
     # TODO: print the returned car locations
     # car_locations = recording()
