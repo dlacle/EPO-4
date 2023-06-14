@@ -678,7 +678,7 @@ def localization(data_recording,x_ref, mic_positions,Fs,eps,Vsound,Lhat, locatio
     # Convert locations to normal array format
     location = [[loc[0][0], loc[1][0]] for loc in location]
 
-    print(location)
+    # print(location)
 
     return location
 def IQR_average(locations):
@@ -704,9 +704,9 @@ def IQR_average(locations):
 
     return average_location_within_iqr
 
-locations = localization(data_recording, xref, mic_positions_xy, Fs, eps, Vsound, len(xref), location_car, threshold)
-print(locations)
-IQR_average(locations)
+# locations = localization(data_recording, xref, mic_positions_xy, Fs, eps, Vsound, len(xref), location_car, threshold)
+# print(locations)
+# IQR_average(locations)
 
 
 
