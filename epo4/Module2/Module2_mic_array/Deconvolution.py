@@ -4,6 +4,7 @@ import pyaudio
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fft import fft, ifft
+from scipy import stats
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Define Constants and variables
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -30,14 +31,14 @@ mic_positions_xy = np.array(
 Fs = 48000
 
 # File path mic data
-file_path_mic = 'epo4/Module2/Module2_mic_array/Mic-Data/kitt_carrier_2250_bit_3k_80x400.txt'
+file_path_mic = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Mic-Data\kitt_carrier_2250_bit_3k_305x160.txt"
 location_car = '80x400'
 
 # Load data from the text file
 data_recording = np.loadtxt(file_path_mic)
 
 # File path ref signal
-file_path_xref = r"C:\Users\ZA\Desktop\EPO-4\EPO-4-Python\epo4\Module2\Module2_mic_array\ref_sig_V1.8.txt"
+file_path_xref = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\ref_sig_V1.8.txt"
 
 # Load data from the text file
 xref = np.loadtxt(file_path_xref)
@@ -279,7 +280,7 @@ def plotting_channel_response_of_every_channel_in_one_plot_each_segment(n, lowes
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 def split_channels(dataTotal):
     N_total = len(dataTotal)
-    dataTotal = dataTotal[:N_total//5] #only use when u find the recording to long,example for plotting
+    dataTotal = dataTotal[:N_total//1] #only use when u find the recording to long,example for plotting
     data1 = dataTotal[0:len(dataTotal):5]
     data2 = dataTotal[1:len(dataTotal):5]
     data3 = dataTotal[2:len(dataTotal):5]
@@ -461,6 +462,10 @@ def difference_peaks(location_peak):
 def difference_to_location_xy(diff_peak, mic_positions_xy, Fs,Vsound):#Algorith neglect height
     diff_to_distance = [x * Vsound/ Fs for x in diff_peak]
 
+    # Ensure range_diff and receiver_positions have the correct dimensions
+    assert len(diff_to_distance) == 10, "Invalid range difference input"
+    assert mic_positions_xy.shape == (5, 2), "Invalid receiver positions input"
+
     x1, y1 = mic_positions_xy[0]
     x2, y2 = mic_positions_xy[1]
     x3, y3= mic_positions_xy[2]
@@ -525,56 +530,6 @@ def difference_to_location_xyz(diff_peak, mic_positions_xyz, Fs,Vsound):
     # Ensure range_diff and receiver_positions have the correct dimensions
     assert len(diff_to_distance) == 10, "Invalid range difference input"
     assert mic_positions_xyz.shape == (5, 3), "Invalid receiver positions input"
-
-    # #
-    # x1, y1, z1 = mic_positions_xyz[0]
-    # x2, y2, z2 = mic_positions_xyz[1]
-    # x3, y3, z3 = mic_positions_xyz[2]
-    # x4, y4, z4 = mic_positions_xyz[3]
-    # x5, y5, z5 = mic_positions_xyz[4]
-    #
-    # # define r_ij (Range difference)
-    # r12 = diff_to_distance[0]
-    # r13 = diff_to_distance[1]
-    # r14 = diff_to_distance[2]
-    # r15 = diff_to_distance[3]
-    # r23 = diff_to_distance[4]
-    # r24 = diff_to_distance[5]
-    # r25 = diff_to_distance[6]
-    # r34 = diff_to_distance[7]
-    # r35 = diff_to_distance[8]
-    # r45 = diff_to_distance[9]
-    #
-    # # define matrix A
-    # A = np.array([
-    #     [2 * (x2 - x1),2 * (y2 - y1),2 * (z2 - z1), 2 * r12],
-    #     [2 * (x3 - x1),2 * (y3 - y1),2 * (z3 - z1), 2 * r13],
-    #     [2 * (x4 - x1),2 * (y4 - y1),2 * (z4 - z1), 2 * r14],
-    #     [2 * (x5 - x1),2 * (y5 - y1),2 * (z5 - z1), 2 * r15]
-    # ])
-    #
-    # # magnitude / length
-    # norms = np.linalg.norm(mic_positions_xyz, axis=1)
-    #
-    # l1 = norms[0]
-    # l2 = norms[1]
-    # l3 = norms[2]
-    # l4 = norms[3]
-    # l5 = norms[4]
-    #
-    # # define matrix B
-    # B = np.array([
-    #     [-r12**2 + (x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2],
-    #     [-r13**2 + (x3 - x1)**2 + (y3 - y1)**2 + (z3 - z1)**2],
-    #     [-r14**2 + (x4 - x1)**2 + (y4 - y1)**2 + (z4 - z1)**2],
-    #     [-r15**2 + (x5 - x1)**2 + (y5 - y1)**2 + (z5 - z1)**2]
-    #
-    # ])
-    #
-    # # A*y=B solving for y:
-    # y = np.linalg.pinv(A)*B
-    # location = y
-    # return location
 
     x1, y1, z1 = mic_positions_xyz[0]
     x2, y2, z2 = mic_positions_xyz[1]
@@ -659,94 +614,8 @@ extended iriterative version of the manual
     #             b[k] = (distmat[j, i] ** 2 - norm(micloc[i]) ** 2 + norm(micloc[j]) ** 2)
     #         k += 1
 
-'''''''''''''''''''''''''''''
-hh
-'''''''''''''''''''''''''''''
-    # N = len(mic_positions)  # Number of microphones
-    #
-    # # Compute pairwise range differences
-    # r_ij = np.zeros((N, N))
-    # for i in range(N):
-    #     for j in range(i + 1, N):
-    #         r_ij[i, j] = diff_peak[i * (N - 1) - (i * (i - 1) // 2) + (j - i - 1)]
-    #         r_ij[j, i] = -r_ij[i, j]
-    #
-    # # Compute matrix A and vector b
-    # A = np.zeros((N * (N - 1) // 2, N + 1))
-    # b = np.zeros((N * (N - 1) // 2,))
-    # row = 0
-    # for i in range(N):
-    #     for j in range(i + 1, N):
-    #         A[row, :2] = 2 * (mic_positions[j, :] - mic_positions[i, :])
-    #         A[row, -1] = -2 * r_ij[i, j]
-    #         b[row] = r_ij[i, j] ** 2 - np.linalg.norm(mic_positions[i, :]) ** 2 + np.linalg.norm(
-    #             mic_positions[j, :]) ** 2
-    #         row += 1
-    #
-    # # Compute pseudoinverse of A and solve for unknowns
-    # A_inv = np.linalg.pinv(A)
-    # solution = np.dot(A_inv, b)
-    # car_location = solution[:2]  # (x, y) location of the car
-    # d = solution[2:]  # Nuisance parameters (distances)
-    #
-    # # Compute z-coordinate (assuming car is always at z = 0)
-    # z = np.zeros_like(car_location[0])
 
-    # return np.array([car_location[0], car_location[1], z])
-    # diff_to_distance = [x * Vsound/Fs for x in diff_peak]
-    #
-    # # TDOA measurements
-    # rij = np.array(diff_to_distance)
-    # xi = mic_positions
-    #
-    # # Constructing the coefficient matrix A
-    # A = np.zeros((10, 5))
-    # for i in range(4):
-    #     A[i, :3] = 2 * (xi[i + 1] - xi[0])
-    #     A[i, 3] = -2 * rij[i]
-    #
-    # for i in range(3):
-    #     A[i + 4, :3] = 2 * (xi[i + 2] - xi[i + 1])
-    #     A[i + 4, 3] = -2 * rij[i + 4]
-    #
-    # for i in range(2):
-    #     A[i + 7, :3] = 2 * (xi[i + 3] - xi[i + 1])
-    #     A[i + 7, 3] = -2 * rij[i + 7]
-    #
-    # A[9, :3] = 2 * (xi[4] - xi[3])
-    # A[9, 4] = -2 * rij[9]
-    #
-    # # Constructing the known vector b
-    # b = np.zeros(10)
-    # for i in range(4):
-    #     b[i] = np.linalg.norm(xi[0]) ** 2 - np.linalg.norm(xi[i + 1]) ** 2 + rij[i] ** 2
-    #
-    # for i in range(3):
-    #     b[i + 4] = np.linalg.norm(xi[i + 1]) ** 2 - np.linalg.norm(xi[i + 2]) ** 2 + rij[i + 4] ** 2
-    #
-    # for i in range(2):
-    #     b[i + 7] = np.linalg.norm(xi[i + 1]) ** 2 - np.linalg.norm(xi[i + 3]) ** 2 + rij[i + 7] ** 2
-    #
-    # b[9] = np.linalg.norm(xi[3]) ** 2 - np.linalg.norm(xi[4]) ** 2 + rij[9] ** 2
-    #
-    # # Computing the pseudo-inverse of A
-    # A_pseudo_inv = np.linalg.pinv(A)
-    #
-    # # Solving for the unknown vector y
-    # y = np.dot(A_pseudo_inv, b)
-    #
-    # # Extracting the car's location x and nuisance parameters d2, d3, d4, d5
-    # location = y[:3]
-    # # d2, d3, d4, d5 = y[3:]
-    #
-    # # Printing the results
-    # # print("Car Location (x, y, z):", location)
-    # # print("Nuisance Parameters (d2, d3, d4, d5):", d2, d3, d4, d5)
-    # return location
-
-# def Average_location(x,y,n_locations = 1):
-
-def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, location_car,treshold):
+def localization(data_recording,x_ref, mic_positions,Fs,eps,Vsound,Lhat, location_car,treshold):
 
     data_per_channel = split_channels(data_recording)
 
@@ -767,7 +636,7 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, loc
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
                 Only use when you have a low number of peaks
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-        Plot_each_segment_and_each_channel_separately(segments, Fs, location_car, n, lowest_peak_value)
+        # Plot_each_segment_and_each_channel_separately(segments, Fs, location_car, n, lowest_peak_value)
         # Plot_all_channels_per_segment_one_plot(segments, Fs, location_car, n, lowest_peak_value)
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
@@ -795,8 +664,8 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, loc
         diff_peaks = difference_peaks(location_peak)
 
         #calculate the cooridanates of the car using the difference of peaks
-        # estimated_location_KITT = difference_to_location_xy(diff_peaks, mic_positions_xy,Fs,Vsound)
-        estimated_location_KITT = difference_to_location_xyz(diff_peaks, mic_positions_xyz, Fs, Vsound)
+        estimated_location_KITT = difference_to_location_xy(diff_peaks, mic_positions,Fs,Vsound)
+        # estimated_location_KITT = difference_to_location_xyz(diff_peaks, mic_positions, Fs, Vsound)
 
         location.append(estimated_location_KITT)
     # x = estimated_location_KITT[0]
@@ -806,9 +675,41 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, loc
     # Plot_one_segment_each_channel_in_one_plot (channel, Fs, location_car)
     # Plot_one_segment_each_channel(channel, Fs, location_car)
 
-    return location
+    # Convert locations to normal array format
+    location = [[loc[0][0], loc[1][0]] for loc in location]
 
-print(localization(data_recording, xref, mic_positions_xyz, Fs, eps, Vsound, len(xref), location_car, threshold))
+    print(location)
+
+    return location
+def IQR_average(locations):
+    locations_array = np.array(locations)
+
+    x_iqr = stats.iqr(locations_array[:, 0])
+    y_iqr = stats.iqr(locations_array[:, 1])
+
+    x_lower_bound = np.percentile(locations_array[:, 0], 25) - (1.5 * x_iqr)
+    x_upper_bound = np.percentile(locations_array[:, 0], 75) + (1.5 * x_iqr)
+
+    y_lower_bound = np.percentile(locations_array[:, 1], 25) - (1.5 * y_iqr)
+    y_upper_bound = np.percentile(locations_array[:, 1], 75) + (1.5 * y_iqr)
+
+    filtered_locations = locations_array[(locations_array[:, 0] >= x_lower_bound) &
+                                         (locations_array[:, 0] <= x_upper_bound) &
+                                         (locations_array[:, 1] >= y_lower_bound) &
+                                         (locations_array[:, 1] <= y_upper_bound)]
+
+    average_location_within_iqr = np.mean(filtered_locations, axis=0)
+
+    print("Average location (x, y) within IQR range:", average_location_within_iqr)
+
+    return average_location_within_iqr
+
+locations = localization(data_recording, xref, mic_positions_xy, Fs, eps, Vsound, len(xref), location_car, threshold)
+print(locations)
+IQR_average(locations)
+
+
+
 
 
 
