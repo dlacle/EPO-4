@@ -1,8 +1,9 @@
 import serial
-from GUI import GUI
+import serial.tools.list_ports
+# from GUI import GUI
 
 def estimate_battery_percentage(current_voltage):
-    min_voltage = 16 #?????
+    min_voltage = 17
     max_voltage = 18.6
     voltage_range = max_voltage - min_voltage
     voltage_interval = voltage_range / 10  # Assuming 10 equal intervals
@@ -14,9 +15,27 @@ def estimate_battery_percentage(current_voltage):
 class KITT():
     def __init__(self): # called when the class is used to create a new object
         # current_voltage = self.get_status(data = 'voltage')
-        # port = GUI(estimate_battery_percentage(current_voltage))
-        port = "COM7"
-        self.serial = serial.Serial(port,baudrate=115200,rtscts=True)
+
+        # get port info
+        ports = serial.tools.list_ports.comports()
+        for i in range(len(ports)):
+            print(f"{i} - {ports[i].description}")
+        comport = 'COM7'
+        # comport = ports[int(input(f"Enter device index: \n"))].device
+
+        # global comport
+        global serial_port
+        # getting access to bluetooth link
+        try:
+            serial_port = serial.Serial(comport, 115200, rtscts=True)
+            print("Port details ->", serial_port)
+        except serial.SerialException as var:
+            print("Error has occured")
+            print("var")
+        else:
+            print("connected, serial port opened")
+
+
     def run_mode(self):
         pass
     def set_beacon(self):
@@ -29,6 +48,20 @@ class KITT():
         self.serial.write(b"B" + (3000).to_bytes(2, byteorder='big') + b"\n")
         # Set repetition count
         self.serial.write(b"R" + (1250).to_bytes(2, byteorder='big') + b"\n")
+
+        # On
+        serial_port.write(b'A1\n')
+
+    def turn(self, direction):
+        if direction == 'hard left':
+            self.set_angle(200)
+        elif direction == 'hard right':
+            self.set_angle(100)
+        elif direction == 'right':
+            self.set_angle(125)
+        elif direction == 'left':
+            self.set_angle(125)
+
     def set_dir(self, angle):
         # Limit angle to avoid sending invalid command to KITT
         if 100 <= angle <= 200:
@@ -79,5 +112,3 @@ class KITT():
         self.serial.close()
 
 
-
-KITT()
