@@ -3,7 +3,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 from KITT import KITT
-from localize import*
+from epo4.Module2.Module2_mic_array.get_stationary_location import*
 
 
 def deg_to_pwm(angle):
@@ -40,9 +40,9 @@ def measure_loc(dt, t, v_old, m, Turn, L, alpha, power, old_x0, fa_max):
     phi_rad = call_angle(phi_rad)
     Fa = np.cos(phi_rad) * acceleration_force(fa_max, power)
     a = acceleration(v_old, Fa, m)
-    print('a in loop ', a)
+    # print('a in loop ', a)
     v = v_old + a * dt
-    print('v in loop', v)
+    # print('v in loop', v)
 
     if phi_rad != 0:            # if the car turns
         R = radius(phi_rad, power)
@@ -160,14 +160,19 @@ MAX_PWM = 200
 # transmitting connection takes place over port 6
 comport = 'COM8'#set in kitt file for now
 kitt = KITT()                                                    # create KITT object
-KITT.set_beacon()
+kitt.set_beacon()
 
 # determine begin and end location
-x0 = np.array([int(input('x0: ', )) / 100, int(input('y0: ', )) / 100])  # [x0,y0] starting location
-alpha = np.radians(int(input('starting orientaion: ', )))  # starting orientation angle with x-axis
+# x0 = np.array([int(input('x0: ', )) / 100, int(input('y0: ', )) / 100])  # [x0,y0] starting location
+# alpha = np.radians(int(input('starting orientaion: ', )))  # starting orientation angle with x-axis
+# d0 = np.array([np.cos(alpha), np.sin(alpha)])  # starting orientation vector
+# x1 = np.array([int(input('x1: ', )) / 100, int(input('y1: ', )) / 100])  # [x1, y1] end location
+# x2 = np.array([int(input('x2: ', )) / 100, int(input('y2: ', )) / 100])  # [x1, y1] end location
+x0 = np.array([int(430) / 100, int(32) / 100])  # [x0,y0] starting location
+alpha = np.radians(int(180))  # starting orientation angle with x-axis
 d0 = np.array([np.cos(alpha), np.sin(alpha)])  # starting orientation vector
-x1 = np.array([int(input('x1: ', )) / 100, int(input('y1: ', )) / 100])  # [x1, y1] end location
-x2 = np.array([int(input('x2: ', )) / 100, int(input('y2: ', )) / 100])  # [x1, y1] end location
+x1 = np.array([int(240) / 100, int(240) / 100])  # [x1, y1] end location
+x2 = np.array([int(80) / 100, int(400) / 100])  # [x1, y1] end location
 
 # relative location of  car and end-location x1
 dx, omega = relative_loc(x0, x1, alpha)
@@ -184,16 +189,18 @@ plt.plot(x1[0], x1[0], marker='o')
 plt.plot(x2[0], x2[1], marker='o')
 
 # drive from point to point
-while dx >= 0.1:
+while dx >= 0.2:
     time.sleep(0.01)
     dx, omega = relative_loc(x0, x1, alpha)     # update end location relative to car location
 
     if x0[0] <= 0.25 or x0[0] >= 4.55 or x0[1] <= 0.25 or x0[1] >= 4.55:
+        print('barrier')
         power = 142     # backward
         turn = 150      # straight (but slightly turning against off-set, only noticeable when driving backward)
         kitt.drive(power, turn)
         dt, t, v, x0, d0, alpha = measure_loc(dt, t, v, m, turn, L, alpha, power, x0, Fa_max)
     elif dx <= np.abs(np.sin(omega) * 2 * R_min_forward):
+        print('radius')
         power = 142  # backward
         if omega >= 0:
             turn = 100
@@ -203,47 +210,46 @@ while dx >= 0.1:
             turn = 150
         kitt.drive(power, turn)
     else:
+        print('go')
         power = 158
         turn = deg_to_pwm(np.rad2deg(omega))
         kitt.drive(power, turn)
 
-    print('drive to destination')
-    print('turn', turn)
-    print('power', power)
-    print('speed', v)
+    # print('drive to destination')
+    # print('turn', turn)
+    # print('power', power)
+    # print('speed', v)
     dt, t, v, x0, d0, alpha = measure_loc(dt, t, v, m, turn, L, alpha, power, x0, Fa_max)     # update car status
-    print('location', x0)
-    print('orientation', d0)
-    print('dx', dx)
-    if dx <= 0.3 and np.any(x1 != x2):
+    # print('location', x0)
+    # print('orientation', d0)
+    # print('dx', dx)
+    if dx <= 0.2 and np.any(x1 != x2):
+        print('locate')
         kitt.drive(145, 150)
         time.sleep(np.abs(v / 2.3))
         kitt.stop()
-        v = 0
+        v = 0.01
         time.sleep(1)
-        x0 = get_stationary_location(10)
-        dx, omega = relative_loc(x0, x1, alpha)
-        if dx <= 0.2:
-            x1[0] = x2[0]
-            x1[1] = x2[1]
-            time.sleep(2.5)
-    elif dx <= 0.3 and np.any(x1 == x2):
-        kitt.drive(145, 150)
-        time.sleep(np.abs(v / 2.3))
-        kitt.stop()
-        v = 0
-        time.sleep(1)
-        x0 = get_stationary_location(10)
+        x0 = np.array([get_stationary_location(10)[0], get_stationary_location(10)[1]])
         dx, omega = relative_loc(x0, x1, alpha)
         if dx <= 0.2:
             break
+        #     x1[0] = x2[0]
+        #     x1[1] = x2[1]
+        #     time.sleep(2.5)
+    # elif dx <= 0.3 and np.any(x1 == x2):
+    #     kitt.drive(145, 150)
+    #     time.sleep(np.abs(v / 2.3))
+    #     kitt.stop()
+    #     v = 0
+    #     time.sleep(1)
+    #     x0 = get_stationary_location(10)
+    #     dx, omega = relative_loc(x0, x1, alpha)
+    #     if dx <= 0.2:
+    #         break
 
 # stop at location
-kitt.drive(145, 150)
-time.sleep(np.abs(v / 2.3))
-kitt.stop()
-v = 0
-
+print('destination')
 del kitt        # disconnect from kitt
 
 # plot trajectory

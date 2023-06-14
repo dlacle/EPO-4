@@ -1,3 +1,6 @@
+import time
+
+import numpy as np
 import serial
 import serial.tools.list_ports
 # from GUI import GUI
@@ -23,12 +26,12 @@ class KITT():
         comport = 'COM7'
         # comport = ports[int(input(f"Enter device index: \n"))].device
 
-        # global comport
-        global serial_port
+        # # global comport
+        # global serial_port
         # getting access to bluetooth link
         try:
-            serial_port = serial.Serial(comport, 115200, rtscts=True)
-            print("Port details ->", serial_port)
+            self.serial = serial.Serial(comport, 115200, rtscts=True)
+            print("Port details ->", self.serial)
         except serial.SerialException as var:
             print("Error has occured")
             print("var")
@@ -50,7 +53,7 @@ class KITT():
         self.serial.write(b"R" + (1250).to_bytes(2, byteorder='big') + b"\n")
 
         # On
-        serial_port.write(b'A1\n')
+        self.serial.write(b'A1\n')
 
     def turn(self, direction):
         if direction == 'hard left':
@@ -101,6 +104,19 @@ class KITT():
             status = int(status.decode().splitlines()[0][5:-2])
         return status
 
+    def brake(self, speed):
+        brake_power = (np.abs(speed) / speed) * 5 + 150
+        brake_time = np.abs(speed / 2.3)
+        start = time.time()
+        T = 0
+        while T <= brake_time:
+            self.set_speed(brake_power)
+            T = T + time.time() - start
+
+    def drive(self, power, turn):
+        self.set_dir(turn)
+        self.set_speed(power)
+
     def stop(self):
         # Reset the KITT to its default speed and direction
         self.set_speed(150)
@@ -110,5 +126,4 @@ class KITT():
         self.serial.write(b"A0\n")
         # Remove object and close serial port
         self.serial.close()
-
 

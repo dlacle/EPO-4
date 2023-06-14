@@ -30,15 +30,15 @@ mic_positions_xy = np.array(
 )
 Fs = 48000
 
-# File path mic data
-file_path_mic = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Mic-Data\kitt_carrier_2250_bit_3k_80x400.txt"
-location_car = '80x400'
+# # File path mic data
+# file_path_mic = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Mic-Data\kitt_carrier_2250_bit_3k_80x400.txt"
+# location_car = '80x400'
 
-# Load data from the text file
-data_recording = np.loadtxt(file_path_mic)
+# # Load data from the text file
+# data_recording = np.loadtxt(file_path_mic)
 
 # File path ref signal
-file_path_xref = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\ref_sig_V1.8.txt"
+file_path_xref = r"C:\Users\ZA\Desktop\EPO-4\EPO-4-Python\epo4\Module2\Module2_mic_array\ref_sig_V1.8.txt"
 
 # Load data from the text file
 xref = np.loadtxt(file_path_xref)
@@ -456,7 +456,7 @@ def difference_peaks(location_peak):
         for j in range(i + 1, len(location_peak)):
             diff = (location_peak[i] - location_peak[j])
             diff_peak.append(diff)
-    print(diff_peak)
+    print('diff_peak',diff_peak)
     return diff_peak #returns a list: [r12,r13,r14,r15,r23,r24,r25,r34,r35,r45]
 
 def difference_to_location_xy(diff_peak, mic_positions_xy, Fs,Vsound):#Algorith neglect height
