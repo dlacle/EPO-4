@@ -30,7 +30,7 @@ mic_positions_xy = np.array(
 Fs = 48000
 
 # File path mic data
-file_path_mic = r'C:\Users\ZA\Desktop\EPO-4\EPO-4-Python\epo4\Module2\Module2_mic_array\Mic-Data\kitt_carrier_2250_bit_3k_80x400.txt'
+file_path_mic = 'epo4/Module2/Module2_mic_array/Mic-Data/kitt_carrier_2250_bit_3k_80x400.txt'
 location_car = '80x400'
 
 # Load data from the text file

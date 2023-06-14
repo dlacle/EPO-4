@@ -84,11 +84,8 @@ def recording():
                                           threshold)
             previous_size = data_size
 
-
-
         localizations = np.append(locations, returned_locations, axis=0)
         print("location test", localizations)
-
 
     # Add this line after the loop to print the locations
     # print("Locations:", localizations)
