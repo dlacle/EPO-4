@@ -1,12 +1,8 @@
 """
-Audio beacon and code transmission of Module 2
+Testing callback mode
 """
-import time
-import serial
-import pyaudio
-import numpy as np
-import matplotlib.pyplot as plt
 import serial.tools.list_ports
+
 from epo4.Module2.Module2_mic_array.Deconvolution import *
 
 # Sampling data
@@ -15,34 +11,29 @@ Time_recording = 10  # in seconds
 N_mic = 5  # number of mics/channels
 N = Time_recording * Fs  # number of frames per mic
 N_total = N_mic * N  # total number of samples
-filename = 'kitt_carrier_2250_bit_3k_ref'
+filename = 'epo4/Module2/Module2_mic_array/Mic-Data/kitt_carrier_2250_bit_3k_ref.txt'
 
 new_frame = np.array([])
 data = np.array([])
 locations = np.array([])
 
+
 def recording():
     def callback(in_data, frame_count, time_info, status=0):
-        global new_frames
-        new_frames = np.frombuffer(in_data, dtype='int16').reshape(frame_count, 1)
-        global locations
-        global data  # Access the global data variable
-        data = np.append(data, new_frames, axis=0)
-        if data.shape[0] > int(125000):
-            data = data[(data.shape[0] - int(125000)):]
-        location = localization(data, xref, mic_positions_xyz, Fs, eps, Vsound,  len(xref), location_car, threshold)
-        locations = np.append(locations,location,axis=0)
-        # localize
+        data = np.frombuffer(in_data, dtype='int16').reshape(frame_count, 1)
 
-        return in_data, pyaudio.paContinue
+        print("data test", data)
 
+        # TODO: save date txt
+
+        return (data, pyaudio.paContinue)
 
     # Create instance of PyAudio
-    pyaudio_handle = pyaudio.PyAudio()
+    p = pyaudio.PyAudio()
 
     # List the index and names of all audio devices visible to PyAudio
-    for i in range(pyaudio_handle.get_device_count()):
-        device_info = pyaudio_handle.get_device_info_by_index(i)
+    for i in range(p.get_device_count()):
+        device_info = p.get_device_info_by_index(i)
         print(i, device_info['name'])
 
     # Automate the correct PyAudio device index
@@ -50,37 +41,59 @@ def recording():
     desired_device_name2 = "Microphone (2- AudioBox 1818 VS"
     desired_device_name3 = "Microphone (2- AudioBox 1818 VSL)"
 
-    for i in range(pyaudio_handle.get_device_count()):
-        device_info = pyaudio_handle.get_device_info_by_index(i)
+    for i in range(p.get_device_count()):
+        device_info = p.get_device_info_by_index(i)
         if (device_info["name"] == desired_device_name1 or
                 device_info["name"] == desired_device_name2 or
                 device_info["name"] == desired_device_name3):
             device_index = i
             break
 
-    input("Press Enter to start....")
+    input("Device found, starting stream")
 
-    stream = pyaudio_handle.open(input_device_index=device_index,
-                                 channels=5,
-                                 format=pyaudio.paInt16,
-                                 rate=Fs,
-                                 input=True,
-                                 frames_per_buffer=2048,
-                                 stream_callback=callback)
+    # # Open stream using callback (3)
+    # stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+    #                 channels=wf.getnchannels(),
+    #                 rate=wf.getframerate(),
+    #                 output=True,
+    #                 stream_callback=callback)
+
+    stream = p.open(input_device_index=device_index,
+                    channels=5,
+                    format=pyaudio.paInt16,
+                    rate=Fs,
+                    input=True,
+                    frames_per_buffer=2048,
+                    stream_callback=callback)
+
     stream.start_stream()
 
-    try:
-        while stream.is_active():
-            if new_frame.shape != np.array([]).shape:
-                data = np.append(data, new_frame, axis=0)
+    # try:
+    while stream.is_active():
+        time.sleep(0.1)
+        if data.shape != np.array([]).shape:
+            data = np.append(data, new_frame, axis=0)
+            print(data)
+        # TODO: move localization to here
+        if data.shape[0] == int(125000):
+            returned_locations = localization(data, xref,
+                                              mic_positions_xyz,
+                                              Fs, eps, Vsound,
+                                              len(xref), location_car,
+                                              threshold)
 
+        localizations = np.append(locations, returned_locations, axis=0)
+        print("location test", localizations)
 
-    except KeyboardInterrupt:
-        pass
+    # Add this line after the loop to print the locations
+    # print("Locations:", localizations)
 
-    print(locations)
+    #
+    # except KeyboardInterrupt:
+    #     pass
+
     stream.stop_stream()
-    pyaudio_handle.terminate()
+    p.terminate()
     return locations
 
 
@@ -135,7 +148,6 @@ def start_pairing():
     time.sleep(3)
 
     return
-
 
 
 def plotting():
@@ -205,6 +217,11 @@ def stop_pairing():
 def main():
     start_pairing()
     recording()
+
+    # Change: print the returned car locations
+    # car_locations = recording()
+    # print("Car locations:", car_locations)
+
     # serial_port.write(b'A0\n')  # off
     # plotting()
     stop_pairing()

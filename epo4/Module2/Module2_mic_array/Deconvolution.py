@@ -30,7 +30,7 @@ mic_positions_xy = np.array(
 Fs = 48000
 
 # File path mic data
-file_path_mic = r'Mic-Data/kitt_carrier_2250_bit_3k_80x400.txt'
+file_path_mic = r'C:\Users\ZA\Desktop\EPO-4\EPO-4-Python\epo4\Module2\Module2_mic_array\Mic-Data\kitt_carrier_2250_bit_3k_80x400.txt'
 location_car = '80x400'
 
 # Load data from the text file
@@ -751,7 +751,7 @@ def localization(data_recording,x_ref, mic_positions_xyz,Fs,eps,Vsound,Lhat, loc
     data_per_channel = split_channels(data_recording)
 
     # Plot_each_channel_in_one_plot_color(data_per_channel, Fs, location_car)
-    Plot_each_channel_separately(data_per_channel, Fs, location_car)
+    # Plot_each_channel_separately(data_per_channel, Fs, location_car)
 
     peak_begin = find_peak_begin(data_per_channel)
     # print('peak begin=',peak_begin)
