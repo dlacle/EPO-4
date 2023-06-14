@@ -1,3 +1,6 @@
+import time
+
+import numpy as np
 import serial
 import serial.tools.list_ports
 # from GUI import GUI
@@ -101,6 +104,19 @@ class KITT():
             status = int(status.decode().splitlines()[0][5:-2])
         return status
 
+    def brake(self, speed):
+        brake_power = (np.abs(speed) / speed) * 5 + 150
+        brake_time = np.abs(speed / 2.3)
+        start = time.time()
+        T = 0
+        while T <= brake_time:
+            self.set_speed(brake_power)
+            T = T + time.time() - start
+
+    def drive(self, power, turn):
+        self.set_angle(turn)
+        self.set_speed(power)
+
     def stop(self):
         # Reset the KITT to its default speed and direction
         self.set_speed(150)
@@ -110,5 +126,4 @@ class KITT():
         self.serial.write(b"A0\n")
         # Remove object and close serial port
         self.serial.close()
-
 
