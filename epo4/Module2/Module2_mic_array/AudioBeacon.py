@@ -73,7 +73,7 @@ def start_pairing():
     return
 
 
-def mic_recording():
+def mic_recording(N):
     # Create instance of PyAudio
     pyaudio_handle = pyaudio.PyAudio()
 
@@ -108,7 +108,7 @@ def mic_recording():
     #     for sample in data:
     #         file.write("%s\n" % sample)
     #     print("Data stored")
-    return
+    return data
 
 
 def plotting():
@@ -180,9 +180,9 @@ def main():
     # start_pairing()
     # mic_recording()
     # serial_port.write(b'A0\n')  # off
-    plotting()
+    # plotting()
     # stop_pairing()
     return
 
 
-main()
+# main()
