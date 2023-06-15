@@ -8,7 +8,7 @@ file_path_ref = r'Mic-Data/kitt_carrier_2250_bit_3k_ref.txt'
 data = np.loadtxt(file_path_ref)
 
 # Select
-ref_ch_3 = data[2:len(data):5]#[4.5:]
+ref_ch_3 = data[2:2400000:5][4.5:]
 
 # Sampling frequency
 Fs = 48e3
