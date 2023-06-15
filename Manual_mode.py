@@ -3,12 +3,6 @@ import serial
 import time
 from KITT import KITT
 
-# Transmitting connection takes place over port 5
-# comport = 'COM7'
-
-# Getting access to the Bluetooth link
-# serial_port = serial.Serial(comport, 115200, rtscts=True)
-
 # Setting initial speed and direction to neutral (150)
 speed = 150
 direction = 150
