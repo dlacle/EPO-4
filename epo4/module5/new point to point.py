@@ -1,6 +1,7 @@
 import serial
 import time
 import numpy as np
+from check_reachability_endpoint import check_endpoint_reachability
 import matplotlib.pyplot as plt
 
 
@@ -112,7 +113,7 @@ def phi(steering_setting, phi_max):
 # determining location x1 with respect to x0
 def beta(x0, y0, x1, y1):
     dx = np.array([x1 - x0, y1 - y0])  # distance/direction vector between location 0 and 1
-    angle_beta = np.arctan(dx[1] / dx[0])  # angle of dx vector with positive x-axis (requested direction)
+    angle_beta = np.arctan2(dx[1], dx[0])  # angle of dx vector with positive x-axis (requested direction)
     angle_beta = call_angle(angle_beta)
     return angle_beta
 
@@ -180,14 +181,25 @@ R_min_backward = radius(np.radians(phi_max), 135)
 # kitt = KITT(comport)                                                    # create KITT object
 
 # determine begin and end location
-x0 = np.array([int(input('x0: ', )) / 100, int(input('y0: ', )) / 100])  # [x0,y0] starting location
-alpha = np.radians(int(input('starting orientaion: ', )))  # starting orientation angle with x-axis
+# x0 = np.array([int(input('x0: ', )) / 100, int(input('y0: ', )) / 100])  # [x0,y0] starting location
+# alpha = np.radians(int(input('starting orientaion: ', )))  # starting orientation angle with x-axis
+# d0 = np.array([np.cos(alpha), np.sin(alpha)])  # starting orientation vector
+# x1 = np.array([int(input('x1: ', )) / 100, int(input('y1: ', )) / 100])  # [x1, y1] end location
+
+x0 = np.array([int(300) / 100, int(300) / 100])  # [x0,y0] starting location
+alpha = np.radians(int(180))  # starting orientation angle with x-axis
+alpha = alpha % (2*np.pi) # Map the orientation to the range [0, 2π]
 d0 = np.array([np.cos(alpha), np.sin(alpha)])  # starting orientation vector
-x1 = np.array([int(input('x1: ', )) / 100, int(input('y1: ', )) / 100])  # [x1, y1] end location
+x1 = np.array([int(100) / 100, int(100) / 100])  # [x1, y1] end location
+
+arrow_length = 0.345
+arrow_dx = arrow_length * np.cos(alpha)
+arrow_dy = arrow_length * np.sin(alpha)
+plt.arrow(x0[0], x0[1], arrow_dx, arrow_dy, color='black', width=0.02)
 
 # relative location of  car and end-location x1
 dx, omega = relative_loc(x0, x1, alpha)
-
+startvalue_omega = omega
 # initial values
 v = 0
 start_time = time.time()
@@ -195,16 +207,17 @@ dt, t = set_time(start_time, 0)
 Fa = 0
 
 # plot starting and end location
-plt.plot(x0[0], x0[1], marker='o')
-plt.plot(x1[0], x1[0], marker='o')
+plt.plot(x0[0], x0[1], marker='x',color = 'blue')
+plt.plot(x1[0], x1[1], marker='x',color = 'blue')
 
 # drive from point to point
-while dx >= 0.18:
+while dx >= 0.18: # until KITT is 18 cm from target
     time.sleep(0.07)
     dx, omega = relative_loc(x0, x1, alpha)     # update end location relative to car location
 
     # check for barriers
-    if x0[0] <= 0.25 and (alpha >= 0.5 * np.pi or alpha <= -0.5 * np.pi):       # barrier left
+    # barrier left
+    if x0[0] <= 0.25 and 0.5*np.pi < alpha < 1.5*np.pi: #(alpha >= 0.5 * np.pi or alpha <= -0.5 * np.pi):
         # kitt.brake(v)
         power = 142
         turn = 150
@@ -215,15 +228,17 @@ while dx >= 0.18:
         dt, t, v, x0, d0, alpha, plot = measure_loc(dt + sleep, t, v, m, turn, L, alpha, power, x0)
         dx, omega = relative_loc(x0, x1, alpha)
         if -0.5 * np.pi > alpha >= -np.pi:
-            turn = 100
+            turn = 100 #turn right
         else:
-            turn = 200
+            turn = 200 #turn left
         while (alpha >= 0.5 * np.pi or alpha <= -0.5 * np.pi) and 0.25 <= x0[1] <=4.55:
             # kitt.drive(power, turn)
             dt, t, v, x0, d0, alpha, plot = measure_loc(dt, t, v, m, turn, L, alpha, power, x0)
             dx, omega = relative_loc(x0, x1, alpha)
             print('barrier left')
             print('alpha: ', alpha)
+
+
     # elif x0[0] >= 4.55 and (alpha <= 0.5 * np.pi or alpha >= -0.5 * np.pi):      # barrier right
     #     # kitt.brake(v)
     #     power = 142
@@ -286,7 +301,12 @@ while dx >= 0.18:
     #         print('barrier above')
 
     # check for obstacles
-    #######
+    def ObstacleAvoidance(dR, dL):
+        #location of obstacle is known but orientation isn't
+        #  15 cm location car to sensor, 20 cm from side object to object center
+        obstacle = 15+20
+        if (dR < obstacle and dL < obstacle):
+
     # obstacle check code
     #######
 
@@ -302,6 +322,23 @@ while dx >= 0.18:
     #     print('get minimal distance')
 
     # end-location lies in-front or next to the car
+    elif (abs(startvalue_omega) > 0.5*np.pi):
+        dir = 'backwards'
+        # alpha = alpha + np.pi  # orientation for backwards driving
+        # alpha = alpha % (2 * np.pi)
+
+        if -0.01 * np.pi <= omega <= 0.01 * np.pi:  # end location, directly in-front of car
+            power = 142  # backwards
+            turn = 150  # straight
+            # kitt.drive(power, turn)
+        elif omega > 0.01 * np.pi:  # end location, left of car
+            power = 142  # backwards
+            turn = 100  # weels right to go left backwards
+            # kitt.drive(power, turn)
+        elif omega < -0.01 * np.pi:  # end location, right of car
+            power = 142  # backwards
+            turn = 200  #weels left to go right backwards
+
     else:
         # if omega >= (np.pi - 0.01388 * np.pi) or omega <= (-np.pi + 0.01388 * np.pi):   # end location, directly behind car
         #     power = 142     # forward
@@ -311,14 +348,17 @@ while dx >= 0.18:
         if -0.01 * np.pi <= omega <= 0.01 * np.pi:  # end location, directly in-front of car
             power = 158  # forward
             turn = 150  # straight
+            dir = 'forwards'
             # kitt.drive(power, turn)
         elif omega > 0.01 * np.pi:  # end location, left of car
             power = 158  # forward
             turn = 200  # left
+            dir = 'forwards'
             # kitt.drive(power, turn)
         elif omega < -0.01 * np.pi:  # end location, right of car
             power = 158  # forward
             turn = 100  # right
+            dir = 'forwards'
             # kitt.drive(power, turn)
     # else:   # do nothing
     # power, turn = kitt.stop()
@@ -328,8 +368,11 @@ while dx >= 0.18:
     print('omega', omega)
     print('turn ', turn)
     print('power ', power)
+    print('direction',dir)
     dt, t, v, x0, d0, alpha, plot = measure_loc(dt, t, v, m, turn, L, alpha, power, x0)     # update car status
 
+if dir == 'backwards': # restore to forward orientation for next destination
+    alpha = alpha + np.pi
 # stop at location
 # kitt.brake(v)
 # kitt.stop()
