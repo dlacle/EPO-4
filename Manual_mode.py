@@ -19,7 +19,6 @@ def check_keyboard_input():
 
     previous_speed = speed
     previous_direction = direction
-
     while True:
         if keyboard.is_pressed('w'):
             speed = 165  # Forward speed
@@ -36,7 +35,7 @@ def check_keyboard_input():
             direction = 150  # Default neutral direction
 
         if keyboard.is_pressed('q'):
-            break  # Exit the loop if 'q' is pressed
+            break  # Exit the loop if 'q' is pressedddddaaaa
 
         # Check if there is a change in speed or direction
         if speed != previous_speed:
@@ -50,7 +49,7 @@ def check_keyboard_input():
             previous_speed = speed
 
         if direction != previous_direction:
-           KITT.set_speed(direction)
+           KITT.set_dir(direction)
            fdirection = f"D{direction}\n"
            print(fdirection)  # Register check
            # serial_port.write(fdirection.encode())
@@ -64,6 +63,5 @@ def check_keyboard_input():
 KITT = KITT()
 print('port opened')
 check_keyboard_input()
-
 KITT.stop()
 del KITT

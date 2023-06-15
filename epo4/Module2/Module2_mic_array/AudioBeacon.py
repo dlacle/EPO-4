@@ -68,12 +68,10 @@ def start_pairing():
 
     # Speaker playback duration
     time.sleep(3)
-
-
     return
 
 
-def mic_recording(N):
+def mic_recording(S):
     # Create instance of PyAudio
     pyaudio_handle = pyaudio.PyAudio()
 
@@ -100,9 +98,15 @@ def mic_recording(N):
                                  format=pyaudio.paInt16,
                                  rate=Fs,
                                  input=True)
+    Time_recording = S  # in seconds
+    N_mic = 5  # number of mics/channels
+    N = Time_recording * Fs  # number of frames per mic
+    N_total = N_mic * N  # total number of samples
 
     # Recording and storing mic data
+    print('recording')
     samples = stream.read(N)
+    print('recording finish')
     data = np.frombuffer(samples, dtype='int16')
     # with open(f'Mic-Data/{filename}.txt', 'w') as file:
     #     for sample in data:

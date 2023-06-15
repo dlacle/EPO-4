@@ -364,6 +364,7 @@ def test_localization_xy(kitt_test_location_xy):
     #         r_ij.append(dist[i, j])
     #
     # print(r_ij)
+
     return r_ij
 
 
