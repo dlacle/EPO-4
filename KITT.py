@@ -4,7 +4,6 @@ import numpy as np
 import serial
 import serial.tools.list_ports
 # from GUI import GUI
-# changed 16 juni
 
 def estimate_battery_percentage(current_voltage):
     min_voltage = 17
@@ -17,14 +16,14 @@ def estimate_battery_percentage(current_voltage):
 
     return battery_percentage
 class KITT():
-    def __init__(self): # called when the class is used to create a new object
+    def __init__(self, comport): # called when the class is used to create a new object
         # current_voltage = self.get_status(data = 'voltage')
 
         # get port info
         ports = serial.tools.list_ports.comports()
         for i in range(len(ports)):
             print(f"{i} - {ports[i].description}")
-        comport = 'COM7'
+        # comport = 'COM7'
         # comport = ports[int(input(f"Enter device index: \n"))].device
 
         # # global comport
@@ -48,7 +47,7 @@ class KITT():
         self.serial.write(b"C" + (0x3355A780).to_bytes(4, byteorder='big') + b"\n")
         # Set carrier frequency
         self.serial.write(b"F" + (2250).to_bytes(2, byteorder='big') + b"\n")
-        # Set bit frequency
+        # Set a bit frequency
         self.serial.write(b"B" + (3000).to_bytes(2, byteorder='big') + b"\n")
         # Set repetition count
         self.serial.write(b"R" + (1250).to_bytes(2, byteorder='big') + b"\n")
@@ -66,17 +65,13 @@ class KITT():
         elif direction == 'left':
             self.set_angle(125)
 
-    def set_dir(self, angle):
-        # Limit angle to avoid sending invalid command to KITT
-        if 100 <= angle <= 200:
-            # Take a given a direction value, convert this to bits and send KITT the command
-            self.serial.write(f"D{angle}\n".encode())
+    def set_angle(self, angle):
+        fangle = f"D{angle}\n"
+        self.serial.write(fangle.encode())
 
     def set_speed(self, speed):
-        # Take a given a speed value, convert this to bits and send KITT the command
-        if 135 <= speed <= 165:
-            # Limit speed to avoid sending invalid command to KITT
-            self.serial.write(f"M{speed}\n".encode())
+        fspeed = f"M{speed}\n"
+        self.serial.write(fspeed.encode())
 
     def get_status(self, data):  # Request status from KITT
         if data == "full":
@@ -110,21 +105,20 @@ class KITT():
         brake_time = np.abs(speed / 2.3)
         start = time.time()
         T = 0
-        while T <= brake_time:
+        while T < brake_time:
             self.set_speed(brake_power)
-            T = T + time.time() - start
+            T = time.time() - start
 
     def drive(self, power, turn):
-        self.set_dir(turn)
+        self.set_angle(turn)
         self.set_speed(power)
 
     def stop(self):
-        # Reset the KITT to its default speed and direction
+        self.set_angle(150)
         self.set_speed(150)
-        self.set_dir(150)
+
     def __del__(self):
         # Disable beacon
         self.serial.write(b"A0\n")
         # Remove object and close serial port
         self.serial.close()
-
