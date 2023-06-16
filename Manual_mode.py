@@ -1,6 +1,7 @@
 import time
 import keyboard
 from KITT import KITT
+from playsound import playsound
 
 # Transmitting connection takes place over port 5
 # comport = 'COM7'
@@ -65,4 +66,5 @@ KITT = KITT()
 # print('port opened')
 check_keyboard_input()
 KITT.stop()
+# playsound("C:\Users\Sam\PycharmProjects\EPO-4\audioProcessing_Up.wav")
 del KITT
