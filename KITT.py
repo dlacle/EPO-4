@@ -4,6 +4,7 @@ import numpy as np
 import serial
 import serial.tools.list_ports
 # from GUI import GUI
+# changed 16 juni
 
 def estimate_battery_percentage(current_voltage):
     min_voltage = 17

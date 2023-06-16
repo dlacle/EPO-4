@@ -5,6 +5,7 @@ from KITT import KITT
 
 # Transmitting connection takes place over port 5
 # comport = 'COM7'
+# changed 16 juni
 
 # Getting access to the Bluetooth link
 # serial_port = serial.Serial(comport, 115200, rtscts=True)
