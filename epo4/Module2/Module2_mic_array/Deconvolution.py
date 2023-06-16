@@ -47,7 +47,7 @@ xref = np.loadtxt(file_path_xref)
 print('lenght xref=',len(xref))
 
 #set eps ch3 function
-eps = 0.001
+eps = 0.01
 
 #set speed of sound
 Vsound = 343.14 #speed of sound m/s 20 degree
@@ -642,6 +642,7 @@ def localization(data_recording,x_ref, mic_positions,Fs,eps,Vsound,Lhat, locatio
         # Plot_all_channels_per_segment_one_plot(segments, Fs, location_car, n, lowest_peak_value)
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
+        # Lhat = len(segments)//5
         # estimate the channels
         h1 = ch3(x_ref, segments[n * 5],     eps,Lhat)
         h2 = ch3(x_ref, segments[n * 5 + 1], eps,Lhat)

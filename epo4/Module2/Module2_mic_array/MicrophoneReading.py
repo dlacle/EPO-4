@@ -46,10 +46,10 @@ N_total = N_mic * N      # total number of samples
 # Recording and storing mic data
 samples = stream.read(N)
 data = np.frombuffer(samples, dtype='int16')
-with open('data_mics_kitt.txt', 'w') as file:
-    for sample in data:
-        file.write("%s\n" % sample)
-    print("data stored")
+# with open('data_mics_kitt.txt', 'w') as file:
+#     for sample in data:
+#         file.write("%s\n" % sample)
+#     print("data stored")
 
 
 # Plotting the microphone data

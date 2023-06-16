@@ -23,17 +23,19 @@ from circle_line_function import circle_line_function
 # Assuming max steering angle is 35 degrees in both directions
 L = 34.5  # Length of the car in cm's
 # init_or = float(input('Give the initial orientation (angle to positive x-axis): '))
-init_or = 270
+init_or = 90
+init_or = init_or % 360
+
 
 # start = input('Coordinates of Start (example: [0, 0]): ')
 # x_init, y_init = ast.literal_eval(start)
-x_init = 100
-y_init = 100
+x_init = 300
+y_init = 300
 
 # waypoint = input('Coordinates of Waypoint (example: [0, 0]): ')
 # w_x, w_y = ast.literal_eval(waypoint)
-w_x = 300
-w_y = 300
+w_x = 100
+w_y = 100
 
 # final = input('Coordinates of Final Destination (example: [0, 0]): ')
 # f_x, f_y = ast.literal_eval(final)
@@ -42,6 +44,7 @@ f_y = 360
 v1 = [w_x - x_init, w_y - y_init]
 v2 = [f_x - w_x, f_y - w_y]
 phase_v1 = math.degrees(math.atan2(v1[1], v1[0]))  # Angle displacement vector
+phase_v1 = phase_v1 % 360
 phase_v2 = math.degrees(math.atan2(v2[1], v2[0]))
 print('angle displacement vector:', phase_v1)
 
@@ -87,8 +90,6 @@ else:
 
     # Plotting the displacement vectors
     arrow_width = 0.8 # Adjust the width of the arrows
-    arrow_length = L  # Adjust the length of the arrows
-
     plt.arrow(x_init, y_init, w_x - x_init, w_y - y_init, color='red', width=arrow_width,
               length_includes_head=True)
     # plt.arrow(w_x, w_y, f_x - w_x, f_y - w_y, color='blue', width=arrow_width,
@@ -116,7 +117,7 @@ else:
     # radius of circle will be constant assuming steering angle is 35 degrees
     r = L / math.sin(math.radians(35))
     r = 100
-    print("Radius:",r)
+    # print("Radius:",r)
 
     if check_endpoint_reachability(x_init, y_init, new_or, r, w_x, w_y):
         # Execute circle_line_function
