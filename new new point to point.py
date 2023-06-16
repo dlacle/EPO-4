@@ -2,7 +2,8 @@ import serial
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-
+from KITT import*
+# from localize import*
 
 def deg_to_pwm(angle):
     pwm_value = round(((angle + 25) / 50) * (MAX_PWM - MIN_PWM) + MIN_PWM)
@@ -43,14 +44,14 @@ def measure_loc(t, v_old, m, Turn, L, alpha, power, old_x0, fa_max):
 
     if phi_rad != 0:  # if the car turns
         R = radius(phi_rad, v)
-        delta_theta = (v * np.sin(phi_rad) / L)
+        delta_theta = ((v+v_old)/2 * np.sin(phi_rad) / L)
         theta = (delta_theta * DT)
         d_new = np.array([np.cos(alpha + theta), np.sin(alpha + theta)])
         x_new = np.array([R * (-np.sin(alpha) + np.sin(alpha + theta)),
                           R * (np.cos(alpha) - np.cos(alpha + theta))]) + old_x0
     else:  # if the car drives straight
         d_new = np.array([np.cos(alpha), np.sin(alpha)])
-        x_new = old_x0 + v * DT * d_new
+        x_new = old_x0 + (v+v_old)/2 * DT * d_new
         theta = 0
 
     X0 = x_new
@@ -136,48 +137,48 @@ def call_angle(angle):
     return angle
 
 
-class KITT:
-    def __init__(self, comport):  # called when the class is used to create a new object
-        self.serial = serial.Serial(comport, baudrate=115200, rtscts=True)
-
-    def set_speed(self, speed):
-        fspeed = f"M{speed}\n"
-        self.serial.write(fspeed.encode())
-
-    def set_angle(self, angle):
-        fangle = f"D{angle}\n"
-        self.serial.write(fangle.encode())
-
-    def stop(self):
-        power = 150
-        turn = 150
-        self.set_angle(turn)
-        self.set_speed(power)
-        return power, turn
-
-    def brake(self, speed):
-        brake_power = (np.abs(speed) / speed) * 5 + 150
-        brake_time = np.abs(speed / 2.3)
-        start = time.time()
-        T = 0
-        while T <= brake_time:
-            self.set_speed(brake_power)
-            T = T + time.time() - start
-
-    def drive(self, power, turn):
-        self.set_angle(turn)
-        self.set_speed(power)
-
-    def __del__(self):
-        self.serial.close()
+# class KITT:
+#     def __init__(self, comport):  # called when the class is used to create a new object
+#         self.serial = serial.Serial(comport, baudrate=115200, rtscts=True)
+#
+#     def set_speed(self, speed):
+#         fspeed = f"M{speed}\n"
+#         self.serial.write(fspeed.encode())
+#
+#     def set_angle(self, angle):
+#         fangle = f"D{angle}\n"
+#         self.serial.write(fangle.encode())
+#
+#     def stop(self):
+#         power = 150
+#         turn = 150
+#         self.set_angle(turn)
+#         self.set_speed(power)
+#         return power, turn
+#
+#     def brake(self, speed):
+#         brake_power = (np.abs(speed) / speed) * 5 + 150
+#         brake_time = np.abs(speed / 2.3)
+#         start = time.time()
+#         T = 0
+#         while T <= brake_time:
+#             self.set_speed(brake_power)
+#             T = T + time.time() - start
+#
+#     def drive(self, power, turn):
+#         self.set_angle(turn)
+#         self.set_speed(power)
+#
+#     def __del__(self):
+#         self.serial.close()
 
 
 # Define constants
 # Fa_max = 10.615                 # Accelerating force Max.
 Fb_max = 17.7  # Brake force Max.
-b = 0.75  # Constant for linear drag force
-c = 1.5  # Constant for quadratic drag force
-Fa_max0 = b * 2.3 + c * pow(2.3, 2)  # Accelerating force Max.
+b = 2.74  # Constant for linear drag force
+c = 0.27  # Constant for quadratic drag force
+Fa_max0 = b * 2.35 + c * pow(2.35, 2)  # Accelerating force Max.
 Fa_max = Fa_max0
 m = 5.6  # Mass of car
 L = 0.335  # Length of car
@@ -201,6 +202,17 @@ d0 = np.array([np.cos(alpha), np.sin(alpha)])  # starting orientation vector
 x1 = np.array([int(input('x1: ', )) / 100, int(input('y1: ', )) / 100])  # [x1, y1] end location
 x2 = np.array([int(input('x2: ', )) / 100, int(input('y2: ', )) / 100])  # [x1, y1] end location
 
+print('starting in:    5')
+time.sleep(1)
+print('starting in:    4')
+time.sleep(1)
+print('starting in:    3')
+time.sleep(1)
+print('starting in:    2')
+time.sleep(1)
+print('starting in:    1')
+time.sleep(1)
+
 # initial values
 v = 0
 start_time = time.time()
@@ -220,53 +232,80 @@ dx, omega = relative_loc(x0, x_target, alpha)  # update end location relative to
 while dx > 0.001:
     time.sleep(0.01)
 
+    # barriers
     if x0[0] < 0.25 or x0[0] > 4.55 or x0[1] < 0.25 or x0[1] > 4.55:
+        # kitt.brake(v)
+        time.sleep(v / 2.3)
+        # kitt.stop()
+        dt, t, v, x0, d0, alpha = measure_loc(t, v, m, 150, L, alpha, 145, x0, Fb_max)
         power = 142  # backward
         turn = 150  # straight (but slightly turning against off-set, only noticeable when driving backward)
-        # kitt.drive(power, turn)
-        dt, t, v, x0, d0, alpha = measure_loc(t, v, m, turn, L, alpha, power, x0, Fa_max)
+        # turn = deg_to_pwm(-omega)
+        while x0[0] < 0.45 or x0[0] > 4.35 or x0[1] < 0.45 or x0[1] > 4.35:
+            # kitt.drive(power, turn)
+            dt, t, v, x0, d0, alpha = measure_loc(t, v, m, turn, L, alpha, power, x0, Fa_max)
+
     elif dx < np.abs(np.sin(omega) * 2 * R_min_forward):
         power = 142  # backward
-        if omega > 0:
-            turn = 100
-        elif omega < 0:
-            turn = 200
-        else:
-            turn = 150
+        turn = deg_to_pwm(np.rad2deg(-omega))
+        # if omega > 0:
+        #     turn = 100
+        # elif omega < 0:
+        #     turn = 200
+        # else:
+        #     turn = 150
         # kitt.drive(power, turn)
     else:
         power = 158
         turn = deg_to_pwm(np.rad2deg(omega))
         # kitt.drive(power, turn)
 
-    if dx < 0.18 and np.any(x_target == x1):
+    if dx < 0.1 and np.any(x_target == x1):
         print('x1 reached')
         # kitt.drive(145, 150)
         time.sleep(np.abs(v / 2.3))
         # kitt.stop()
         v = 0
-        # x0 = get_stationary_location(10)
+        # Location = get_stationary_location(10)
+        Location = np.array([x0[0] + 0.1, x0[1] + 0.1])
+        x_model = x0
+        # if Location[0] > x0[0] + 0.3 or Location[1] > x0[1] + 0.3:
+        #     x0 = Location
+        # else:
+        #     x0 = np.array([(x_model[0] + Location[0]) / 2, (x_model[1] + Location[1]) / 2])
+        # print('x0 ', x0)
         dx, omega = relative_loc(x0, x_target, alpha)
-        print('target', x_target)
         if dx < 0.3:
+            input('press enter to start', )
             x_target = x2
-            print('target', x_target)
-            time.sleep(2.5)
-    elif dx < 0.18 and np.any(x_target == x2):
+        dt, t = set_time(start_time, t)
+        print('target', x_target)
+    elif dx < 0.1 and np.any(x_target == x2):
         print('x2 reached')
         # kitt.drive(145, 150)
         time.sleep(np.abs(v / 2.3))
         # kitt.stop()
         v = 0
-        time.sleep(1)
-        # x0 = get_stationary_location(10)
+        # Location = get_stationary_location(10)
+        Location = np.array([x0[0]+0.1, x0[1]+0.1])
+        x_model = x0
+        if Location[0] > x0[0]+0.3 or Location[1] > x0[1]+0.3:
+            x0 = Location
+        else:
+            x0 = np.array([(x_model[0]+Location[0])/2, (x_model[1]+Location[1])/2])
         dx, omega = relative_loc(x0, x_target, alpha)
+        dt, t = set_time(start_time, t)
         if dx < 0.3:
+            print('WINNERS!!!')
+            print('time: ', t)
             break
+        print('target ', x_target)
+
     dt, t, v, x0, d0, alpha = measure_loc(t, v, m, turn, L, alpha, power, x0, Fa_max)  # update car status
     dx, omega = relative_loc(x0, x_target, alpha)  # update end location relative to car location
     plt.plot(x0[0], x0[1], marker='.')
-    print('x0', x0)
+    print('x0 ', x0)
+    # print('x0', x0)
 
 # stop at location
 # kitt.drive(145, 150)

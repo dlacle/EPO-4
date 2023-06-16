@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # File path
-file_path = r'Mic-Data/kitt_carrier_2250_bit_3k_ref.txt'
+file_path = r'../Mic-Data/kitt_carrier_2250_bit_3k_ref.txt'
 
 # Load data from the text file
 data = np.loadtxt(file_path)
@@ -136,7 +136,7 @@ clean_data = clean_data[clean_data != 0]
 print(len(clean_data))
 
 #Save the data
-with open('ref_sig_V1.2.txt', 'w') as f:
+with open('../Mic-Data/Mic-Data-V1/ref_sig_V1.2.txt', 'w') as f:
     for i in clean_data:
         f.write("%s\n" % i)
 

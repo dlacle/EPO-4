@@ -11,9 +11,6 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
     # y_mirror_orig = 0
     # both_mirror = 0
 
-    # # Convert new_or to a NumPy array
-    # new_or_arrow = np.array(new_or)
-    # plt.quiver(x_start, y_start, 20 * np.cos(np.deg2rad(new_or_arrow)), 20 * np.sin(np.deg2rad(new_or_arrow)), 'black', linewidth=2)
     # Plot an arrow indicating the orientation
     arrow_length = 34.5
     arrow_dx = arrow_length * np.cos(np.deg2rad(new_or))
@@ -69,7 +66,7 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
         print("orientation mirrored")
         mirror_or = 1 #variable used to see if we need to mirror at the end
         print(phase_v)
-        beta = abs(phase_v - new_or)
+        beta = phase_v - new_or
         new_or = new_or + 2 * beta
         new_or = new_or % 360
         print(new_or)
@@ -127,6 +124,13 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
 
     #now make the straight line part/ Calculate the vector l1
     l1_vector = np.array([x_dest, y_dest]) - intersect
+    # Calculate the angle using arctan2
+    angle = np.arctan2(l1_vector[1], l1_vector[0])
+    # Convert the angle to degrees
+    angle_degrees = np.degrees(angle)
+    print("Angle in radians:", angle)
+    print("Angle in degrees:", angle_degrees)
+
     l1_length = np.linalg.norm(l1_vector)
     print('lenght straight from vector',l1_length )
 
@@ -142,25 +146,25 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
     print(new_or)
     print(alpha)
 
-    x_short = x[int(np.mod(np.abs(90 + new_or - np.round(np.rad2deg(alpha))), 360)):int(np.mod(np.abs(90 + new_or), 360))]
-    y_short = y[int(np.mod(np.abs(90 + new_or - np.round(np.rad2deg(alpha))), 360)):int(np.mod(np.abs(90 + new_or), 360))]
+    # x_short = x[int(np.mod(np.abs(90 + new_or - np.round(np.rad2deg(alpha))), 360)):int(np.mod(np.abs(90 + new_or), 360))]
+    # y_short = y[int(np.mod(np.abs(90 + new_or - np.round(np.rad2deg(alpha))), 360)):int(np.mod(np.abs(90 + new_or), 360))]
     if adjust_orientation == 0:#new_or > phase_v
         # upper bovel
         print('upper bovel')
-        # x_short = x[np.mod(np.arange(np.abs(90 + new_or - np.round(alpha)), np.abs(90 + new_or)), 360)]
-        # y_short = y[np.mod(np.arange(np.abs(90 + new_or - np.round(alpha)), np.abs(90 + new_or)), 360)]
-
-        # # Convert the indices to integers using astype()
-        # indices = np.mod(np.arange(np.abs(90 + new_or - np.round(alpha)), np.abs(90 + new_or)), 360).astype(int)
-        # # Use the indices for slicing
-        # x_short = x[indices]
-        # new_or = new_or - np.round(alpha)
-        #
-        # # Convert the indices to integers using astype()
-        # indices = np.mod(np.arange(np.abs(90 + new_or - np.round(alpha)), np.abs(90 + new_or)), 360).astype(int)
-        # # Use the indices for slicing
-        # y_short = y[indices]
-
+        x_short = x[np.mod(np.arange(np.abs(90 + new_or - np.round(alpha)), np.abs(90 + new_or)), 360)]
+        y_short = y[np.mod(np.arange(np.abs(90 + new_or - np.round(alpha)), np.abs(90 + new_or)), 360)]
+    #
+    #     # # Convert the indices to integers using astype()
+    #     # indices = np.mod(np.arange(np.abs(90 + new_or - np.round(alpha)), np.abs(90 + new_or)), 360).astype(int)
+    #     # # Use the indices for slicing
+    #     # x_short = x[indices]
+    #     # new_or = new_or - np.round(alpha)
+    #     #
+    #     # # Convert the indices to integers using astype()
+    #     # indices = np.mod(np.arange(np.abs(90 + new_or - np.round(alpha)), np.abs(90 + new_or)), 360).astype(int)
+    #     # # Use the indices for slicing
+    #     # y_short = y[indices]
+    #
         new_or = new_or - np.round(np.rad2deg(alpha))
     else:
         # lower bovel

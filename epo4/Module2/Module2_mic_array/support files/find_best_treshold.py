@@ -32,28 +32,28 @@ mic_positions_xy = np.array(
 Fs = 48000
 
 # File path mic data
-file_path_mic = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Mic-Data\kitt_carrier_2250_bit_3k_305x160.txt"
-location_car = '140x240'
-location_car = [305,160]
+file_path_mic = r"/epo4/Module2/Module2_mic_array/Mic-Data-V2/kitt_mic_80x400_v2.txt"
+location_car = [80,400]
+
 
 # Load data from the text file
 data_recording = np.loadtxt(file_path_mic)
 
 # File path ref signal
-file_path_xref = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\ref_sig_V1.8.txt"
+file_path_xref = r"/epo4/Module2/Module2_mic_array/Mic-Data-V2/kitt_mic3_ref_v2.txt"
 
 # Load data from the text file
 xref = np.loadtxt(file_path_xref)
-print('lenght xref=',len(xref))
+# print('lenght xref=',len(xref))
 
 #set eps ch3 function
-eps = 0.01
+eps = 0.001
 
 #set speed of sound
 Vsound = 343.14 #speed of sound m/s 20 degree
 
 #set treshold for find first peak channel response
-threshold = 0.21 #0.25
+threshold = 0.25
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Plotting functions:
@@ -213,7 +213,7 @@ def Plot_all_channels_per_segment_one_plot(segment, Fs, location_car, n, lowest_
 
 def plotting_channel_response_of_every_chanel_of_every_segment(n, lowest_peak_value, h1, h2, h3, h4, h5):
     # plotting the channel response of every chanel of every segment
-    time = np.linspace((lowest_peak_value[n] - 950) / Fs, (lowest_peak_value[n] + len(h1)) / Fs, len(h1))
+    time = np.linspace((lowest_peak_value[n] - 1000) / Fs, (lowest_peak_value[n] + len(h1)) / Fs, len(h1)+1000)
 
     # Create subplots for each microphone channel
     fig, axs = plt.subplots(5, 1, figsize=(8, 10))
@@ -282,7 +282,7 @@ def plotting_channel_response_of_every_channel_in_one_plot_each_segment(n, lowes
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 def split_channels(dataTotal):
     N_total = len(dataTotal)
-    dataTotal = dataTotal[:N_total//5] #only use when u find the recording to long,example for plotting
+    dataTotal = dataTotal[:N_total//1] #only use when u find the recording to long,example for plotting
     data1 = dataTotal[0:len(dataTotal):5]
     data2 = dataTotal[1:len(dataTotal):5]
     data3 = dataTotal[2:len(dataTotal):5]
@@ -312,7 +312,7 @@ def find_peak_begin(data):
         # peaks_begin_debug = [peak / Fs for peak in peaks_begin]
         # print("Peaks Begin:", peaks_begin_debug)
     # peaks_begin_debug = [peak / Fs for peak in peaks_begin]
-    print('peaks_begin=',total_peak_begin)
+    # print('peaks_begin=',total_peak_begin)
     return total_peak_begin #returning a list inside a list [[peaks_data1_begin]....[peaks_data5_begin]]
 
 
@@ -356,7 +356,7 @@ def filterpeaks(total_peak_begin):
         else:
             break
     peak_filter = total_peak_begin
-    print('peaks_begin_filtered=',peak_filter)
+    # print('peaks_begin_filtered=',peak_filter)
     return peak_filter #returning a list inside a list with filtered [peaks_data1_begin....peaks_data5_begin]
 
 def automatically_segment(peak_filter,lst):
@@ -364,11 +364,11 @@ def automatically_segment(peak_filter,lst):
 
     for p in range(len(peak_filter[0])):
         i = min(sublist[p] for sublist in peak_filter)
-        segment_data1 = lst[0][i - 950:i + 10000]#15000
-        segment_data2 = lst[1][i - 950:i + 10000]
-        segment_data3 = lst[2][i - 950:i + 10000]
-        segment_data4 = lst[3][i - 950:i + 10000]
-        segment_data5 = lst[4][i - 950:i + 10000]
+        segment_data1 = lst[0][i - 950:i + 15000]
+        segment_data2 = lst[1][i - 950:i + 15000]
+        segment_data3 = lst[2][i - 950:i + 15000]
+        segment_data4 = lst[3][i - 950:i + 15000]
+        segment_data5 = lst[4][i - 950:i + 15000]
         segments.extend([segment_data1, segment_data2, segment_data3, segment_data4, segment_data5])
 
     #only use for debug and plotting
@@ -377,7 +377,7 @@ def automatically_segment(peak_filter,lst):
     for p in range(len(peak_filter[0])):
         lowest_peak = min(sublist[p] for sublist in peak_filter)
         sublist_index = next(i for i, sublist in enumerate(peak_filter) if sublist[p] == lowest_peak)
-        print(f"lowest peak of each segment = {lowest_peak}, {lowest_peak/Fs}sec, came from sublist [{sublist_index}]")
+        # print(f"lowest peak of each segment = {lowest_peak}, {lowest_peak/Fs}sec, came from sublist [{sublist_index}]")
         which_channel_first.append(sublist_index)
         lowest_peak_value.append(lowest_peak)
 
@@ -448,7 +448,7 @@ def find_peaks(h1, h2, h3, h4, h5,treshold):
     peak_ch5 = find_first_pk(h5,treshold)
 
     peak_location = np.array([peak_ch1, peak_ch2, peak_ch3, peak_ch4, peak_ch5])
-    print(peak_location)
+    # print(peak_location)
 
     return peak_location
 def difference_peaks(location_peak):
@@ -458,7 +458,7 @@ def difference_peaks(location_peak):
         for j in range(i + 1, len(location_peak)):
             diff = (location_peak[i] - location_peak[j])
             diff_peak.append(diff)
-    print(diff_peak)
+    # print(diff_peak)
     return diff_peak #returns a list: [r12,r13,r14,r15,r23,r24,r25,r34,r35,r45]
 
 def difference_to_location_xy(diff_peak, mic_positions_xy, Fs,Vsound):#Algorith neglect height
@@ -618,70 +618,75 @@ extended iriterative version of the manual
 
 
 def localization(data_recording,x_ref, mic_positions,Fs,eps,Vsound,Lhat, location_car,treshold):
+    for threshold in [round(x * 0.01, 2) for x in range(1, 79)]:
+        treshold = threshold
+        print('current threshold',treshold)
+        data_per_channel = split_channels(data_recording)
 
-    data_per_channel = split_channels(data_recording)
+        # Plot_each_channel_in_one_plot_color(data_per_channel, Fs, location_car)
+        # Plot_each_channel_separately(data_per_channel, Fs, location_car)
 
-    # Plot_each_channel_in_one_plot_color(data_per_channel, Fs, location_car)
-    Plot_each_channel_separately(data_per_channel, Fs, location_car)
+        peak_begin = find_peak_begin(data_per_channel)
+        # print('peak begin=',peak_begin)
 
-    peak_begin = find_peak_begin(data_per_channel)
-    # print('peak begin=',peak_begin)
+        filtered_peaks = filterpeaks(peak_begin)
+        # print('filtered peak=', filtered_peaks)
 
-    filtered_peaks = filterpeaks(peak_begin)
-    # print('filtered peak=', filtered_peaks)
+        segments, which_channel_first, lowest_peak_value = automatically_segment(filtered_peaks, data_per_channel)
+        location = []
+        # channel = []
+        for n in range(len(segments)//5): # N segments/peaks, 5 = Nmics/channels
 
-    segments, which_channel_first, lowest_peak_value = automatically_segment(filtered_peaks, data_per_channel)
-    location = []
-    # channel = []
-    for n in range(len(segments)//5): # N segments/peaks, 5 = Nmics/channels
+            ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+                    Only use when you have a low number of peaks
+            '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+            # Plot_each_segment_and_each_channel_separately(segments, Fs, location_car, n, lowest_peak_value)
+            # Plot_all_channels_per_segment_one_plot(segments, Fs, location_car, n, lowest_peak_value)
+            ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-                Only use when you have a low number of peaks
-        '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-        Plot_each_segment_and_each_channel_separately(segments, Fs, location_car, n, lowest_peak_value)
-        # Plot_all_channels_per_segment_one_plot(segments, Fs, location_car, n, lowest_peak_value)
-        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+            # estimate the channels
+            h1 = ch3(x_ref, segments[n * 5],     eps,Lhat)
+            h2 = ch3(x_ref, segments[n * 5 + 1], eps,Lhat)
+            h3 = ch3(x_ref, segments[n * 5 + 2], eps,Lhat)
+            h4 = ch3(x_ref, segments[n * 5 + 3], eps,Lhat)
+            h5 = ch3(x_ref, segments[n * 5 + 4], eps,Lhat)
+            # channel.extend([h1,h2,h3,h4,h5])
 
-        # Lhat = len(segments)//5
-        # estimate the channels
-        h1 = ch3(x_ref, segments[n * 5],     eps,Lhat)
-        h2 = ch3(x_ref, segments[n * 5 + 1], eps,Lhat)
-        h3 = ch3(x_ref, segments[n * 5 + 2], eps,Lhat)
-        h4 = ch3(x_ref, segments[n * 5 + 3], eps,Lhat)
-        h5 = ch3(x_ref, segments[n * 5 + 4], eps,Lhat)
-        # channel.extend([h1,h2,h3,h4,h5])
-
-        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-        Only use when you have a low number of peaks
-        '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-        plotting_channel_response_of_every_chanel_of_every_segment(n,lowest_peak_value,h1,h2,h3,h4,h5)
-        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-
-        #find the location of the peaks
-        location_peak = find_peaks(h1, h2, h3, h4, h5,treshold)
-        # plotting_channel_response_of_every_channel_in_one_plot_each_segment(n, lowest_peak_value, h1, h2, h3, h4, h5, location_peak)
+            ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+            Only use when you have a low number of peaks
+            '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+            # plotting_channel_response_of_every_chanel_of_every_segment(n,lowest_peak_value,h1,h2,h3,h4,h5)
+            ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
-        #calculate the difference of the peak locations
-        diff_peaks = difference_peaks(location_peak)
+            #find the location of the peaks
+            location_peak = find_peaks(h1, h2, h3, h4, h5,treshold)
+            # plotting_channel_response_of_every_channel_in_one_plot_each_segment(n, lowest_peak_value, h1, h2, h3, h4, h5, location_peak)
 
-        #calculate the cooridanates of the car using the difference of peaks
-        estimated_location_KITT = difference_to_location_xy(diff_peaks, mic_positions,Fs,Vsound)
-        # estimated_location_KITT = difference_to_location_xyz(diff_peaks, mic_positions, Fs, Vsound)
 
-        location.append(estimated_location_KITT)
-    # x = estimated_location_KITT[0]
-    # y = estimated_location_KITT[1]
+            #calculate the difference of the peak locations
+            diff_peaks = difference_peaks(location_peak)
 
-    # Plot_each_channel_in_one_plot(data_per_channel, Fs, location_car)
-    # Plot_one_segment_each_channel_in_one_plot (channel, Fs, location_car)
-    # Plot_one_segment_each_channel(channel, Fs, location_car)
+            #calculate the cooridanates of the car using the difference of peaks
+            estimated_location_KITT = difference_to_location_xy(diff_peaks, mic_positions,Fs,Vsound)
+            # estimated_location_KITT = difference_to_location_xyz(diff_peaks, mic_positions, Fs, Vsound)
 
-    # Convert locations to normal array format
-    location = [[loc[0][0], loc[1][0]] for loc in location]
+            location.append(estimated_location_KITT)
+        # x = estimated_location_KITT[0]
+        # y = estimated_location_KITT[1]
 
-    # print(location)
+        # Plot_each_channel_in_one_plot(data_per_channel, Fs, location_car)
+        # Plot_one_segment_each_channel_in_one_plot (channel, Fs, location_car)
+        # Plot_one_segment_each_channel(channel, Fs, location_car)
+
+        # Convert locations to normal array format
+        location = [[loc[0][0], loc[1][0]] for loc in location]
+        # print(location)
+        location = IQR_average(location)
+
+        # Calculate the distance using the Euclidean distance formula
+        error = abs(math.sqrt((location[0] - location_car[0]) ** 2 + (location[1] - location_car[1]) ** 2))
+        print(error)
 
     return location
 def IQR_average(locations):
@@ -703,61 +708,13 @@ def IQR_average(locations):
 
     average_location_within_iqr = np.mean(filtered_locations, axis=0)
 
-    print("Average location (x, y) within IQR range:", average_location_within_iqr)
 
     return average_location_within_iqr
 
 locations = localization(data_recording, xref, mic_positions_xy, Fs, eps, Vsound, len(xref), location_car, threshold)
-print(locations)
-location = IQR_average(locations)
 
-# Calculate the distance using the Euclidean distance formula
-error = abs(math.sqrt((location[0] - location_car[0]) ** 2 + (location[1] - location_car[1]) ** 2))
-print(error)
+
+# absolute_error = abs(math.sqrt(location**2 - ))
 
 
 
-
-
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-
-
-
-def TDOA(x, y, Fs):
-    # Reference and measured channels
-    h_3 = ch3(x, data3, x.size, 0.001)
-    h_1 = ch3(x, data1, x.size, 0.001)
-
-    # The time axis for the impulse response is
-    # then created using the length of the reference
-    # channel and the sampling rate.
-    t = np.linspace(0, len(ch_ref)/Fs, len(ch_ref))
-
-    # Find the peak of each of the impulse responses
-    # using the argmax() function. This assumes that
-    # the peak represents the arrival
-    # time of the direct sound between the two signals.
-    pk_ref = np.argmax(ch_ref)
-    pk_measured = np.argmax(ch_measured)
-
-    # Time difference between two peaks (in samples)
-    t_diff = t[pk_measured] - t[pk_ref]
-
-    # Distance between two signals is obtained by
-    # multiplying the time difference by speed of sound
-    distance = 343 * t_diff
-
-    return distance
-
-
-# # Plotting 140x320
-    # data1 = data1/max(data1)
-    # data4 = data4 / max(data4)
-    # Fs = 48000
-    # time_axis = np.linspace(0, len(data1) / Fs, len(data1))
-    # plt.plot(time_axis, data1, label='mic 1')
-    # plt.plot(time_axis, data4, label='mic 4')
-    # plt.legend()

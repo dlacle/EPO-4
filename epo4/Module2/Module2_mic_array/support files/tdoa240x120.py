@@ -118,8 +118,8 @@ def TDOA(x, y, Fs):
 def main():
 
     Fs = 48e3
-    x = np.loadtxt('ref_sig_V1.5.txt')
-    y = np.loadtxt('Mic-Data/kitt_carrier_2250_bit_3k_240x120.txt')
+    x = np.loadtxt('../Mic-Data/Mic-Data-V1/ref_sig_V1.5.txt')
+    y = np.loadtxt('../Mic-Data/Mic-Data-V1/kitt_carrier_2250_bit_3k_240x120.txt')
 
     distance = TDOA(x, y, Fs)
     print("Distance:", distance, ' [meter]')
