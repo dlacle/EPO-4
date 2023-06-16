@@ -11,6 +11,12 @@ def deg_to_pwm(angle):
         pwm_value = 200
     elif pwm_value < 100:
         pwm_value = 100
+    # if omega > 0.01388*np.pi:
+    #     pwm_value = 200
+    # elif omega < 0.01388*np.pi:
+    #     pwm_value = 100
+    # else:
+    #     pwm_value = 150
     return pwm_value
 
 
@@ -38,13 +44,15 @@ def measure_loc(t, v_old, m, Turn, L, alpha, power, old_x0, fa_max):
     PHI = phi(Turn, phi_max)
     phi_rad = np.radians(PHI)
     phi_rad = call_angle(phi_rad)
-    Fa = np.cos(phi_rad) * acceleration_force(fa_max, power)
+    Fa = np.cos(phi_rad*(0.25*np.pi/np.radians(phi_max))) * acceleration_force(fa_max, power)
     a = acceleration(v_old, Fa, m)
     v = v_old + a * DT
 
     if phi_rad != 0:  # if the car turns
         R = radius(phi_rad, v)
-        delta_theta = (v_old * np.sin(phi_rad) / L)/1.5
+        delta_theta = (v_old * np.sin(phi_rad) / L)
+        # delta_theta = DT*(v+v_old)/(2*R)
+        # print('dt', DT)
         theta = (delta_theta * DT)
         d_new = np.array([np.cos(alpha + theta), np.sin(alpha + theta)])
         x_new = np.array([R * (-np.sin(alpha) + np.sin(alpha + theta)),
@@ -179,7 +187,8 @@ Fb_max = 17.7  # Brake force Max.
 b = 3.81  # Constant for linear drag force
 c = 0.2  # Constant for quadratic drag force
 Fa_max0 = b * 2.35 + c * pow(2.35, 2)  # Accelerating force Max.
-Fa_max = Fa_max0
+voltage = 19.4
+Fa_max = Fa_max0 * voltage/17.8
 m = 5.6  # Mass of car
 L = 0.335  # Length of car
 phi_max = 28  # Max. steering angle
@@ -202,10 +211,10 @@ kitt = KITT(comport)                                                    # create
 # x1 = np.array([int(input('x1: ', )) / 100, int(input('y1: ', )) / 100])  # [x1, y1] end location
 # x2 = np.array([int(input('x2: ', )) / 100, int(input('y2: ', )) / 100])  # [x1, y1] end location
 
-x0 = np.array([0.4, 0.44])  # [x0,y0] starting location
-alpha = np.radians(0)  # starting orientation angle with x-axis
+x0 = np.array([1, 1])  # [x0,y0] starting location
+alpha = np.radians(90)  # starting orientation angle with x-axis
 d0 = np.array([np.cos(alpha), np.sin(alpha)])  # starting orientation vector
-x1 = np.array([0.4, 2.5])  # [x1, y1] end location
+x1 = np.array([1, 3.1])  # [x1, y1] end location
 x2 = np.array([5, 5])  # [x1, y1] end location
 
 # print('starting in:    5')
