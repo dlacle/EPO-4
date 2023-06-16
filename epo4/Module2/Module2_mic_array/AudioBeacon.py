@@ -14,7 +14,8 @@ Time_recording = 10  # in seconds
 N_mic = 5  # number of mics/channels
 N = Time_recording * Fs  # number of frames per mic
 N_total = N_mic * N  # total number of samples
-filename = 'kitt_carrier_2250_bit_3k_ref'
+filename_loc = '380x100'
+filename = f'Mic-Data\Mic-Data-V1\kitt_carrier_2250_bit_3k_{filename_loc}'
 
 
 # Chosen carrier=2250 Hz, bit=3000 Hz, and rep=1250
@@ -71,7 +72,7 @@ def start_pairing():
     return
 
 
-def mic_recording(S):
+def mic_recording():#s
     # Create instance of PyAudio
     pyaudio_handle = pyaudio.PyAudio()
 
@@ -98,7 +99,7 @@ def mic_recording(S):
                                  format=pyaudio.paInt16,
                                  rate=Fs,
                                  input=True)
-    Time_recording = S  # in seconds
+    Time_recording = 10  # in seconds
     N_mic = 5  # number of mics/channels
     N = Time_recording * Fs  # number of frames per mic
     N_total = N_mic * N  # total number of samples
@@ -108,16 +109,16 @@ def mic_recording(S):
     samples = stream.read(N)
     print('recording finish')
     data = np.frombuffer(samples, dtype='int16')
-    # with open(f'Mic-Data/{filename}.txt', 'w') as file:
-    #     for sample in data:
-    #         file.write("%s\n" % sample)
-    #     print("Data stored")
+    with open(f'{filename}.txt', 'w') as file:
+        for sample in data:
+            file.write("%s\n" % sample)
+        print("Data stored")
     return data
 
 
 def plotting():
     # Plotting the microphone data
-    dataTotal = np.loadtxt(f'epo4/Module2/Module2_mic_array/Mic-Data/{filename}.txt')
+    dataTotal = np.loadtxt(f'{filename}.txt')
 
     data0 = dataTotal[0:N_total:5]
     data1 = dataTotal[1:N_total:5]
@@ -159,13 +160,13 @@ def plotting():
     # Adjust spacing between subplots
     plt.tight_layout()
 
-    with open(f'../../../ref_ch3_V1.txt', 'w') as file:
-        for sample in data2:
-            file.write("%s\n" % sample)
-        print("Data stored")
+    # with open(f'../../../ref_ch3_V1.txt', 'w') as file:
+    #     for sample in data2:
+    #         file.write("%s\n" % sample)
+    #     print("Data stored")
 
     # Export plot
-    # plt.savefig(f'Plots-Report/{filename}_report.svg', format='svg')
+    plt.savefig(f'Plots-Report/{filename_loc}_report.svg', format='svg')
 
     # Display the plot
     plt.show()
@@ -181,12 +182,12 @@ def stop_pairing():
 
 
 def main():
-    # start_pairing()
-    # mic_recording()
-    # serial_port.write(b'A0\n')  # off
-    # plotting()
-    # stop_pairing()
+    start_pairing()
+    mic_recording()
+    serial_port.write(b'A0\n')  # off
+    plotting()
+    stop_pairing()
     return
 
 
-# main()
+main()
