@@ -55,7 +55,7 @@ def check_keyboard_input():
     # serial_port.close()
 
 KITT = KITT()
-print('port opened')
+# print('port opened')
 check_keyboard_input()
 KITT.stop()
 del KITT
