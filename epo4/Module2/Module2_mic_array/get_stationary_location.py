@@ -28,18 +28,30 @@ eps = 0.001
 Vsound = 343.14 #speed of sound m/s 20 degree
 
 #set treshold for find first peak channel response
-threshold = 0.25
+threshold = 0.21
 def get_stationary_location(N):
-    data = mic_recording(N)
+    max_retry = 3
+    retry_count = 0
 
-    locations = localization(data, xref, mic_positions_xy, Fs, eps, Vsound, len(xref), location_car,
-                             threshold)
-    location_stationary = IQR_average(locations)
-    location_stationary = location_stationary / 100
+    while retry_count < max_retry:
+        try:
+            data = mic_recording(N)
 
-    print("location_stationary",location_stationary)
+            locations = localization(data, xref, mic_positions_xy, Fs, eps, Vsound, len(xref), location_car,
+                                     threshold)
+            location_stationary = IQR_average(locations)
+            location_stationary = location_stationary / 100
+
+            break  # If function call succeeds, exit the loop
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            retry_count += 1
+            print(f"Retrying... (Attempt {retry_count})")
+
+    if retry_count == max_retry:
+        print("Function call unsuccessful after maximum retries.")
+        location_stationary = [999,999] # error location not found
+
+    print("location_stationary", location_stationary)
     return location_stationary
 
-
-if __name__ == '__main__':
-    get_stationary_location(10000)

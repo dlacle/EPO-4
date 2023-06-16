@@ -32,15 +32,15 @@ mic_positions_xy = np.array(
 Fs = 48000
 
 # File path mic data
-file_path_mic = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Mic-Data\kitt_carrier_2250_bit_3k_305x160.txt"
+file_path_mic = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Mic-Data\Mic-Data-V1\kitt_carrier_2250_bit_3k_80x480_2.txt"
 location_car = '140x240'
-location_car = [305,160]
+location_car = [80,400]
 
 # Load data from the text file
 data_recording = np.loadtxt(file_path_mic)
 
 # File path ref signal
-file_path_xref = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\ref_sig_V1.8.txt"
+file_path_xref = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Mic-Data\Mic-Data-V1\ref_sig_V1.8.txt"
 
 # Load data from the text file
 xref = np.loadtxt(file_path_xref)
@@ -282,7 +282,7 @@ def plotting_channel_response_of_every_channel_in_one_plot_each_segment(n, lowes
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 def split_channels(dataTotal):
     N_total = len(dataTotal)
-    dataTotal = dataTotal[:N_total//5] #only use when u find the recording to long,example for plotting
+    dataTotal = dataTotal[:N_total//1] #only use when u find the recording to long,example for plotting
     data1 = dataTotal[0:len(dataTotal):5]
     data2 = dataTotal[1:len(dataTotal):5]
     data3 = dataTotal[2:len(dataTotal):5]
@@ -622,7 +622,7 @@ def localization(data_recording,x_ref, mic_positions,Fs,eps,Vsound,Lhat, locatio
     data_per_channel = split_channels(data_recording)
 
     # Plot_each_channel_in_one_plot_color(data_per_channel, Fs, location_car)
-    Plot_each_channel_separately(data_per_channel, Fs, location_car)
+    # Plot_each_channel_separately(data_per_channel, Fs, location_car)
 
     peak_begin = find_peak_begin(data_per_channel)
     # print('peak begin=',peak_begin)
@@ -638,7 +638,7 @@ def localization(data_recording,x_ref, mic_positions,Fs,eps,Vsound,Lhat, locatio
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
                 Only use when you have a low number of peaks
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-        Plot_each_segment_and_each_channel_separately(segments, Fs, location_car, n, lowest_peak_value)
+        # Plot_each_segment_and_each_channel_separately(segments, Fs, location_car, n, lowest_peak_value)
         # Plot_all_channels_per_segment_one_plot(segments, Fs, location_car, n, lowest_peak_value)
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
@@ -654,7 +654,7 @@ def localization(data_recording,x_ref, mic_positions,Fs,eps,Vsound,Lhat, locatio
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         Only use when you have a low number of peaks
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-        plotting_channel_response_of_every_chanel_of_every_segment(n,lowest_peak_value,h1,h2,h3,h4,h5)
+        # plotting_channel_response_of_every_chanel_of_every_segment(n,lowest_peak_value,h1,h2,h3,h4,h5)
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
