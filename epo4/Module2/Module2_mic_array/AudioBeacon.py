@@ -8,14 +8,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import serial.tools.list_ports
 
-# Sampling data
+# # Sampling data
 Fs = 48000
-Time_recording = 10  # in seconds
-N_mic = 5  # number of mics/channels
-N = Time_recording * Fs  # number of frames per mic
-N_total = N_mic * N  # total number of samples
-filename_loc = '380x100'
-filename = f'Mic-Data\Mic-Data-V1\kitt_carrier_2250_bit_3k_{filename_loc}'
+# Time_recording = S  # in seconds
+# N_mic = 5  # number of mics/channels
+# N = Time_recording * Fs  # number of frames per mic
+# N_total = N_mic * N  # total number of samples
+# filename_loc = '380x100'
+# filename = f'Mic-Data\Mic-Data-V1\kitt_carrier_2250_bit_3k_{filename_loc}'
 
 
 # Chosen carrier=2250 Hz, bit=3000 Hz, and rep=1250
@@ -72,7 +72,7 @@ def start_pairing():
     return
 
 
-def mic_recording():#s
+def mic_recording(S):#s
     # Create instance of PyAudio
     pyaudio_handle = pyaudio.PyAudio()
 
@@ -99,7 +99,7 @@ def mic_recording():#s
                                  format=pyaudio.paInt16,
                                  rate=Fs,
                                  input=True)
-    Time_recording = 10  # in seconds
+    Time_recording = S  # in seconds
     N_mic = 5  # number of mics/channels
     N = Time_recording * Fs  # number of frames per mic
     N_total = N_mic * N  # total number of samples
@@ -109,10 +109,10 @@ def mic_recording():#s
     samples = stream.read(N)
     print('recording finish')
     data = np.frombuffer(samples, dtype='int16')
-    with open(f'{filename}.txt', 'w') as file:
-        for sample in data:
-            file.write("%s\n" % sample)
-        print("Data stored")
+    # with open(f'{filename}.txt', 'w') as file:
+    #     for sample in data:
+    #         file.write("%s\n" % sample)
+    #     print("Data stored")
     return data
 
 
@@ -181,13 +181,13 @@ def stop_pairing():
     return
 
 
-def main():
-    start_pairing()
-    mic_recording()
-    serial_port.write(b'A0\n')  # off
-    plotting()
-    stop_pairing()
-    return
+# def main():
+#     start_pairing()
+#     mic_recording()
+#     serial_port.write(b'A0\n')  # off
+#     plotting()
+#     stop_pairing()
+#     return
 
 
-main()
+# main()

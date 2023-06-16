@@ -3,7 +3,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 from KITT import*
-# from localize import*
+from epo4.Module2.Module2_mic_array.get_stationary_location import*
 
 def deg_to_pwm(angle):
     pwm_value = round(((angle + 25) / 50) * (MAX_PWM - MIN_PWM) + MIN_PWM)
@@ -201,8 +201,9 @@ MIN_PWM = 100
 MAX_PWM = 200
 
 # transmitting connection takes place over port 6
-comport = 'COM8'
-kitt = KITT(comport)                                                    # create KITT object
+comport = 'COM7'
+kitt = KITT(comport)
+kitt.set_beacon()# create KITT object
 
 # determine begin and end location
 # x0 = np.array([int(input('x0: ', )) / 100, int(input('y0: ', )) / 100])  # [x0,y0] starting location
@@ -211,11 +212,11 @@ kitt = KITT(comport)                                                    # create
 # x1 = np.array([int(input('x1: ', )) / 100, int(input('y1: ', )) / 100])  # [x1, y1] end location
 # x2 = np.array([int(input('x2: ', )) / 100, int(input('y2: ', )) / 100])  # [x1, y1] end location
 
-x0 = np.array([1, 1])  # [x0,y0] starting location
-alpha = np.radians(90)  # starting orientation angle with x-axis
+x0 = np.array([3.8, 3.8])  # [x0,y0] starting location
+alpha = np.radians(180)  # starting orientation angle with x-axis
 d0 = np.array([np.cos(alpha), np.sin(alpha)])  # starting orientation vector
-x1 = np.array([1, 3.1])  # [x1, y1] end location
-x2 = np.array([5, 5])  # [x1, y1] end location
+x1 = np.array([2.4, 2.4])  # [x1, y1] end location
+x2 = np.array([0.4, 0.4])  # [x1, y1] end location
 
 # print('starting in:    5')
 # time.sleep(1)
@@ -283,14 +284,14 @@ while dx > 0.001:
         power = 150
         turn = 150
         v = 0
-        # Location = get_stationary_location(10)
-        Location = np.array([x0[0] + 0.1, x0[1] + 0.1])
+        Location = get_stationary_location(10)
+        # Location = np.array([x0[0] + 0.1, x0[1] + 0.1])
         x_model = x0
-        # if Location[0] > x0[0] + 0.3 or Location[1] > x0[1] + 0.3:
-        #     x0 = Location
-        # else:
-        #     x0 = np.array([(x_model[0] + Location[0]) / 2, (x_model[1] + Location[1]) / 2])
-        # print('x0 ', x0)
+        if Location[0] > x0[0] + 0.4 or Location[1] > x0[1] + 0.4:
+            x0 = Location
+        else:
+            x0 = np.array([(x_model[0] + Location[0]) / 2, (x_model[1] + Location[1]) / 2])
+        print('x0 ', x0)
         dx, omega = relative_loc(x0, x_target, alpha)
         if dx < 0.3:
             input('press enter to start', )
@@ -305,10 +306,10 @@ while dx > 0.001:
         power = 150
         turn = 150
         v = 0
-        # Location = get_stationary_location(10)
-        Location = np.array([x0[0]+0.1, x0[1]+0.1])
+        Location = get_stationary_location(10)
+        # Location = np.array([x0[0]+0.1, x0[1]+0.1])
         x_model = x0
-        if Location[0] > x0[0]+0.3 or Location[1] > x0[1]+0.3:
+        if Location[0] > x0[0]+0.4 or Location[1] > x0[1]+0.4:
             x0 = Location
         else:
             x0 = np.array([(x_model[0]+Location[0])/2, (x_model[1]+Location[1])/2])

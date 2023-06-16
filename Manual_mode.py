@@ -1,7 +1,7 @@
-import time
 import keyboard
+import serial
+import time
 from KITT import KITT
-from playsound import playsound
 
 # Transmitting connection takes place over port 5
 # comport = 'COM7'
@@ -36,7 +36,7 @@ def check_keyboard_input():
             direction = 150  # Default neutral direction
 
         if keyboard.is_pressed('q'):
-            break  # Exit the loop if 'q' is pressed
+            break  # Exit the loop if 'q' is pressedddddaaaa
 
         # Check if there is a change in speed or direction
         if speed != previous_speed:
@@ -50,21 +50,19 @@ def check_keyboard_input():
             previous_speed = speed
 
         if direction != previous_direction:
-            KITT.set_dir(direction)
-            fdirection = f"D{direction}\n"
-            print(fdirection)  # Register check
-            # serial_port.write(fdirection.encode())
-            previous_direction = direction
+           KITT.set_dir(direction)
+           fdirection = f"D{direction}\n"
+           print(fdirection)  # Register check
+           # serial_port.write(fdirection.encode())
+           previous_direction = direction
 
         time.sleep(0.1)  # Adjust sleep time as needed
 
     # Shutting down the Bluetooth connection with the car
     # serial_port.close()
 
-
 KITT = KITT()
-# print('port opened')
+print('port opened')
 check_keyboard_input()
 KITT.stop()
-# playsound("C:\Users\Sam\PycharmProjects\EPO-4\audioProcessing_Up.wav")
 del KITT
