@@ -5,12 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e436bdc1-ac86-4841-ba71-8e2af3696f32" name="Changes" comment=":)">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Deconvolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Deconvolution.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/MicrophoneReading.py" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/MicrophoneReading.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/find_best_treshold.py" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/find_best_treshold.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/epo4/module5/circle_line_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/module5/circle_line_function.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/epo4/module5/circle_line_path_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/module5/circle_line_path_generator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/3e segment at location 80x400.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/3e segment channel response at location 400x400.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/kitt_carrier_2250_bit_3k_140x320.txt" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/Mic-Data-V1/kitt_carrier_2250_bit_3k_140x320.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/kitt_carrier_2250_bit_3k_240x120.txt" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/Mic-Data-V1/kitt_carrier_2250_bit_3k_240x120.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/kitt_carrier_2250_bit_3k_240x240.txt" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/Mic-Data-V1/kitt_carrier_2250_bit_3k_240x240.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/kitt_carrier_2250_bit_3k_305x160.txt" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/Mic-Data-V1/kitt_carrier_2250_bit_3k_305x160.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/kitt_carrier_2250_bit_3k_80x400.txt" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/Mic-Data-V1/kitt_carrier_2250_bit_3k_80x400.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Plots-Report/3e segment at location 80x400.svg" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Plots-Report/3e segment at location 80x400.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Plots-Report/3e segment channel response at location 400x400.svg" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Plots-Report/3e segment channel response at location 400x400.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/ReferenceSignal_V1.2.py" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/ReferenceSignal_V1.2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/ReferenceSignal_V1.3.py" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/ReferenceSignal_V1.3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Signals of the 5 channels at 80x400 diff color.svg" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Plots-Report/Signals of the 5 channels at 80x400 diff color.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/TDOA.py" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/TDOA.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/ref_ch3_V1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/Mic-Data-V1/ref_ch3_V1.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/ref_sig.txt" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/Mic-Data-V1/ref_sig.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/ref_sig_V1.2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/Mic-Data-V1/ref_sig_V1.2.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/ref_sig_V1.3.txt" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/Mic-Data-V1/ref_sig_V1.3.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/ref_sig_V1.4.txt" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/Mic-Data-V1/ref_sig_V1.4.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/ref_sig_V1.5.txt" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/Mic-Data-V1/ref_sig_V1.5.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/ref_sig_V1.6.txt" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/Mic-Data-V1/ref_sig_V1.6.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/ref_sig_V1.7.txt" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/Mic-Data-V1/ref_sig_V1.7.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/ref_sig_V1.8.txt" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/Mic-Data/Mic-Data-V1/ref_sig_V1.8.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/tdoa240x120.py" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/tdoa240x120.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/tdoa80x400.py" beforeDir="false" afterPath="$PROJECT_DIR$/epo4/Module2/Module2_mic_array/tdoa80x400.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,10 +113,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Plots-Report" />
+      <recent name="C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Mic-Data\Mic-Data-V1" />
       <recent name="C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Mic-Data-V2" />
       <recent name="C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array" />
       <recent name="C:\Users\Sam\PycharmProjects\EPO-4\epo4\module5\module5_plots_rapport" />
-      <recent name="C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_Epo4_dynamic distance" />
     </key>
   </component>
   <component name="RunManager">
@@ -143,7 +162,7 @@
       <workItem from="1686085285134" duration="10648000" />
       <workItem from="1686726793218" duration="2590000" />
       <workItem from="1686729428224" duration="1164000" />
-      <workItem from="1686732517636" duration="57403000" />
+      <workItem from="1686732517636" duration="58148000" />
     </task>
     <task id="LOCAL-00001" summary="GUI interface">
       <created>1682503141387</created>
@@ -292,7 +311,14 @@
       <option name="project" value="LOCAL" />
       <updated>1686862460425</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary=":)">
+      <created>1686906625426</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1686906625426</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

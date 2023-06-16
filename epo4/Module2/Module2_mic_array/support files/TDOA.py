@@ -179,10 +179,10 @@ def main():
     ]
 
     # Reference signal
-    x = np.loadtxt('ref_sig_V1.8.txt')
+    x = np.loadtxt('../Mic-Data/Mic-Data-V1/ref_sig_V1.8.txt')
 
     # Beacon signal location
-    y = np.loadtxt('Mic-Data/kitt_carrier_2250_bit_3k_80x400.txt')
+    y = np.loadtxt('../Mic-Data/Mic-Data-V1/kitt_carrier_2250_bit_3k_80x400.txt')
 
     # Compute TDOA
     distance = TDOA(x, y, Fs)

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # File path
-file_path = r'C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Mic-Data-V2\kitt_mic3_ref_v2.txt'
+file_path = r'/epo4/Module2/Module2_mic_array/Mic-Data-V2/kitt_mic3_ref_v2.txt'
 
 # Load data from the text file
 data = np.loadtxt(file_path)
@@ -39,7 +39,7 @@ lenght_clean_data=len(clean_data)
 clean_data_nozero = clean_data[clean_data != 0]
 lenght_clean_data_nozero =len(clean_data_nozero)
 
-with open('Mic-Data-V2/ref_sig_V2.1.txt', 'w') as f:
+with open('../Mic-Data-V2/ref_sig_V2.1.txt', 'w') as f:
     for i in clean_data_nozero:
         f.write("%s\n" % i)
 
