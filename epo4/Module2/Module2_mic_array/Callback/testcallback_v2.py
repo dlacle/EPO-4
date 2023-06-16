@@ -58,7 +58,7 @@ def recording():
             device_index = i
             break
 
-    input("Device found, starting stream")
+    print("Device found, starting stream")
 
     stream = p.open(input_device_index=device_index,
                     channels=5,
