@@ -44,7 +44,7 @@ def measure_loc(t, v_old, m, Turn, L, alpha, power, old_x0, fa_max):
 
     if phi_rad != 0:  # if the car turns
         R = radius(phi_rad, v)
-        delta_theta = ((v+v_old)/2 * np.sin(phi_rad) / L)
+        delta_theta = (v_old * np.sin(phi_rad) / L)/1.5
         theta = (delta_theta * DT)
         d_new = np.array([np.cos(alpha + theta), np.sin(alpha + theta)])
         x_new = np.array([R * (-np.sin(alpha) + np.sin(alpha + theta)),
@@ -176,8 +176,8 @@ def call_angle(angle):
 # Define constants
 # Fa_max = 10.615                 # Accelerating force Max.
 Fb_max = 17.7  # Brake force Max.
-b = 2.74  # Constant for linear drag force
-c = 0.27  # Constant for quadratic drag force
+b = 3.81  # Constant for linear drag force
+c = 0.2  # Constant for quadratic drag force
 Fa_max0 = b * 2.35 + c * pow(2.35, 2)  # Accelerating force Max.
 Fa_max = Fa_max0
 m = 5.6  # Mass of car
@@ -193,25 +193,31 @@ MAX_PWM = 200
 
 # transmitting connection takes place over port 6
 comport = 'COM8'
-# kitt = KITT(comport)                                                    # create KITT object
+kitt = KITT(comport)                                                    # create KITT object
 
 # determine begin and end location
-x0 = np.array([int(input('x0: ', )) / 100, int(input('y0: ', )) / 100])  # [x0,y0] starting location
-alpha = np.radians(int(input('starting orientaion: ', )))  # starting orientation angle with x-axis
-d0 = np.array([np.cos(alpha), np.sin(alpha)])  # starting orientation vector
-x1 = np.array([int(input('x1: ', )) / 100, int(input('y1: ', )) / 100])  # [x1, y1] end location
-x2 = np.array([int(input('x2: ', )) / 100, int(input('y2: ', )) / 100])  # [x1, y1] end location
+# x0 = np.array([int(input('x0: ', )) / 100, int(input('y0: ', )) / 100])  # [x0,y0] starting location
+# alpha = np.radians(int(input('starting orientaion: ', )))  # starting orientation angle with x-axis
+# d0 = np.array([np.cos(alpha), np.sin(alpha)])  # starting orientation vector
+# x1 = np.array([int(input('x1: ', )) / 100, int(input('y1: ', )) / 100])  # [x1, y1] end location
+# x2 = np.array([int(input('x2: ', )) / 100, int(input('y2: ', )) / 100])  # [x1, y1] end location
 
-print('starting in:    5')
-time.sleep(1)
-print('starting in:    4')
-time.sleep(1)
-print('starting in:    3')
-time.sleep(1)
-print('starting in:    2')
-time.sleep(1)
-print('starting in:    1')
-time.sleep(1)
+x0 = np.array([0.4, 0.44])  # [x0,y0] starting location
+alpha = np.radians(0)  # starting orientation angle with x-axis
+d0 = np.array([np.cos(alpha), np.sin(alpha)])  # starting orientation vector
+x1 = np.array([0.4, 2.5])  # [x1, y1] end location
+x2 = np.array([5, 5])  # [x1, y1] end location
+
+# print('starting in:    5')
+# time.sleep(1)
+# print('starting in:    4')
+# time.sleep(1)
+# print('starting in:    3')
+# time.sleep(1)
+# print('starting in:    2')
+# time.sleep(1)
+# print('starting in:    1')
+# time.sleep(1)
 
 # initial values
 v = 0
@@ -234,15 +240,15 @@ while dx > 0.001:
 
     # barriers
     if x0[0] < 0.25 or x0[0] > 4.55 or x0[1] < 0.25 or x0[1] > 4.55:
-        # kitt.brake(v)
-        time.sleep(v / 2.3)
-        # kitt.stop()
+        kitt.brake(v)
+        # time.sleep(np.abs(v) / 2.3)
+        kitt.drive(150, 150)
         dt, t, v, x0, d0, alpha = measure_loc(t, v, m, 150, L, alpha, 145, x0, Fb_max)
         power = 142  # backward
         turn = 150  # straight (but slightly turning against off-set, only noticeable when driving backward)
         # turn = deg_to_pwm(-omega)
         while x0[0] < 0.45 or x0[0] > 4.35 or x0[1] < 0.45 or x0[1] > 4.35:
-            # kitt.drive(power, turn)
+            kitt.drive(power, turn)
             dt, t, v, x0, d0, alpha = measure_loc(t, v, m, turn, L, alpha, power, x0, Fa_max)
 
     elif dx < np.abs(np.sin(omega) * 2 * R_min_forward):
@@ -254,17 +260,19 @@ while dx > 0.001:
         #     turn = 200
         # else:
         #     turn = 150
-        # kitt.drive(power, turn)
+        kitt.drive(power, turn)
     else:
         power = 158
         turn = deg_to_pwm(np.rad2deg(omega))
-        # kitt.drive(power, turn)
+        kitt.drive(power, turn)
 
-    if dx < 0.1 and np.any(x_target == x1):
+    if dx < 0.05 and np.any(x_target == x1):
         print('x1 reached')
-        # kitt.drive(145, 150)
+        kitt.drive(145, 150)
         time.sleep(np.abs(v / 2.3))
-        # kitt.stop()
+        kitt.stop()
+        power = 150
+        turn = 150
         v = 0
         # Location = get_stationary_location(10)
         Location = np.array([x0[0] + 0.1, x0[1] + 0.1])
@@ -282,9 +290,11 @@ while dx > 0.001:
         print('target', x_target)
     elif dx < 0.1 and np.any(x_target == x2):
         print('x2 reached')
-        # kitt.drive(145, 150)
+        kitt.drive(145, 150)
         time.sleep(np.abs(v / 2.3))
-        # kitt.stop()
+        kitt.stop()
+        power = 150
+        turn = 150
         v = 0
         # Location = get_stationary_location(10)
         Location = np.array([x0[0]+0.1, x0[1]+0.1])
@@ -306,12 +316,6 @@ while dx > 0.001:
     plt.plot(x0[0], x0[1], marker='.')
     print('x0 ', x0)
     # print('x0', x0)
-
-# stop at location
-# kitt.drive(145, 150)
-time.sleep(np.abs(v / 2.3))
-# kitt.stop()
-v = 0
 
 # del kitt        # disconnect from kitt
 
