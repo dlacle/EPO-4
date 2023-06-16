@@ -1,6 +1,5 @@
-import keyboard
-import serial
 import time
+import keyboard
 from KITT import KITT
 
 # Transmitting connection takes place over port 5
@@ -36,7 +35,7 @@ def check_keyboard_input():
             direction = 150  # Default neutral direction
 
         if keyboard.is_pressed('q'):
-            break  # Exit the loop if 'q' is pressedddddaaaa
+            break  # Exit the loop if 'q' is pressed
 
         # Check if there is a change in speed or direction
         if speed != previous_speed:
@@ -50,16 +49,17 @@ def check_keyboard_input():
             previous_speed = speed
 
         if direction != previous_direction:
-           KITT.set_dir(direction)
-           fdirection = f"D{direction}\n"
-           print(fdirection)  # Register check
-           # serial_port.write(fdirection.encode())
-           previous_direction = direction
+            KITT.set_dir(direction)
+            fdirection = f"D{direction}\n"
+            print(fdirection)  # Register check
+            # serial_port.write(fdirection.encode())
+            previous_direction = direction
 
         time.sleep(0.1)  # Adjust sleep time as needed
 
     # Shutting down the Bluetooth connection with the car
     # serial_port.close()
+
 
 KITT = KITT()
 # print('port opened')
