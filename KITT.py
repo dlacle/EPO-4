@@ -23,7 +23,7 @@ class KITT():
         ports = serial.tools.list_ports.comports()
         for i in range(len(ports)):
             print(f"{i} - {ports[i].description}")
-        comport = 'COM7'
+        comport = 'COM3'
         # comport = ports[int(input(f"Enter device index: \n"))].device
 
         # # global comport
@@ -32,9 +32,9 @@ class KITT():
         try:
             self.serial = serial.Serial(comport, 115200, rtscts=True)
             print("Port details ->", self.serial)
-        except serial.SerialException as var:
+        except self.serial.SerialException as var:
             print("Error has occured")
-            print("var")
+            print("var:",var)
         else:
             print("connected, serial port opened")
 
