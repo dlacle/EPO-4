@@ -6,17 +6,11 @@ import matplotlib.pyplot as plt
 # from epo4.Module2.Module2_mic_array.get_stationary_location import*
 
 def deg_to_pwm(angle):
-    pwm_value = round(((angle*1.2 + phi_max) / (2*phi_max)) * (MAX_PWM - MIN_PWM) + MIN_PWM)
+    pwm_value = round(50 * angle * 1.1 / phi_max + MIN_PWM + 50)
     if pwm_value > 200:
         pwm_value = 200
     elif pwm_value < 100:
         pwm_value = 100
-    # if omega > 0.01388*np.pi:
-    #     pwm_value = 200
-    # elif omega < 0.01388*np.pi:
-    #     pwm_value = 100
-    # else:
-    #     pwm_value = 150
     return pwm_value
 
 
@@ -44,7 +38,7 @@ def measure_loc(t, v_old, m, Turn, L, alpha, power, old_x0, fa_max):
     PHI = phi(Turn, phi_max)
     phi_rad = np.radians(PHI)
     phi_rad = call_angle(phi_rad)
-    Fa = np.cos(phi_rad*(0.25*np.pi/np.radians(phi_max))) * acceleration_force(fa_max, power)
+    Fa = np.cos(phi_rad*(0.28*np.pi/np.radians(phi_max))) * acceleration_force(fa_max, power)
     a = acceleration(v_old, Fa, m)
     v = v_old + a * DT
 
@@ -183,15 +177,15 @@ def call_angle(angle):
 
 # Define constants
 # Fa_max = 10.615                 # Accelerating force Max.
-Fb_max = 17.7  # Brake force Max.
-b = 3.81  # Constant for linear drag force
-c = 0.2  # Constant for quadratic drag force
-Fa_max0 = b * 2.35 + c * pow(2.35, 2)  # Accelerating force Max.
-voltage = 19.4
+b = 3.81        # Constant for linear drag force
+c = 0.15         # Constant for quadratic drag force
+Fa_max0 = b * 2.35 + c * pow(2.35, 2)       # Accelerating force Max.
+voltage = 18.15      # battery voltage of the car
+Fb_max = 17.7 * voltage/17.8                # Brake force Max.
 Fa_max = Fa_max0 * voltage/17.8
-m = 5.6  # Mass of car
-L = 0.335  # Length of car
-phi_max = 28  # Max. steering angle
+m = 5.6         # Mass of car
+L = 0.335       # Length of car
+phi_max = 28         # Max. steering angle
 
 # limit conditions
 R_min_forward = radius(np.radians(phi_max), 1)

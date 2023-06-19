@@ -2,13 +2,13 @@ import serial
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-# from KITT import*
+from KITT import*
 # from localize import*
 
 def deg_to_pwm(angle):
     MIN_PWM = 100
     MAX_PWM = 200
-    pwm_value = round(((angle*1.2 + phi_max) / (2*phi_max)) * (MAX_PWM - MIN_PWM) + MIN_PWM)
+    pwm_value = round(50 * angle * 1.1 / phi_max + MIN_PWM + 50)
     if pwm_value > 200:
         pwm_value = MAX_PWM
     elif pwm_value < 100:
@@ -40,7 +40,7 @@ def measure_loc(t, v_old, m, Turn, L, alpha, power, old_x0, fa_max):
     PHI = phi(Turn, phi_max)
     phi_rad = np.radians(PHI)
     phi_rad = call_angle(phi_rad)
-    Fa = np.cos(phi_rad*(0.25*np.pi/np.radians(phi_max))) * acceleration_force(fa_max, power)
+    Fa = np.cos(phi_rad*(0.28*np.pi/np.radians(phi_max))) * acceleration_force(fa_max, power)
     a = acceleration(v_old, Fa, m)
     v = v_old + a * DT
     if phi_rad != 0:  # if the car turns
@@ -176,9 +176,9 @@ def call_angle(angle):
 # Define constants
 # Fa_max = 10.615                 # Accelerating force Max.
 b = 3.81        # Constant for linear drag force
-c = 0.2         # Constant for quadratic drag force
+c = 0.15         # Constant for quadratic drag force
 Fa_max0 = b * 2.35 + c * pow(2.35, 2)       # Accelerating force Max.
-voltage = 19.4      # battery voltage of the car
+voltage = 18.15      # battery voltage of the car
 Fb_max = 17.7 * voltage/17.8                # Brake force Max.
 Fa_max = Fa_max0 * voltage/17.8
 m = 5.6         # Mass of car
@@ -190,8 +190,8 @@ R_min_forward = radius(np.radians(phi_max), 1)
 R_min_backward = radius(np.radians(phi_max), -1)
 
 # transmitting connection takes place over port 6
-# comport = 'COM8'
-# kitt = KITT(comport)                                                    # create KITT object
+comport = 'COM8'
+kitt = KITT(comport)                                                    # create KITT object
 
 # determine begin and end location
 x0 = np.array([int(input('x0: ', )) / 100, int(input('y0: ', )) / 100])  # [x0,y0] starting location
@@ -205,16 +205,16 @@ x1 = np.array([int(input('x1: ', )) / 100, int(input('y1: ', )) / 100])  # [x1, 
 # x1 = np.array([1.3, 1])  # [x1, y1] end location
 # x2 = np.array([5, 5])  # [x1, y1] end location
 
-print('starting in:    5')
-time.sleep(1)
-print('starting in:    4')
-time.sleep(1)
-print('starting in:    3')
-time.sleep(1)
-print('starting in:    2')
-time.sleep(1)
-print('starting in:    1')
-time.sleep(1)
+# print('starting in:    5')
+# time.sleep(1)
+# print('starting in:    4')
+# time.sleep(1)
+# print('starting in:    3')
+# time.sleep(1)
+# print('starting in:    2')
+# time.sleep(1)
+# print('starting in:    1')
+# time.sleep(1)
 
 # initial values
 v = 0
@@ -236,17 +236,17 @@ while dx > 0.001:
 
     # barriers
     if x0[0] < 0.25 or x0[0] > 4.55 or x0[1] < 0.25 or x0[1] > 4.55:
-        # kitt.brake(v)
-        # time.sleep(np.abs(v) / 2.3)
-        # kitt.drive(150, 150)
+        kitt.brake(v)
+        time.sleep(np.abs(v) / 2.3)
+        kitt.drive(150, 150)
         dt, t, v, x0, d0, alpha = measure_loc(t, v, m, 150, L, alpha, 145, x0, Fb_max)
         power = 142  # backward
         turn = 150  # straight (but slightly turning against off-set, only noticeable when driving backward)
 
         while x0[0] < 0.45 or x0[0] > 4.35 or x0[1] < 0.45 or x0[1] > 4.35:
-            # dx, omega = relative_loc(x0, x_target, alpha)
-            # turn = deg_to_pwm(-omega)
-            # kitt.drive(power, turn)
+            dx, omega = relative_loc(x0, x_target, alpha)
+            turn = deg_to_pwm(np.rad2deg(-omega))
+            kitt.drive(power, turn)
             dt, t, v, x0, d0, alpha = measure_loc(t, v, m, turn, L, alpha, power, x0, Fa_max)
 
     # check if reachable driving forward
@@ -260,17 +260,16 @@ while dx > 0.001:
         #     turn = 200
         # else:
         #     turn = 150
-        # kitt.drive(power, turn)
+        kitt.drive(power, turn)
     else:
         power = 158
         turn = deg_to_pwm(np.rad2deg(omega))
-        # kitt.drive(power, turn)
+        kitt.drive(power, turn)
 
     if dx < 0.1:
         print('x2 reached')
-        # kitt.drive(145, 150)
-        time.sleep(np.abs(v / 2.3))
-        # kitt.stop()
+        kitt.brake(v)
+        kitt.stop()
         power = 150
         turn = 150
         v = 0
@@ -295,7 +294,7 @@ while dx > 0.001:
     print('x0 ', x0)
     # print('x0', x0)
 
-# del kitt        # disconnect from kitt
+del kitt        # disconnect from kitt
 
 # plot trajectory
 plt.grid(True)
