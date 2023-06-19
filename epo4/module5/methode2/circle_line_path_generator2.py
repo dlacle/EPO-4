@@ -3,7 +3,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 from check_reachability_endpoint import check_endpoint_reachability
-from circle_line_function import circle_line_function
+from circle_line_funcion2 import circle_line_function
 
 def check_within_field(x_short, y_short, x_min, x_max, y_min, y_max):
     for x, y in zip(x_short, y_short):
@@ -47,7 +47,7 @@ y_max = field_size - safety_border_distance
 # Assuming max steering angle is 35 degrees in both directions
 L = 34.5  # Length of the car in cm's
 # init_or = float(input('Give the initial orientation (angle to positive x-axis): '))
-init_or = 0
+init_or = 180
 init_or = init_or % 360
 
 # start = input('Coordinates of Start (example: [0, 0]): ')
@@ -57,14 +57,14 @@ y_init = 30
 
 # waypoint = input('Coordinates of Waypoint (example: [0, 0]): ')
 # w_x, w_y = ast.literal_eval(waypoint)
-w_x = 180
-w_y = 240
+w_x = 200
+w_y = 200
 
 # final = input('Coordinates of Final Destination (example: [0, 0]): ')
 # f_x, f_y = ast.literal_eval(final)
 f_x = 420
 f_y = 180
-location_targets = [[x_init,y_init],[w_x,w_y],[f_x,f_y]]#,[f_x,f_y],[420,60]
+location_targets = [[x_init,y_init],[w_x,w_y]]#,[f_x,f_y],[420,60]
 
 phase_displacements = []
 
@@ -103,6 +103,12 @@ for i in range(len(location_targets) - 1):
     x_start, y_start = location_targets[i]
     x_dest, y_dest = location_targets[i + 1]
 
+    # Plot an arrow indicating the orientation
+    arrow_length = 34.5
+    arrow_dx = arrow_length * np.cos(np.deg2rad(orientation[-1]))
+    arrow_dy = arrow_length * np.sin(np.deg2rad(orientation[-1]))
+    plt.arrow(x_start, y_start, arrow_dx, arrow_dy, color='black', width=0.8)
+
     print(f"Starting point: ({x_start}, {y_start}), Destination point: ({x_dest}, {y_dest})")
 
     if phase_displacements[i] == orientation[-1] or phase_displacements[i] == (180 + orientation[-1]) % 360:
@@ -118,13 +124,13 @@ for i in range(len(location_targets) - 1):
 
     elif check_endpoint_reachability(x_start, y_start, orientation[-1], r_f, x_dest, y_dest):
         while True:
-            new_or_res, x_start_res, y_start_res, alpha_res, x_short_res, y_short_res, l_r_res,l1_length_res= circle_line_function(
+            new_or_res, x_start_res, y_start_res, alpha_res, x_short_res, y_short_res, l_r_res,l1_length_res,intersect, center_x, center_y= circle_line_function(
                 phase_displacements[i], orientation[-1], r_f, x_start, y_start, x_dest, y_dest)
             if not check_within_field(x_short_res, y_short_res, x_min, x_max, y_min, y_max):
                 print('Driving forward to new point, point reachable but outside safety border, trying backwards')
                 if check_endpoint_reachability(x_start, y_start, ((orientation[-1] + 180) % 360), r_b, x_dest, y_dest): #check if backwards turn is possible
 
-                    new_or_res, x_start_res, y_start_res, alpha_res, x_short_res, y_short_res, l_r_res,l1_length_res = circle_line_function(
+                    new_or_res, x_start_res, y_start_res, alpha_res, x_short_res, y_short_res, l_r_res,l1_length_res,intersect, center_x, center_y = circle_line_function(
                         phase_displacements[i],((orientation[-1] + 180) % 360), r_f, x_start, y_start, x_dest, y_dest)
                     new_or_res = ((new_or_res + 180) % 360)
                     if check_within_field(x_short_res, y_short_res, x_min, x_max, y_min, y_max):
@@ -136,6 +142,16 @@ for i in range(len(location_targets) - 1):
 
                         Mdir_res = 'backwards'
                         Mdir.append(Mdir_res)
+
+                        #plot the path
+                        plt.plot(x_short_res, y_short_res, color='blue', linestyle='--')  # plot turn
+                        plt.plot([x_dest, x_short_res[0]], [y_dest, y_short_res[0]],color='black', linestyle='--')  # plot straigtline
+
+                        # plotting points
+                        plt.plot(intersect[0], intersect[1], marker='o', color='black', markersize=5)
+                        plt.plot(center_x, center_y, marker='x', color='green', markersize=10)
+
+
                         print('Driving backwards to new point, point reachable and within safety border')
                         break
 
@@ -147,12 +163,20 @@ for i in range(len(location_targets) - 1):
                 alpha.append(alpha_res)
                 orientation.append(new_or_res)
                 l_r.append(l_r_res)
+
+                # plot the path
+                plt.plot(x_short_res, y_short_res, 'r--')  # plot turn
+                plt.plot([x_dest, x_short_res[0]], [y_dest, y_short_res[0]], 'g--')  # plot straigtline
+
+                # plotting points
+                plt.plot(intersect[0], intersect[1], marker='o', color='black', markersize=5)
+                plt.plot(center_x, center_y, marker='x', color='green', markersize=10)
                 break
 
     elif check_endpoint_reachability(x_start, y_start, ((orientation[-1] + 180) % 360), r_b, x_dest, y_dest):
         print('Point inside turn radius forwards, try if backwards possible, checking safety border')
         while True:
-            new_or_res, x_start_res, y_start_res, alpha_res, x_short_res, y_short_res, l_r_res,l1_length_res = circle_line_function(
+            new_or_res, x_start_res, y_start_res, alpha_res, x_short_res, y_short_res, l_r_res,l1_length_res,intersect, center_x, center_y = circle_line_function(
                 phase_displacements[i], ((orientation[-1] + 180) % 360), r_f, x_start, y_start, x_dest, y_dest)
             new_or_res = ((new_or_res + 180) % 360)
             if check_within_field(x_short_res, y_short_res, x_min, x_max, y_min, y_max):
@@ -165,6 +189,14 @@ for i in range(len(location_targets) - 1):
 
                 Mdir_res = 'backwards'
                 Mdir.append(Mdir_res)
+
+                # plot the path
+                plt.plot(x_short_res, y_short_res, color='blue', linestyle='--')  # plot turn
+                plt.plot([x_dest, x_short_res[0]], [y_dest, y_short_res[0]],color='black', linestyle='--')  # plot straigtline
+
+                # plotting points
+                plt.plot(intersect[0], intersect[1], marker='o', color='black', markersize=5)
+                plt.plot(center_x, center_y, marker='x', color='green', markersize=10)
                 break
     else:
         print('points not reachable forward and backwards, try something else')
@@ -272,11 +304,11 @@ plt.gca().set_aspect('equal', adjustable='box')
 plt.show()
     # return orientation, alpha, l_r, Mdir,l1_lenght
 
-l1_length.append(l1_length_res)
-                Mdir.append(Mdir_res)
-                alpha.append(alpha_res)
-                orientation.append(new_or_res)
-                l_r.append(l_r_res)
-
-                Mdir_res = 'backwards'
-                Mdir.append(Mdir_res)
+# l1_length.append(l1_length_res)
+#                 Mdir.append(Mdir_res)
+#                 alpha.append(alpha_res)
+#                 orientation.append(new_or_res)
+#                 l_r.append(l_r_res)
+#
+#                 Mdir_res = 'backwards'
+#                 Mdir.append(Mdir_res)
