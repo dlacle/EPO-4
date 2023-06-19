@@ -20,10 +20,10 @@ class KITT():
         # current_voltage = self.get_status(data = 'voltage')
 
         # get port info
-        ports = serial.tools.list_ports.comports()
-        for i in range(len(ports)):
-            print(f"{i} - {ports[i].description}")
-        # comport = 'COM7'
+        # ports = serial.tools.list_ports.comports()
+        # for i in range(len(ports)):
+        #     print(f"{i} - {ports[i].description}")
+
         # comport = ports[int(input(f"Enter device index: \n"))].device
 
         # # global comport

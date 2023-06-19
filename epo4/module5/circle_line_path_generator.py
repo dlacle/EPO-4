@@ -58,8 +58,8 @@ w_y = 300
 
 # final = input('Coordinates of Final Destination (example: [0, 0]): ')
 # f_x, f_y = ast.literal_eval(final)
-f_x = 400
-f_y = 200
+f_x = 30
+f_y = 450
 
 # radius of circle will be constant assuming steering angle is 35 degrees
 r = L / math.sin(math.radians(35))
