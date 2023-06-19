@@ -2,8 +2,8 @@ import serial
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-# from KITT import*
-# from epo4.Module2.Module2_mic_array.get_stationary_location import*
+from KITT import*
+from epo4.Module2.Module2_mic_array.get_stationary_location import*
 
 def deg_to_pwm(angle):
     pwm_value = round(50 * angle * 1.1 / phi_max + MIN_PWM + 50)
@@ -180,8 +180,8 @@ def call_angle(angle):
 b = 3.81        # Constant for linear drag force
 c = 0.15         # Constant for quadratic drag force
 Fa_max0 = b * 2.35 + c * pow(2.35, 2)       # Accelerating force Max.
-voltage = 18.15      # battery voltage of the car
-Fb_max = 17.7 * voltage/17.8                # Brake force Max.
+voltage = 18.0      # battery voltage of the car
+Fb_max = 17.7 * (voltage/17.8)**2                # Brake force Max.
 Fa_max = Fa_max0 * voltage/17.8
 m = 5.6         # Mass of car
 L = 0.335       # Length of car
@@ -195,9 +195,9 @@ MIN_PWM = 100
 MAX_PWM = 200
 
 # transmitting connection takes place over port 6
-comport = 'COM7'
-# kitt = KITT(comport)
-# kitt.set_beacon()       # create KITT object
+comport = 'COM3'
+kitt = KITT(comport)
+kitt.set_beacon()       # create KITT object
 
 # determine begin and end location
 # x0 = np.array([int(input('x0: ', )) / 100, int(input('y0: ', )) / 100])  # [x0,y0] starting location
@@ -215,13 +215,13 @@ x2 = np.array([0.4, 0.4])  # [x1, y1] end location
 # print('starting in:    5')
 # time.sleep(1)
 # print('starting in:    4')
-# time.sleep(1)
-# print('starting in:    3')
-# time.sleep(1)
-# print('starting in:    2')
-# time.sleep(1)
-# print('starting in:    1')
-# time.sleep(1)
+time.sleep(1)
+print('starting in:    3')
+time.sleep(1)
+print('starting in:    2')
+time.sleep(1)
+print('starting in:    1')
+time.sleep(1)
 
 # initial values
 v = 0
@@ -244,41 +244,33 @@ while dx > 0.001:
 
     # barriers
     if x0[0] < 0.25 or x0[0] > 4.55 or x0[1] < 0.25 or x0[1] > 4.55:
-        # kitt.brake(v)
-        # time.sleep(np.abs(v) / 2.3)
-        # kitt.drive(150, 150)
+        kitt.brake(v)
+        kitt.stop()
         dt, t, v, x0, d0, alpha = measure_loc(t, v, m, 150, L, alpha, 145, x0, Fb_max)
         power = 142  # backward
         turn = 150  # straight (but slightly turning against off-set, only noticeable when driving backward)
         while x0[0] < 0.45 or x0[0] > 4.35 or x0[1] < 0.45 or x0[1] > 4.35:
-            # kitt.drive(power, turn)
+            kitt.drive(power, turn)
             dt, t, v, x0, d0, alpha = measure_loc(t, v, m, turn, L, alpha, power, x0, Fa_max)
 
     elif v <= 0 and dx < np.abs(np.sin(omega) * 2 * R_min_forward):
         power = 142  # backward
         turn = deg_to_pwm(np.rad2deg(-omega))
-        # if omega > 0:
-        #     turn = 100
-        # elif omega < 0:
-        #     turn = 200
-        # else:
-        #     turn = 150
-        # kitt.drive(power, turn)
+        kitt.drive(power, turn)
     else:
         power = 158
         turn = deg_to_pwm(np.rad2deg(omega))
-        # kitt.drive(power, turn)
+        kitt.drive(power, turn)
 
     if dx < 0.05 and np.any(x_target == x1):
         print('x1 reached')
-        # kitt.drive(145, 150)
-        # time.sleep(np.abs(v / 2.3))
-        # kitt.stop()
+        kitt.brake(v)
+        kitt.stop()
         power = 150
         turn = 150
         v = 0
-        # Location = get_stationary_location(10)
-        Location = np.array([x0[0] + 0.1, x0[1] + 0.1])
+        Location = get_stationary_location(10)
+        # Location = np.array([x0[0] + 0.1, x0[1] + 0.1])
         x_model = x0
         if Location[0] > x0[0] + 0.4 or Location[1] > x0[1] + 0.4:
             x0 = Location
@@ -293,16 +285,15 @@ while dx > 0.001:
         print('target', x_target)
     elif dx < 0.1 and np.any(x_target == x2):
         print('x2 reached')
-        # kitt.drive(145, 150)
-        # time.sleep(np.abs(v / 2.3))
-        # kitt.stop() # kitt.drive(150,150)
+        kitt.brake(v)
+        kitt.stop()     # kitt.drive(150,150)
         power = 150
         turn = 150
         v = 0
-        # Location = get_stationary_location(10)
-        Location = np.array([x0[0]+0.1, x0[1]+0.1])
+        Location = get_stationary_location(10)
+        # Location = np.array([x0[0]+0.1, x0[1]+0.1])
         x_model = x0
-        if Location[0] > x0[0]+0.4 or Location[1] > x0[1]+0.4:
+        if Location[0] > x0[0]+0.3 or Location[1] > x0[1]+0.3:
             x0 = Location
         else:
             x0 = np.array([(x_model[0]+Location[0])/2, (x_model[1]+Location[1])/2])
@@ -320,7 +311,7 @@ while dx > 0.001:
     print('x0 ', x0)
     # print('x0', x0)
 
-# del kitt        # disconnect from kitt
+del kitt        # disconnect from kitt
 
 # plot trajectory
 plt.grid(True)
