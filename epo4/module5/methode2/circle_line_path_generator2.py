@@ -47,7 +47,7 @@ y_max = field_size - safety_border_distance
 # Assuming max steering angle is 35 degrees in both directions
 L = 34.5  # Length of the car in cm's
 # init_or = float(input('Give the initial orientation (angle to positive x-axis): '))
-init_or = 180
+init_or = 135
 init_or = init_or % 360
 
 # start = input('Coordinates of Start (example: [0, 0]): ')
@@ -62,8 +62,8 @@ w_y = 200
 
 # final = input('Coordinates of Final Destination (example: [0, 0]): ')
 # f_x, f_y = ast.literal_eval(final)
-f_x = 420
-f_y = 180
+f_x = 200
+f_y = 300
 location_targets = [[x_init,y_init],[w_x,w_y]]#,[f_x,f_y],[420,60]
 
 phase_displacements = []
@@ -129,10 +129,10 @@ for i in range(len(location_targets) - 1):
             if not check_within_field(x_short_res, y_short_res, x_min, x_max, y_min, y_max):
                 print('Driving forward to new point, point reachable but outside safety border, trying backwards')
                 if check_endpoint_reachability(x_start, y_start, ((orientation[-1] + 180) % 360), r_b, x_dest, y_dest): #check if backwards turn is possible
-
+                    print('Driving backwards to new point, point is reachable, check if within safety border')
                     new_or_res, x_start_res, y_start_res, alpha_res, x_short_res, y_short_res, l_r_res,l1_length_res,intersect, center_x, center_y = circle_line_function(
                         phase_displacements[i],((orientation[-1] + 180) % 360), r_f, x_start, y_start, x_dest, y_dest)
-                    new_or_res = ((new_or_res + 180) % 360)
+                    new_or_res = ((new_or_res + 180) % 360) # change back to correct orient
                     if check_within_field(x_short_res, y_short_res, x_min, x_max, y_min, y_max):
                         # use the parameters of the function above
                         l1_length.append(l1_length_res)
@@ -151,8 +151,11 @@ for i in range(len(location_targets) - 1):
                         plt.plot(intersect[0], intersect[1], marker='o', color='black', markersize=5)
                         plt.plot(center_x, center_y, marker='x', color='green', markersize=10)
 
-
                         print('Driving backwards to new point, point reachable and within safety border')
+                        break
+
+                    else:
+                        print('points never reachable forward and backwards, dead point')
                         break
 
             else:
@@ -174,7 +177,7 @@ for i in range(len(location_targets) - 1):
                 break
 
     elif check_endpoint_reachability(x_start, y_start, ((orientation[-1] + 180) % 360), r_b, x_dest, y_dest):
-        print('Point inside turn radius forwards, try if backwards possible, checking safety border')
+        print('Point inside turn radius forwards, backwards turn possible, checking safety border')
         while True:
             new_or_res, x_start_res, y_start_res, alpha_res, x_short_res, y_short_res, l_r_res,l1_length_res,intersect, center_x, center_y = circle_line_function(
                 phase_displacements[i], ((orientation[-1] + 180) % 360), r_f, x_start, y_start, x_dest, y_dest)
@@ -197,6 +200,9 @@ for i in range(len(location_targets) - 1):
                 # plotting points
                 plt.plot(intersect[0], intersect[1], marker='o', color='black', markersize=5)
                 plt.plot(center_x, center_y, marker='x', color='green', markersize=10)
+                break
+            else:
+                print('points never reachable forward and backwards, dead point')
                 break
     else:
         print('points not reachable forward and backwards, try something else')

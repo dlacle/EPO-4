@@ -105,6 +105,7 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
     # if (center_x < x_start and center_x < intersect[0]):
     if check_correct_angle_alpha(center_x,center_y, intersect[0], intersect[1]):
         alpha = 2* np.pi - alpha
+        print('check')
     # if adjust_orientation == 1 and intersect[0]>x_start:
     #     alpha = 2*np.pi - alpha
     # elif adjust_orientation == 0 and intersect[0]> x_start:
@@ -236,6 +237,7 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
             x_short[i], y_short[i] = rotate(np.array([x_short[i], y_short[i]]), angle)
             x_short[i] = x_short[i] + x_start
             y_short[i] = y_short[i] + y_start
+
         # reflect point for plotting later
         intersect[0] = intersect[0] + 2 * (x_start - intersect[0])
         center_x = center_x + 2 * (x_start - center_x)
@@ -290,9 +292,9 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
         center_x = center_x + 2 * (x_start - center_x)
         center_y = center_y + 2 * (y_start - center_y)
 
-        # only used for plotting points
-        print(f" final used intersection (x,y): ({intersect[0]},{intersect[1]})")
-        print("final Center turn circle :", center_x, center_y)
+    # only used for plotting points
+    print(f" final used intersection (x,y): ({intersect[0]},{intersect[1]})")
+    print("final Center turn circle :", center_x, center_y)
 
     x_short = x_short.flatten() #reshapes x_short into a column vector
     y_short = y_short.flatten() #reshapes x_short into a column vector
@@ -386,5 +388,5 @@ def check_correct_angle_alpha(x_center, y_center, intersect_x, intersect_y):
 
         # Calculate the value of x for the given y using the rearranged equation x = (y - b) / m
         x_value = (y_center - b) / slope
-
+        print("x_value ", x_value)
     return x_value > x_center

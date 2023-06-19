@@ -43,27 +43,26 @@ y_max = field_size - safety_border_distance
 # Assuming max steering angle is 35 degrees in both directions
 L = 34.5  # Length of the car in cm's
 # init_or = float(input('Give the initial orientation (angle to positive x-axis): '))
-init_or = 180
+init_or = -20
 init_or = init_or % 360
 
 # start = input('Coordinates of Start (example: [0, 0]): ')
 # x_init, y_init = ast.literal_eval(start)
-x_init = 100
+x_init = 300
 y_init = 100
 
 # waypoint = input('Coordinates of Waypoint (example: [0, 0]): ')
 # w_x, w_y = ast.literal_eval(waypoint)
-w_x = 300
+w_x = 100
 w_y = 300
 
 # final = input('Coordinates of Final Destination (example: [0, 0]): ')
 # f_x, f_y = ast.literal_eval(final)
-f_x = 30
-f_y = 450
-
+f_x = 200
+f_y = 300
 # radius of circle will be constant assuming steering angle is 35 degrees
 r = L / math.sin(math.radians(35))
-# r = 100
+r = 100
 print("Radius:",r)
 
 v1 = [w_x - x_init, w_y - y_init]
@@ -111,12 +110,12 @@ if phase_v1 == init_or or phase_v1 == (180 + init_or) % 360:
 
 elif check_endpoint_reachability(x_init, y_init, new_or, r, w_x, w_y):
     # Execute circle_line_function
-    new_or, x_start, y_start, alpha,x_short,y_short, l_r, x_mirror, y_mirror, both_mirror, l1_vector = circle_line_function(
+    new_or, x_start,y_start,alpha,x_short,y_short,l_r,l1_length = circle_line_function(
         phase_v1, new_or, r, x_init, y_init, x_dest, y_dest)
     print(check_within_field(x_short, y_short, x_min, x_max, y_min, y_max))
 
     if check_endpoint_reachability(w_x, w_y, new_or, r, f_x, f_y):
-        new_or, x_start, y_start, alpha,x_short,y_short, l_r, x_mirror, y_mirror, both_mirror, l1_vector = circle_line_function(
+        new_or, x_start,y_start,alpha,x_short,y_short,l_r,l1_length = circle_line_function(
         phase_v2, new_or, r, w_x, w_y, f_x, f_y)
         print(check_within_field(x_short, y_short, x_min, x_max, y_min, y_max))
     else:
