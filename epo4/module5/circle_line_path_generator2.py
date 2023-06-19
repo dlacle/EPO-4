@@ -159,7 +159,6 @@ for i in range(len(location_targets) - 1):
                 print('Point inside turn radius forwards, but backwards possible, inside safety border')
                 # use the parameters of the function above
                 l1_length.append(l1_length_res)
-                Mdir.append(Mdir_res)
                 alpha.append(alpha_res)
                 orientation.append(new_or_res)
                 l_r.append(l_r_res)
