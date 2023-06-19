@@ -29,7 +29,7 @@ def plot_safety_border():
              [y_min, y_min, y_max, y_max, y_min],
              linestyle='dotted', color='blue')
 
-def circle_line_path_generator(r,init_or,x_init,y_init,x_dest,y_dest):
+def circle_line_path_generator(r_f,r_b,init_or,x_init,y_init,x_dest,y_dest):
     # Define the field size and safety border distance and grid parameters
     field_size = 480
     grid_spacing = 30
@@ -62,27 +62,21 @@ def circle_line_path_generator(r,init_or,x_init,y_init,x_dest,y_dest):
     # f_x, f_y = ast.literal_eval(final)
     f_x = 30
     f_y = 450
+    location_targets = [[x_init,y_init],[w_x,w_y],[f_x,f_y]]
 
-    # radius of circle will be constant assuming steering angle is 35 degrees
-    r = L / math.sin(math.radians(35))
-    # r = 100
-    print("Radius:",r)
+    phase_displacements = []
 
-    v1 = [w_x - x_init, w_y - y_init]
-    v2 = [f_x - w_x, f_y - w_y]
-    phase_v1 = math.degrees(math.atan2(v1[1], v1[0]))  # Angle displacement vector
-    phase_v1 = phase_v1 % 360
-    phase_v2 = math.degrees(math.atan2(v2[1], v2[0]))
-    phase_v2 = phase_v2 % 360
-    print('angle displacement vector:', phase_v1)
-    print('angle displacement vector:', phase_v2)
+    for i in range(1, len(location_targets)):
+        dis_vect = [location_targets[i][0] - location_targets[i - 1][0], location_targets[i][1] - location_targets[i - 1][1]]
+        phase_dis_vect = math.degrees(math.atan2(dis_vect[1], dis_vect[0]))  # Angle displacement vector
+        phase_dis_vect = phase_dis_vect % 360
+        phase_displacements.append(phase_dis_vect)
 
-    # init_or = adjust_orientation(init_or,phase_v1)
-    # init_or = map_orientation(phase_v1,init_or)
     print('init_or', init_or)
     print('diff', abs(init_or - phase_v1))
 
-
+    # initialize the new_or which will be the recursive variable
+    new_or = init_or
 
     # Create a square figure
     fig = plt.figure(figsize=(6, 6))
@@ -98,34 +92,53 @@ def circle_line_path_generator(r,init_or,x_init,y_init,x_dest,y_dest):
     we found again to get the needed path.
     """
 
-    # initialize the new_or which will be the recursive variable
-    new_or = init_or
-    x_start = x_init
-    y_start = y_init
-    x_dest = w_x
-    y_dest = w_y
+    for i in range(len(location_targets) - 1):
+        x_start, y_start = location_targets[i]
+        x_dest, y_dest = location_targets[i + 1]
+
+        if phase_displacements[i] == new_or or phase_displacements[i] == (180 + new_or) % 360:
+            l1_length, Mdir = straight_line(phase_displacements[i], new_or, x_start, y_start, x_dest, y_dest)
+            print("No turn neeeded drive straight")
+            print(f'l1_length {l1_length}, Mdir {Mdir}')
+
+        elif check_endpoint_reachability(x_start, y_start, new_or, r_f, x_dest, y_dest) == True:
+            Mdir = 'forward'
+            new_or_res, x_start_res, y_start_res, alpha_res, x_short_res, y_short_res, l_r_res,_,_,_,_ = circle_line_function(
+                phase_displacements[i], new_or, r_f, x_start, y_start, x_dest, y_dest)
+            if check_within_field(x_short, y_short, x_min, x_max, y_min, y_max) == False:
+                print('driving forward to new point, point reachable but outside safety border, try backwards')
+                if check_endpoint_reachability(x_start, y_start, ((new_or+180)%360), r_b, x_dest, y_dest) == True:
+                    Mdir = 'backwards'
+                    new_or_res, x_start_res, y_start_res, alpha_res, x_short_res, y_short_res, l_r_res,_,_,_,_ = circle_line_function(
+                    phase_displacements[i], new_or, r_f, x_start, y_start, x_dest, y_dest)
+                    new_or_res = ((new_or_res+180)%360)
+                    if check_within_field(x_short_res, y_short_res, x_min, x_max, y_min, y_max) == True:
+                        # use the parameters of the function above
+                        new_or = new_or_res
+                        alpha = alpha_res
+                        l_r = l_r_res
+                    print('driving backwards to new point, point reachable and within safety border')
+            else:
+                print('driving forward to new point, point reachable and within safety border')
+                new_or =new_or_res
+                alpha = alpha_res
+                l_r = l_r_res
 
 
-    # check driving in a straight line
-    if phase_v1 == init_or or phase_v1 == (180 + init_or) % 360:
-        l1_lenght, Mdir = straight_line(phase_v1, init_or, x_init, y_init, w_x, w_y)
-        print(f'l1_lenght {l1_lenght},Mdir {Mdir}')
-
-    elif check_endpoint_reachability(x_init, y_init, new_or, r, w_x, w_y):
-        # Execute circle_line_function
-        new_or, x_start, y_start, alpha,x_short,y_short, l_r, x_mirror, y_mirror, both_mirror, l1_vector = circle_line_function(
-            phase_v1, new_or, r, x_init, y_init, x_dest, y_dest)
-        print(check_within_field(x_short, y_short, x_min, x_max, y_min, y_max))
-
-        if check_endpoint_reachability(w_x, w_y, new_or, r, f_x, f_y):
-            new_or, x_start, y_start, alpha,x_short,y_short, l_r, x_mirror, y_mirror, both_mirror, l1_vector = circle_line_function(
-            phase_v2, new_or, r, w_x, w_y, f_x, f_y)
-            print(check_within_field(x_short, y_short, x_min, x_max, y_min, y_max))
+        elif check_endpoint_reachability(x_start, y_start, ((new_or+180)%360), r_b, x_dest, y_dest) == True:
+            print('point inside turn radius forwards, but backwards possible, check safety border')
+            Mdir = 'backwards'
+            new_or_res, x_start_res, y_start_res, alpha_res, x_short_res, y_short_res, l_r_res,_,_,_,_ = circle_line_function(
+                phase_displacements[i], new_or, r_f, x_start, y_start, x_dest, y_dest)
+            new_or_res = ((new_or_res + 180) % 360)
+            if check_within_field(x_short_res, y_short_res, x_min, x_max, y_min, y_max) == True:
+                print('point inside turn radius forwards, but backwards possible, inside safety border')
+                # use the parameters of the function above
+                new_or = new_or_res
+                alpha = alpha_res
+                l_r = l_r_res
         else:
-            print("Second point not reachable")
-    else:
-        print("First point not reachable")
-
+            print('point not reachable forward and backwards turn, try something else ')
 
     # Plot the field border
     plot_safety_border()
@@ -138,18 +151,22 @@ def circle_line_path_generator(r,init_or,x_init,y_init,x_dest,y_dest):
         plt.plot(mic[0], mic[1], marker='s', color='blue', markersize=12)
         plt.text(mic[0], mic[1] + 20, mic[2], color='blue', fontsize=12, ha='center')
 
-    # Plots the points and the displacement vectors
-    # Plotting "x" marks at the given locations
-    plt.plot(x_init, y_init, 'x', color='#0072BD', markersize=10)
-    plt.plot(w_x, w_y, 'x', color='#0072BD', markersize=10)
-    plt.plot(f_x, f_y, 'x', color='#0072BD', markersize=10)
+    # Generate a list of colors for the displacement vectors
+    colors = plt.cm.viridis(np.linspace(0, 1, len(location_targets) - 1))
 
-    # Plotting the displacement vectors
+    # Plotting the points
+    for point in location_targets:
+        plt.plot(point[0], point[1], 'x', color='#0072BD', markersize=10)
+
+    # Plotting the displacement vectors with different colors
     arrow_width = 0.8  # Adjust the width of the arrows
-    plt.arrow(x_init, y_init, w_x - x_init, w_y - y_init, color='red', width=arrow_width,
-              length_includes_head=True)
-    plt.arrow(w_x, w_y, f_x - w_x, f_y - w_y, color='blue', width=arrow_width,
-              length_includes_head=True)
+    for i in range(1, len(location_targets)):
+        start_point = location_targets[i - 1]
+        end_point = location_targets[i]
+        displacement_vector = [end_point[0] - start_point[0], end_point[1] - start_point[1]]
+        color = colors[i - 1]
+        plt.arrow(start_point[0], start_point[1], displacement_vector[0], displacement_vector[1],
+                  color=color, width=arrow_width, length_includes_head=True)
 
         # Set grid lines and labels
     plt.xticks([i for i in range(0, field_size + 1, grid_spacing)])
