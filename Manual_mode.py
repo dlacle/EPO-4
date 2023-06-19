@@ -50,7 +50,7 @@ def check_keyboard_input():
             previous_speed = speed
 
         if direction != previous_direction:
-           KITT.set_dir(direction)
+           KITT.set_angle(direction)
            fdirection = f"D{direction}\n"
            print(fdirection)  # Register check
            # serial_port.write(fdirection.encode())
@@ -61,7 +61,7 @@ def check_keyboard_input():
     # Shutting down the Bluetooth connection with the car
     # serial_port.close()
 
-KITT = KITT()
+KITT = KITT('com3')
 print('port opened')
 check_keyboard_input()
 KITT.stop()

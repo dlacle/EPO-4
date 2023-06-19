@@ -331,7 +331,7 @@ def circle_line_function(phase_v, new_or, r, x_start, y_start, x_dest, y_dest):
         l_r = 'r'
     print('turn',l_r)
 
-    return new_or, x_start,y_start,alpha,x_short,y_short,l_r,x_mirror,y_mirror,both_mirror, l1_vector
+    return new_or, x_start,y_start,alpha,x_short,y_short,l_r,l1_length
 
 
 
@@ -385,9 +385,9 @@ def check_correct_angle_alpha(x_center, y_center, intersect_x, intersect_y):
     if intersect_x == x_center:
         return intersect_x > x_center
 
-    # # Check if the line is horizontal (y-values are the same)
-    # if intersect_y == y_center:
-    #     return None  # No unique x-value exists for a horizontal line
+    # Check if the line is horizontal (y-values are the same)
+    if intersect_y == y_center:
+        return None  # No unique x-value exists for a horizontal line
     else:
         # Calculate the slope (m)
         slope = (intersect_y - y_center) / (intersect_x - x_center)
