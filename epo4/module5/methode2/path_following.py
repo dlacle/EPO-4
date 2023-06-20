@@ -104,271 +104,107 @@ comport = 'COM7'
 kitt = KITT(comport)  # create KITT object
 kitt.set_beacon()
 def path_following(init_or,x_start,y_start,x_dest,y_dest,voltage_battery):
-    c_battery = (voltage_battery/18.8)^2 # P = v^2/R -> thus if volt change by x, P changes by x^2
-    v_real_circle = c_battery*28 # v = (2*pi*r_circle)/t
-    v_real_line = c_battery *41 # v = s/t
+
+# Fa_max = 10.615                 # Accelerating force Max.
+Fb_max = 17.7  # Brake force Max.
+b = 3.81  # Constant for linear drag force
+c = 0.2  # Constant for quadratic drag force
+Fa_max0 = b * 2.3 + c * pow(2.3, 2)  # Accelerating force Max.
+voltage_battery = 19.4
+Fa_max = Fa_max0 * voltage_battery/17.8
+m = 5.6  # Mass of car (kg)
+L = 0.335  # Length of car (meter)
+phi_max = 28  # Max. steering angle
+
+delay = 0.4 # delay (sec) for sending and recieving data
+
+l_measure = 100 # if length straight > 100, start recording
+
+# limit conditions
+R_min_forward = radius(np.radians(phi_max), 1)
+R_min_backward = radius(np.radians(phi_max), -1)
+
+MIN_PWM = 100
+MAX_PWM = 200
+
+
+#drive from point to point
+new_or, alpha, l_r, Mdir, l1_lenght = circle_line_path_generator(init_or,x_start,y_start,x_dest,y_dest)
 
 
 
-    # Fa_max = 10.615                 # Accelerating force Max.
-    Fb_max = 17.7  # Brake force Max.
-    b = 3.81  # Constant for linear drag force
-    c = 0.2  # Constant for quadratic drag force
-    Fa_max0 = b * 2.3 + c * pow(2.3, 2)  # Accelerating force Max.
-    voltage_battery = 19.4
-    Fa_max = Fa_max0 * voltage_battery/17.8
-    m = 5.6  # Mass of car (kg)
-    L = 0.335  # Length of car (meter)
-    phi_max = 28  # Max. steering angle
+input("Press Enter to start challenge...")
+# initial values
+v = 0
+start_time = time.time()
+dt, t = set_time(start_time, 0)
+Fa = 0
+total_distance_driven = 0
 
-    delay = 0.4 # delay (sec) for sending and recieving data
-
-    l_measure = 100 # if length straight > 100, start recording
-
-    # limit conditions
-    R_min_forward = radius(np.radians(phi_max), 1)
-    R_min_backward = radius(np.radians(phi_max), -1)
-
-    MIN_PWM = 100
-    MAX_PWM = 200
-
-
-    #drive from point to point
-    new_or, alpha, l_r, Mdir, l1_lenght = circle_line_path_generator(init_or,x_start,y_start,x_dest,y_dest)
-
-
-
-    input("Press Enter to start challenge...")
-    # initial values
-    v = 0
-    start_time = time.time()
-    dt, t = set_time(start_time, 0)
-    Fa = 0
-    total_distance_driven = 0
-
-    #drive on circle
-    drive_distance_on_circle = radius * alpha
-    total_distance = drive_distance_on_circle + l1_lenght
-    if Mdir == 'forward':
-        power = 158
-        if alpha != 0:
-            if l_r =='r':
-                turn = 100
-            elif l_r == 'l':
-                turn = 200
-            else:
-                turn = 150
-            kitt.drive(power, turn)
-    if Mdir == 'backwards':
-        power = 142
-        if alpha != 0:
-            if l_r =='r':
-                turn = 200 # turn left to go right
-            elif l_r == 'l':
-                turn = 100 # turn right to go left
-            else:
-                turn = 150
-            kitt.drive(power, turn)
-
-    while total_distance - total_distance_driven > 0.1:
-        time.sleep(0.01)
-        if total_distance_driven > drive_distance_on_circle:
+#drive on circle
+drive_distance_on_circle = radius * alpha
+total_distance = drive_distance_on_circle + l1_lenght
+if Mdir == 'forward':
+    power = 158
+    if alpha != 0:
+        if l_r =='r':
+            turn = 100
+        elif l_r == 'l':
+            turn = 200
+        else:
             turn = 150
-            kitt.drive(power, turn)
+        kitt.drive(power, turn)
+if Mdir == 'backwards':
+    power = 142
+    if alpha != 0:
+        if l_r =='r':
+            turn = 200 # turn left to go right
+        elif l_r == 'l':
+            turn = 100 # turn right to go left
+        else:
+            turn = 150
+        kitt.drive(power, turn)
 
-        total_distance_driven, v, t = total_distance_driven(t, v, m, turn, total_distance_driven,L, alpha, power, old_x0, fa_max)
+while total_distance - total_distance_driven > 0.1:
+    time.sleep(0.01)
+    if total_distance_driven > drive_distance_on_circle:
+        turn = 150
+        kitt.drive(power, turn)
 
-    print('target theoretical reached')
-    kitt.drive(145, 150)
-    time.sleep(np.abs(v / 2.3))
-    kitt.stop() # kitt.drive(150,150)
+    total_distance_driven, v, t = total_distance_driven(t, v, m, turn, total_distance_driven,L, alpha, power, old_x0, fa_max)
 
-    # get current location car
-    stationary_location = get_stationary_location(10)
-    error = np.sqrt((stationary_location[0] - x_dest ) ** 2 + (stationary_location[1] - y_dest) ** 2)
-    if error <= dx:
-        x1 = stationary_location
-    else:
-        x1= np.array([(x_dest+ stationary_location[0]) / 2, (y_dest + stationary_location[1]) / 2])
+print('target theoretical reached')
+kitt.drive(145, 150)
+time.sleep(np.abs(v / 2.3))
+kitt.stop() # kitt.drive(150,150)
 
-        dt, t = set_time(start_time, t)
-    if dx < error:
-        print('Target Reached, Challange Completed!!!')
-        print('time: ', t)
-        break
+# get current location car
+stationary_location = get_stationary_location(10)
+error = np.sqrt((stationary_location[0] - x_dest ) ** 2 + (stationary_location[1] - y_dest) ** 2)
+if error <= dx:
+    x1 = stationary_location
+else:
+    x1= np.array([(x_dest+ stationary_location[0]) / 2, (y_dest + stationary_location[1]) / 2])
 
-
-
-
-
-
-
-
-
-    kitt.stop()
-    del kitt # disconnect from kitt
+    dt, t = set_time(start_time, t)
+if dx < error:
+    print('Target Reached, Challange Completed!!!')
+    print('time: ', t)
+    break
 
 
 
 
 
-    v_acc = 10
-    v_line = 20
-    v_brake = 0
-    v_rev = -10
-    v_stop = 0
-    phi_line = 0
-    phi_line_rev = 180
 
-    t_acc = 2
-    t_brake = 2
-    t_measure = 1
 
-    v_real_line = v_line
 
-    # initial values
-    v = 0
-    start_time = time.time()
-    dt, t = set_time(start_time, 0)
-    Fa = 0
 
-    def accurate_location_FD():
-        # Implementation of accurate_location_FD function is missing
-        pass
+kitt.stop()
+del kitt # disconnect from kitt
 
-    def errorcorrection(v_1, v_2, xd, yd):
-        # Implementation of errorcorrection function is missing
-        pass
 
-    EPOCommunications('transmit', phi_line)  # steer straight
 
-    EPOCommunications('transmit', v_acc)  # accelerate
-    toc = 0
-    while True:
-        if toc >= t_acc:
-            break
-        toc += 1
 
-    EPOCommunications('transmit', v_line)  # drive
-    tic = 0
-    while True:
-        if tic >= t_measure - t_acc:
-            break
-        # Check for collision avoidance here
 
-    EPOCommunications('transmit', v_brake)  # brake
-    tic = 0
-    while True:
-        if tic >= t_brake:
-            break
-        tic += 1
-    EPOCommunications('transmit', v_stop)  # standstill
-
-    x1, y1 = accurate_location_FD()
-    v_1 = [x1, y1]
-
-    EPOCommunications('transmit', phi_line_rev)  # steer straight for reverse
-
-    EPOCommunications('transmit', v_brake)  # accelerate reverse
-    tic = 0
-    while True:
-        if tic >= t_acc:
-            break
-        tic += 1
-
-    EPOCommunications('transmit', v_rev)  # drive reverse
-    tic = 0
-    while True:
-        if tic >= t_measure - t_acc:
-            break
-        # Check for collision avoidance here
-
-    EPOCommunications('transmit', v_acc)  # brake reverse
-    tic = 0
-    while True:
-        if tic >= t_brake:
-            break
-        tic += 1
-    EPOCommunications('transmit', v_stop)  # standstill
-
-    x2, y2 = accurate_location_FD()
-    v_2 = [x2, y2]
-
-    v_1 = [v_2[0] + (math.cos(math.radians(180)) * (v_1[0] - v_2[0])) - (math.sin(math.radians(180)) * (v_1[1] - v_2[1])),
-           v_2[1] + (math.sin(math.radians(180)) * (v_1[0] - v_2[0])) + (math.cos(math.radians(180)) * (v_1[1] - v_2[1]))]
-
-    phi_correction, l_line, orientation_final = errorcorrection(v_1, v_2, xd, yd)
-
-    t_line = l_line / v_real_line
-
-    EPOCommunications('transmit', phi_correction)  # steer corrected
-
-    EPOCommunications('transmit', v_acc)  # accelerate
-    toc = 0
-    while True:
-        if toc >= t_acc:
-            break
-        toc += 1
-
-    EPOCommunications('transmit', v_line)  # drive
-    tic = 0
-    while True:
-        if toc >= t_line - t_acc:
-            break
-        # Check for collision avoidance here
-
-    EPOCommunications('transmit', v_brake)  # brake
-    tic = 0
-    while True:
-        if tic >= t_brake:
-            break
-        tic += 1
-    EPOCommunications('transmit', v_stop)  # standstill
-
-    xf, yf = accurate_location_FD()
-
-    distance_off = math.sqrt((xd - xf) ** 2 + (yd - yf) ** 2)
-
-    if distance_off > 60:
-        x1 = xf
-        y1 = yf
-
-        EPOCommunications('transmit', phi_line_rev)  # steer straight for reverse
-
-        EPOCommunications('transmit', v_brake)  # accelerate reverse
-        tic = 0
-        while True:
-            if tic >= t_acc:
-                break
-            tic += 1
-
-        EPOCommunications('transmit', v_rev)  # drive reverse
-        tic = 0
-        while True:
-            if tic >= (2 * t_measure) - t_acc:
-                break
-            # Check for collision avoidance here
-
-        EPOCommunications('transmit', v_acc)  # brake reverse
-        tic = 0
-        while True:
-            if tic >= t_brake:
-                break
-            tic += 1
-        EPOCommunications('transmit', v_stop)  # standstill
-
-        xf, yf = accurate_location_FD()
-
-        orientation_final = math.atan(abs(yf - y1) / abs(xf - x1)) + 180  # Q1
-        if xf < x1 and yf >= y1:
-            orientation_final = 180 - orientation_final  # Q2
-        elif xf < x1 and yf < y1:
-            orientation_final = 180 + orientation_final  # Q3
-        elif xf >= x1 and yf < y1:
-            orientation_final = 360 - orientation_final  # Q4
-
-        challenge_result = 'failed'
-    else:
-        challenge_result = 'completed'
-
-    return challenge_result
+    
