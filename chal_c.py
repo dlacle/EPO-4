@@ -1,3 +1,5 @@
+from epo4.module5.methode2.ObstacleDetect import ObstacleDetect
+
 Fb_max = 17.7  # Brake force Max.
 b = 2.74  # Constant for linear drag force
 c = 0.27  # Constant for quadratic drag force
@@ -54,6 +56,7 @@ x4=x0
 dx, omega = relative_loc(x0, x_target, alpha)  # update end location relative to car location
 qs = time.time()
 # drive from point to point
+# flag_obstacle = False
 while dx > 0.001:
     time.sleep(0.01)
     dis=dis-0.3
@@ -61,19 +64,21 @@ while dx > 0.001:
     print(dis)
     print("omega",np.rad2deg(omega))
 
-    if dis<65:
-        obs = 1
-        dirr = np.arctan(d0[1]/d0[0])
-        dirr1 = np.arctan(d0[1] / d0[0])+np.pi
-        # x4=x0
-        plt.plot(x0[0], x0[1], marker='x')
-        plt.plot(x0[0] + np.cos(dirr+np.pi)*0.60, x0[1] + np.sin(dirr+np.pi)*0.6, marker='x')
-        plt.plot(x0[0] + np.cos(dirr+np.pi) * 0.60+0.20, x0[1] + np.sin(dirr+np.pi) * 0.6, marker='x')
+    # if ObstacleDetect(x0,x1) ==  True:
+    #     obs = 1
+    #
+    #     # x4=x0
+    #     plt.plot(x0[0], x0[1], marker='x')
+    #     plt.plot(x0[0] + np.cos(dirr+np.pi)*0.60, x0[1] + np.sin(dirr+np.pi)*0.6, marker='x')
+    #     plt.plot(x0[0] + np.cos(dirr+np.pi) * 0.60+0.20, x0[1] + np.sin(dirr+np.pi) * 0.6, marker='x')
+    #
+    #     print("z",x0[0], x0[1])
+    #     # break
 
-        print("z",x0[0], x0[1])
-        # break
-
-    if obs==1:
+    if ObstacleDetect(x0,x1) ==  True : #and not flag_obstacle
+        # flag_obstacle = True
+        dirr = np.arctan(d0[1] / d0[0])
+        dirr1 = np.arctan(d0[1] / d0[0]) + np.pi
         print(dirr1)
         if dirr>0:
             dis=300000000
@@ -82,25 +87,16 @@ while dx > 0.001:
             print("current d",np.arctan(d0[1]/d0[0]))
             print("desti",dirr-np.pi/8)
 
-            if np.arctan(d0[1]/d0[0])<-1.5/10:
-                obs=0
-                dis=2000000000
-                plt.plot(x0[0], x0[1], marker='x')
-                print("kla1")
 
 
         elif dirr<0:
-            dis=300000000
             turn=deg_to_pwm(30)
             power=158
             print("current d",np.rad2deg(np.arctan(d0[1]/d0[0])+np.pi))
             print("desti",)
             print(np.rad2deg(1.5/2))
-            if np.arctan(d0[1]/d0[0])+np.pi>np.deg2rad(130):
-                obs=0
-                dis=2000000000
-                plt.plot(x0[0],x0[1], marker='x')
-                print("kla3")
+            plt.plot(x0[0],x0[1], marker='x')
+
 
 
     elif x0[0] < 0.25 or x0[0] > 4.55 or x0[1] < 0.25 or x0[1] > 4.55:
