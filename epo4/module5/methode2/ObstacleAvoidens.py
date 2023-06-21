@@ -1,13 +1,11 @@
 import math
-
 import numpy as np
 from matplotlib import pyplot as plt
-
 
 def ObstacleAvoidance(current_location, orientation, dest):
     # calculate the center point of the most probable obstacle location
     location_object = [current_location[0] + 105 * math.cos(math.radians(orientation)),
-                        current_location[1] + 105 * math.sin(math.radians(orientation))]
+                       current_location[1] + 105 * math.sin(math.radians(orientation))]
 
     # displacement vector = line between actual location and destination
     dis_vect = [dest[0] - current_location[0], dest[1] - current_location[1]]
@@ -17,10 +15,8 @@ def ObstacleAvoidance(current_location, orientation, dest):
     phase_dis = np.rad2deg(phase_dis)
     phase_dis = phase_dis % 360
 
-
     # detect if car is turning clockwise around the center of the field or not
-    if (0 < orientation < 180 and current_location[0] > 240) or \
-            (180 < orientation < 360 and current_location[0] < 240):
+    if (0 < orientation < 180 and current_location[0] > 240) or (180 < orientation < 360 and current_location[0] < 240):
         TurningClockwise = 1
     else:
         TurningClockwise = 0
@@ -43,7 +39,7 @@ def ObstacleAvoidance(current_location, orientation, dest):
                          location_object[1] + 90 * math.sin(math.radians(phase_dis + 135))]
             Waypoint2 = [location_object[0] + 90 * math.cos(math.radians(phase_dis + 45)),
                          location_object[1] + 90 * math.sin(math.radians(phase_dis + 45))]
-        # if too close to the border, drive around from the inside of the field
+    # if too close to the border, drive around from the inside of the field
     else:
         # if KITT drives clockwise, turn around by the left side of the obstacle
         if TurningClockwise:
@@ -71,15 +67,15 @@ def ObstacleAvoidance(current_location, orientation, dest):
 
     return xpoint1, ypoint1, xpoint2, ypoint2, xpoint3, ypoint3, location_object
 
-current_location = [100,100]
-orientation =45
-dest = [300,200]
+current_location = [100, 100]
+orientation = 45
+dest = [300, 200]
 
 # Call the ObstacleAvoidance function
 xpoint1, ypoint1, xpoint2, ypoint2, xpoint3, ypoint3, location_object = ObstacleAvoidance(current_location, orientation, dest)
 
 # Print the points
-print("location obstacle: ",location_object)
+print("location obstacle: ", location_object)
 print("Waypoint 1: ({}, {})".format(xpoint1, ypoint1))
 print("Waypoint 2: ({}, {})".format(xpoint2, ypoint2))
 print("Middle Point: ({}, {})".format(xpoint3, ypoint3))
@@ -107,6 +103,14 @@ plt.text(xpoint3, ypoint3, 'X3', ha='right', va='bottom', color='blue')
 # Plotting the circle
 circle = plt.Circle(location_object, 90, edgecolor='black', facecolor='none')
 
+# Plotting the rectangle
+rectangle_width = 40
+rectangle_height = 80
+rectangle_x = location_object[0] - rectangle_width / 2
+rectangle_y = location_object[1] - rectangle_height / 2
+rectangle = plt.Rectangle((rectangle_x, rectangle_y), rectangle_width, rectangle_height,
+                          edgecolor='green', facecolor='none')
+
 # Setting up the plot
 plt.xlim(0, field_size)
 plt.ylim(0, field_size)
@@ -116,8 +120,9 @@ plt.ylabel('Y')
 plt.title('Obstacle Avoidance')
 plt.legend()
 
-# Adding the circle to the plot
+# Adding the circle and rectangle to the plot
 plt.gca().add_patch(circle)
+plt.gca().add_patch(rectangle)
 
 # Display the plot
 plt.show()
