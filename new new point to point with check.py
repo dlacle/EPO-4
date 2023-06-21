@@ -38,7 +38,7 @@ def measure_loc(t, v_old, m, Turn, L, alpha, power, old_x0, fa_max):
     PHI = phi(Turn, phi_max)
     phi_rad = np.radians(PHI)
     phi_rad = call_angle(phi_rad)
-    Fa = np.cos(phi_rad*(0.28*np.pi/np.radians(phi_max))) * acceleration_force(fa_max, power)
+    Fa = np.cos(phi_rad*(0.33*np.pi/np.radians(phi_max))) * acceleration_force(fa_max, power)
     a = acceleration(v_old, Fa, m)
     v = v_old + a * DT
 
@@ -181,8 +181,8 @@ b = 3.81        # Constant for linear drag force
 c = 0.15         # Constant for quadratic drag force
 Fa_max0 = b * 2.35 + c * pow(2.35, 2)       # Accelerating force Max.
 voltage = 18.15      # battery voltage of the car
-Fb_max = 17.7 * (voltage/17.8)**2                # Brake force Max.
-Fa_max = Fa_max0 * (voltage/17.8)**2
+Fb_max = 17.7 * (voltage/17.7)**2              # Brake force Max.
+Fa_max = Fa_max0 * (voltage/17.7)**2
 m = 5.6         # Mass of car
 L = 0.335       # Length of car
 phi_max = 28         # Max. steering angle

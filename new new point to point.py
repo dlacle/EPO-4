@@ -38,7 +38,7 @@ def measure_loc(t, v_old, m, Turn, L, alpha, power, old_x0, fa_max):
     PHI = phi(Turn, phi_max)
     phi_rad = np.radians(PHI)
     phi_rad = call_angle(phi_rad)
-    Fa = np.cos(phi_rad*(0.28*np.pi/np.radians(phi_max))) * acceleration_force(fa_max, power)
+    Fa = np.cos(phi_rad*(0.33*np.pi/np.radians(phi_max))) * acceleration_force(fa_max, power)
     a = acceleration(v_old, Fa, m)
     v = v_old + a * DT
 
@@ -180,9 +180,9 @@ def call_angle(angle):
 b = 3.81        # Constant for linear drag force
 c = 0.15         # Constant for quadratic drag force
 Fa_max0 = b * 2.35 + c * pow(2.35, 2)       # Accelerating force Max.
-voltage = 18.0      # battery voltage of the car
-Fb_max = 17.7 * (voltage/17.8)**2                # Brake force Max.
-Fa_max = Fa_max0 * voltage/17.8
+voltage = 19      # battery voltage of the car
+Fb_max = 17.7 * (voltage/17.7)**2                # Brake force Max.
+Fa_max = Fa_max0 * (voltage/17.7)**2
 m = 5.6         # Mass of car
 L = 0.335       # Length of car
 phi_max = 28         # Max. steering angle
@@ -195,22 +195,22 @@ MIN_PWM = 100
 MAX_PWM = 200
 
 # transmitting connection takes place over port 6
-comport = 'COM3'
+comport = 'COM8'
 kitt = KITT(comport)
 kitt.set_beacon()       # create KITT object
 
 # determine begin and end location
-# x0 = np.array([int(input('x0: ', )) / 100, int(input('y0: ', )) / 100])  # [x0,y0] starting location
-# alpha = np.radians(int(input('starting orientation: ', )))  # starting orientation angle with x-axis
-# d0 = np.array([np.cos(alpha), np.sin(alpha)])  # starting orientation vector
-# x1 = np.array([int(input('x1: ', )) / 100, int(input('y1: ', )) / 100])  # [x1, y1] end location
-# x2 = np.array([int(input('x2: ', )) / 100, int(input('y2: ', )) / 100])  # [x1, y1] end location
-
-x0 = np.array([3.8, 3.8])  # [x0,y0] starting location
-alpha = np.radians(180)  # starting orientation angle with x-axis
+x0 = np.array([int(input('x0: ', )) / 100, int(input('y0: ', )) / 100])  # [x0,y0] starting location
+alpha = np.radians(int(input('starting orientation: ', )))  # starting orientation angle with x-axis
 d0 = np.array([np.cos(alpha), np.sin(alpha)])  # starting orientation vector
-x1 = np.array([2.4, 2.4])  # [x1, y1] end location
-x2 = np.array([0.4, 0.4])  # [x1, y1] end location
+x1 = np.array([int(input('x1: ', )) / 100, int(input('y1: ', )) / 100])  # [x1, y1] end location
+x2 = np.array([int(input('x2: ', )) / 100, int(input('y2: ', )) / 100])  # [x1, y1] end location
+
+# x0 = np.array([3.8, 3.8])  # [x0,y0] starting location
+# alpha = np.radians(180)  # starting orientation angle with x-axis
+# d0 = np.array([np.cos(alpha), np.sin(alpha)])  # starting orientation vector
+# x1 = np.array([2.4, 2.4])  # [x1, y1] end location
+# x2 = np.array([0.4, 0.4])  # [x1, y1] end location
 
 # print('starting in:    5')
 # time.sleep(1)
@@ -243,7 +243,7 @@ while dx > 0.001:
     time.sleep(0.01)
 
     # barriers
-    if x0[0] < 0.25 or x0[0] > 4.55 or x0[1] < 0.25 or x0[1] > 4.55:
+    if x0[0] < 0.18 or x0[0] > 4.62 or x0[1] < 0.18 or x0[1] > 4.62:
         kitt.brake(v)
         kitt.stop()
         dt, t, v, x0, d0, alpha = measure_loc(t, v, m, 150, L, alpha, 145, x0, Fb_max)

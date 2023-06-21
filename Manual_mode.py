@@ -61,7 +61,7 @@ def check_keyboard_input():
     # Shutting down the Bluetooth connection with the car
     # serial_port.close()
 
-KITT = KITT('com3')
+KITT = KITT('com8')
 print('port opened')
 check_keyboard_input()
 KITT.stop()

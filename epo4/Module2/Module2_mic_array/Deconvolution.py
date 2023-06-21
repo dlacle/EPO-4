@@ -35,6 +35,7 @@ Fs = 48000
 # File path mic data
 # file_path_mic = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Mic-Data\kitt_carrier_2250_bit_3k_305x160.txt"
 # file_path_mic = r"Mic-Data/Mic-Data-V1/kitt_carrier_2250_bit_3k_20x240.txt"
+
 # location_car = '40x40'
 # location_car = [20, 240]
 #
@@ -43,8 +44,8 @@ Fs = 48000
 
 # File path ref signal
 # file_path_xref = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\ref_sig_V1.8.txt"
-file_path_xref = r"C:\Users\ZA\Desktop\EPO-4\EPO-4-Python\epo4\Module2\Module2_mic_array\Mic-Data\Mic-Data-V1\ref_sig_V1.8.txt"
-
+# file_path_xref = r"C:\Users\ZA\Desktop\EPO-4\EPO-4-Python\epo4\Module2\Module2_mic_array\Mic-Data\Mic-Data-V1\ref_sig_V1.8.txt"
+file_path_xref =r"C:\Users\rbjwe\PycharmProjects\EPO-4_GIT\epo4\Module2\Module2_mic_array\Mic-Data\Mic-Data-V1\ref_sig_V1.8.txt"
 # Load data from the text file
 xref = np.loadtxt(file_path_xref)
 print('lenght xref=', len(xref))
