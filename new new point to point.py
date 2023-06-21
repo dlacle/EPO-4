@@ -38,7 +38,7 @@ def measure_loc(t, v_old, m, Turn, L, alpha, power, old_x0, fa_max):
     PHI = phi(Turn, phi_max)
     phi_rad = np.radians(PHI)
     phi_rad = call_angle(phi_rad)
-    Fa = np.cos(phi_rad*(0.33*np.pi/np.radians(phi_max))) * acceleration_force(fa_max, power)
+    Fa = np.cos(phi_rad*(0.3*np.pi/np.radians(phi_max))) * acceleration_force(fa_max, power)
     a = acceleration(v_old, Fa, m)
     v = v_old + a * DT
 
@@ -178,9 +178,9 @@ def call_angle(angle):
 # Define constants
 # Fa_max = 10.615                 # Accelerating force Max.
 b = 3.81        # Constant for linear drag force
-c = 0.15         # Constant for quadratic drag force
+c = 0.3         # Constant for quadratic drag force
 Fa_max0 = b * 2.35 + c * pow(2.35, 2)       # Accelerating force Max.
-voltage = 19      # battery voltage of the car
+voltage = 20      # battery voltage of the car
 Fb_max = 17.7 * (voltage/17.7)**2                # Brake force Max.
 Fa_max = Fa_max0 * (voltage/17.7)**2
 m = 5.6         # Mass of car
@@ -195,7 +195,7 @@ MIN_PWM = 100
 MAX_PWM = 200
 
 # transmitting connection takes place over port 6
-comport = 'COM8'
+comport = 'COM6'
 kitt = KITT(comport)
 kitt.set_beacon()       # create KITT object
 
