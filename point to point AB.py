@@ -3,7 +3,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 from KITT import*
-# from localize import*
+from epo4.Module2.Module2_mic_array.get_stationary_location import*
 
 def deg_to_pwm(angle):
     MIN_PWM = 100
@@ -40,7 +40,7 @@ def measure_loc(t, v_old, m, Turn, L, alpha, power, old_x0, fa_max):
     PHI = phi(Turn, phi_max)
     phi_rad = np.radians(PHI)
     phi_rad = call_angle(phi_rad)
-    Fa = np.cos(phi_rad*(0.28*np.pi/np.radians(phi_max))) * acceleration_force(fa_max, power)
+    Fa = np.cos(phi_rad*(0.33*np.pi/np.radians(phi_max))) * acceleration_force(fa_max, power)
     a = acceleration(v_old, Fa, m)
     v = v_old + a * DT
     if phi_rad != 0:  # if the car turns
@@ -178,9 +178,9 @@ def call_angle(angle):
 b = 3.81        # Constant for linear drag force
 c = 0.15         # Constant for quadratic drag force
 Fa_max0 = b * 2.35 + c * pow(2.35, 2)       # Accelerating force Max.
-voltage = 18.15      # battery voltage of the car
-Fb_max = 17.7 * voltage/17.8                # Brake force Max.
-Fa_max = Fa_max0 * voltage/17.8
+voltage = 19.0         # battery voltage of the car
+Fb_max = 17.7 * (voltage/17.7)**2                # Brake force Max.
+Fa_max = Fa_max0 * (voltage/17.7)**2
 m = 5.6         # Mass of car
 L = 0.335       # Length of car
 phi_max = 28         # Max. steering angle
@@ -191,7 +191,8 @@ R_min_backward = radius(np.radians(phi_max), -1)
 
 # transmitting connection takes place over port 6
 comport = 'COM8'
-kitt = KITT(comport)                                                    # create KITT object
+kitt = KITT(comport)    # create KITT object
+kitt.set_beacon()
 
 # determine begin and end location
 x0 = np.array([int(input('x0: ', )) / 100, int(input('y0: ', )) / 100])  # [x0,y0] starting location
@@ -205,16 +206,16 @@ x1 = np.array([int(input('x1: ', )) / 100, int(input('y1: ', )) / 100])  # [x1, 
 # x1 = np.array([1.3, 1])  # [x1, y1] end location
 # x2 = np.array([5, 5])  # [x1, y1] end location
 
-# print('starting in:    5')
-# time.sleep(1)
-# print('starting in:    4')
-# time.sleep(1)
-# print('starting in:    3')
-# time.sleep(1)
-# print('starting in:    2')
-# time.sleep(1)
-# print('starting in:    1')
-# time.sleep(1)
+print('starting in:    5')
+time.sleep(1)
+print('starting in:    4')
+time.sleep(1)
+print('starting in:    3')
+time.sleep(1)
+print('starting in:    2')
+time.sleep(1)
+print('starting in:    1')
+time.sleep(1)
 
 # initial values
 v = 0
@@ -235,9 +236,9 @@ while dx > 0.001:
     time.sleep(0.01)
 
     # barriers
-    if x0[0] < 0.25 or x0[0] > 4.55 or x0[1] < 0.25 or x0[1] > 4.55:
+    if x0[0] < 0.18 or x0[0] > 4.62 or x0[1] < 0.18 or x0[1] > 4.62:
         kitt.brake(v)
-        time.sleep(np.abs(v) / 2.3)
+        # time.sleep(np.abs(v) / 2.3)
         kitt.drive(150, 150)
         dt, t, v, x0, d0, alpha = measure_loc(t, v, m, 150, L, alpha, 145, x0, Fb_max)
         power = 142  # backward
@@ -273,8 +274,8 @@ while dx > 0.001:
         power = 150
         turn = 150
         v = 0
-        # Location = get_stationary_location(10)
-        Location = np.array([x0[0]+0.1, x0[1]+0.1])
+        Location = get_stationary_location(10)
+        # Location = np.array([x0[0]+0.1, x0[1]+0.1])
         x_model = x0
         if Location[0] > x0[0]+0.3 or Location[1] > x0[1]+0.3:
             x0 = Location

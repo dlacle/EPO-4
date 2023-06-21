@@ -85,12 +85,18 @@ def mic_recording(S):#s
     desired_device_name1 = "Microphone (AudioBox 1818 VSL)"
     desired_device_name2 = "Microphone (2- AudioBox 1818 VS"
     desired_device_name3 = "Microphone (2- AudioBox 1818 VSL)"
+    desired_device_name4 = "Microfoon (AudioBox 1818 VSL)"
+    desired_device_name5 = "Microfoon (2- AudioBox 1818 VS"
+    desired_device_name6 = "Microfoon (2- AudioBox 1818 VSL)"
 
     for i in range(pyaudio_handle.get_device_count()):
         device_info = pyaudio_handle.get_device_info_by_index(i)
         if (device_info["name"] == desired_device_name1 or
                 device_info["name"] == desired_device_name2 or
-                device_info["name"] == desired_device_name3):
+                device_info["name"] == desired_device_name3 or
+                device_info["name"] == desired_device_name4 or
+                device_info["name"] == desired_device_name5 or
+                device_info["name"] == desired_device_name6):
             device_index = i
             break
 
