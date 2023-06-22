@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from KITT import*
 from epo4.Module2.Module2_mic_array.get_stationary_location import*
-
+from epo4.module5.methode2.ObstacleDetect import *
 def deg_to_pwm(angle):
     MIN_PWM = 100
     MAX_PWM = 200
@@ -67,7 +67,7 @@ def radius(phi_rad, speed):
     if phi_rad != 0 and speed > 0:
         R = L / np.sin(phi_rad)  # radius driving forward
     elif phi_rad != 0 and speed < 0:
-        R = L / np.tan(phi_rad)
+        R = L / np.tan(phi_rad)-L*np.tan(phi)
     else:
         R = 0
     return R
@@ -178,7 +178,7 @@ def call_angle(angle):
 b = 3.81        # Constant for linear drag force
 c = 0.15         # Constant for quadratic drag force
 Fa_max0 = b * 2.35 + c * pow(2.35, 2)       # Accelerating force Max.
-voltage = 19.0         # battery voltage of the car
+voltage = 19.7         # battery voltage of the car
 Fb_max = 17.7 * (voltage/17.7)**2                # Brake force Max.
 Fa_max = Fa_max0 * (voltage/17.7)**2
 m = 5.6         # Mass of car
@@ -190,7 +190,7 @@ R_min_forward = radius(np.radians(phi_max), 1)
 R_min_backward = radius(np.radians(phi_max), -1)
 
 # transmitting connection takes place over port 6
-comport = 'COM8'
+comport = 'COM6'
 kitt = KITT(comport)    # create KITT object
 kitt.set_beacon()
 
@@ -234,21 +234,39 @@ dx, omega = relative_loc(x0, x_target, alpha)  # update end location relative to
 # drive from point to point
 while dx > 0.001:
     time.sleep(0.01)
+    if ObstacleDetect(x0, x1) == True:  # and not flag_obstacle
+        # flag_obstacle = True
+        dirr = np.arctan(d0[1] / d0[0])
+        dirr1 = np.arctan(d0[1] / d0[0]) + np.pi
+        print(dirr1)
+        if dirr > 0:
+            dis = 300000000
+            turn = deg_to_pwm(-30)
+            power = 158
+            print("current d", np.arctan(d0[1] / d0[0]))
+            print("desti", dirr - np.pi / 8)
+        elif dirr < 0:
+            turn = deg_to_pwm(30)
+            power = 158
+            print("current d", np.rad2deg(np.arctan(d0[1] / d0[0]) + np.pi))
+            print("desti", )
+            print(np.rad2deg(1.5 / 2))
+            plt.plot(x0[0], x0[1], marker='x')
 
     # barriers
-    if x0[0] < 0.18 or x0[0] > 4.62 or x0[1] < 0.18 or x0[1] > 4.62:
-        kitt.brake(v)
-        # time.sleep(np.abs(v) / 2.3)
-        kitt.drive(150, 150)
-        dt, t, v, x0, d0, alpha = measure_loc(t, v, m, 150, L, alpha, 145, x0, Fb_max)
-        power = 142  # backward
-        turn = 150  # straight (but slightly turning against off-set, only noticeable when driving backward)
-
-        while x0[0] < 0.45 or x0[0] > 4.35 or x0[1] < 0.45 or x0[1] > 4.35:
-            dx, omega = relative_loc(x0, x_target, alpha)
-            turn = deg_to_pwm(np.rad2deg(-omega))
-            kitt.drive(power, turn)
-            dt, t, v, x0, d0, alpha = measure_loc(t, v, m, turn, L, alpha, power, x0, Fa_max)
+    # if x0[0] < 0.18 or x0[0] > 4.62 or x0[1] < 0.18 or x0[1] > 4.62:
+    #     kitt.brake(v)
+    #     # time.sleep(np.abs(v) / 2.3)
+    #     kitt.drive(150, 150)
+    #     dt, t, v, x0, d0, alpha = measure_loc(t, v, m, 150, L, alpha, 145, x0, Fb_max)
+    #     power = 142  # backward
+    #     turn = 150  # straight (but slightly turning against off-set, only noticeable when driving backward)
+    #
+    #     while x0[0] < 0.45 or x0[0] > 4.35 or x0[1] < 0.45 or x0[1] > 4.35:
+    #         dx, omega = relative_loc(x0, x_target, alpha)
+    #         turn = deg_to_pwm(np.rad2deg(-omega))
+    #         kitt.drive(power, turn)
+    #         dt, t, v, x0, d0, alpha = measure_loc(t, v, m, turn, L, alpha, power, x0, Fa_max)
 
     # check if reachable driving forward
     elif v <= 0 and dx < np.abs(np.sin(omega) * 2 * (R_min_forward+0.1)):
