@@ -3,7 +3,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 from KITT import*
-from epo4.Module2.Module2_mic_array.get_stationary_location import*
+# from epo4.Module2.Module2_mic_array.get_stationary_location import*
 
 def deg_to_pwm(angle):
     pwm_value = round(50 * angle * 1.1 / phi_max + MIN_PWM + 50)
@@ -69,7 +69,7 @@ def radius(phi_rad, speed):
     if phi_rad != 0 and speed > 0:
         R = L / np.sin(phi_rad)  # radius driving forward
     elif phi_rad != 0 and speed < 0:
-        R = L / np.tan(phi_rad)-L*np.tan(phi)
+        R = L / np.tan(phi_rad)
     else:
         R = 0
     return R
@@ -195,9 +195,9 @@ MIN_PWM = 100
 MAX_PWM = 200
 
 # transmitting connection takes place over port 6
-comport = 'COM6'
-kitt = KITT(comport)
-kitt.set_beacon()       # create KITT object
+# comport = 'COM6'
+# kitt = KITT(comport)
+# kitt.set_beacon()       # create KITT object
 
 # determine begin and end location
 x0 = np.array([int(input('x0: ', )) / 100, int(input('y0: ', )) / 100])  # [x0,y0] starting location
@@ -244,33 +244,33 @@ while dx > 0.001:
 
     # barriers
     if x0[0] < 0.18 or x0[0] > 4.62 or x0[1] < 0.18 or x0[1] > 4.62:
-        kitt.brake(v)
-        kitt.stop()
+        # kitt.brake(v)
+        # kitt.stop()
         dt, t, v, x0, d0, alpha = measure_loc(t, v, m, 150, L, alpha, 145, x0, Fb_max)
         power = 142  # backward
         turn = 150  # straight (but slightly turning against off-set, only noticeable when driving backward)
         while x0[0] < 0.45 or x0[0] > 4.35 or x0[1] < 0.45 or x0[1] > 4.35:
-            kitt.drive(power, turn)
+            # kitt.drive(power, turn)
             dt, t, v, x0, d0, alpha = measure_loc(t, v, m, turn, L, alpha, power, x0, Fa_max)
 
     elif v <= 0 and dx < np.abs(np.sin(omega) * 2 * R_min_forward):
         power = 142  # backward
         turn = deg_to_pwm(np.rad2deg(-omega))
-        kitt.drive(power, turn)
+        # kitt.drive(power, turn)
     else:
         power = 158
         turn = deg_to_pwm(np.rad2deg(omega))
-        kitt.drive(power, turn)
+        # kitt.drive(power, turn)
 
     if dx < 0.05 and np.any(x_target == x1):
         print('x1 reached')
-        kitt.brake(v)
-        kitt.stop()
+        # kitt.brake(v)
+        # kitt.stop()
         power = 150
         turn = 150
         v = 0
-        Location = get_stationary_location(10)
-        # Location = np.array([x0[0] + 0.1, x0[1] + 0.1])
+        # Location = get_stationary_location(10)
+        Location = np.array([x0[0] + 0.1, x0[1] + 0.1])
         x_model = x0
         if Location[0] > x0[0] + 0.4 or Location[1] > x0[1] + 0.4:
             x0 = Location
@@ -285,13 +285,13 @@ while dx > 0.001:
         print('target', x_target)
     elif dx < 0.1 and np.any(x_target == x2):
         print('x2 reached')
-        kitt.brake(v)
-        kitt.stop()     # kitt.drive(150,150)
+        # kitt.brake(v)
+        # kitt.stop()     # kitt.drive(150,150)
         power = 150
         turn = 150
         v = 0
-        Location = get_stationary_location(10)
-        # Location = np.array([x0[0]+0.1, x0[1]+0.1])
+        # Location = get_stationary_location(10)
+        Location = np.array([x0[0]+0.1, x0[1]+0.1])
         x_model = x0
         if Location[0] > x0[0]+0.3 or Location[1] > x0[1]+0.3:
             x0 = Location
@@ -311,11 +311,12 @@ while dx > 0.001:
     print('x0 ', x0)
     # print('x0', x0)
 
-del kitt        # disconnect from kitt
+# del kitt        # disconnect from kitt
 
 # plot trajectory
 plt.grid(True)
 plt.xlim(0, 4.80)
 plt.ylim(0, 4.80)
 
-plt.show()
+# plt.show()
+plt.savefig('trajectory.svg')
