@@ -67,7 +67,7 @@ def radius(phi_rad, speed):
     if phi_rad != 0 and speed > 0:
         R = L / np.sin(phi_rad)  # radius driving forward
     elif phi_rad != 0 and speed < 0:
-        R = L / np.tan(phi_rad)-L*np.tan(phi)
+        R = L / np.tan(phi_rad)
     else:
         R = 0
     return R
