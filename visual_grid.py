@@ -5,7 +5,7 @@ import random
 import numpy as np
 
 
-def visuel_grid():#starting_x, starting_y, orientation, waypoint_x, waypoint_y, end_x, end_y
+def visuel_grid():  # starting_x, starting_y, orientation, waypoint_x, waypoint_y, end_x, end_y
     # Create the figure and axes
     fig, ax = plt.subplots()
 
@@ -21,12 +21,16 @@ def visuel_grid():#starting_x, starting_y, orientation, waypoint_x, waypoint_y, 
 
     # Create a list of microphone coordinates and labels
     microphones = [(field_size, 0, 'm1'), (field_size, field_size, 'm2'),
-                   (0, field_size, 'm3'), (0, 0, 'm4'), (field_size/2, 0, 'm5')]
+                   (0, field_size, 'm3'), (0, 0, 'm4'), (field_size / 2, 0, 'm5')]
 
     # Plot the microphones
-    for mic in microphones:
-        ax.plot(mic[0], mic[1], marker='s', color='blue', markersize=12)
-        ax.text(mic[0], mic[1]+20, mic[2], color='blue', fontsize=12, ha='center')
+    for i, mic in enumerate(microphones):
+        if i == 4:
+            ax.plot(mic[0], mic[1], marker='s', color='blue', markersize=12)
+            ax.text(mic[0], mic[1] + 15, mic[2], color='blue', fontsize=12, ha='center')
+        else:
+            ax.plot(mic[0], mic[1], marker='s', color='blue', markersize=12)
+            ax.text(mic[0] + 15, mic[1] + 15, mic[2], color='blue', fontsize=12, ha='center')
 
     # Generate a random source location
     random_source = (random.uniform(0, field_size), random.uniform(0, field_size))
@@ -36,14 +40,14 @@ def visuel_grid():#starting_x, starting_y, orientation, waypoint_x, waypoint_y, 
     # ax.text(random_source[0], random_source[1]+20, 'KITT', color='red', fontsize=12, ha='center')
 
     # Set grid lines and labels
-    ax.set_xticks([i for i in range(0, field_size+1, grid_spacing)])
-    ax.set_yticks([i for i in range(0, field_size+1, grid_spacing)])
-    ax.set_xticks([i for i in range(0, field_size+1, axis_spacing)], minor=False)
-    ax.set_yticks([i for i in range(0, field_size+1, axis_spacing)], minor=False)
+    ax.set_xticks([i for i in range(0, field_size + 1, grid_spacing)])
+    ax.set_yticks([i for i in range(0, field_size + 1, grid_spacing)])
+    ax.set_xticks([i for i in range(0, field_size + 1, axis_spacing)], minor=False)
+    ax.set_yticks([i for i in range(0, field_size + 1, axis_spacing)], minor=False)
     ax.grid(True, linestyle='--', linewidth=0.5, which='both')
     ax.grid(True, linestyle='-', linewidth=1, which='major')
 
-    #add label axis
+    # add label axis
     ax.set_xlabel("y")
     ax.set_ylabel("x")
     ax.yaxis.set_label_position('right')
@@ -51,10 +55,11 @@ def visuel_grid():#starting_x, starting_y, orientation, waypoint_x, waypoint_y, 
     # Move the y-axis to the right side
     ax.yaxis.tick_right()
 
-    # Plot black crosses on the specified coordinates
+    # Plot black crosses on the specified coordinates with text labels
     coordinates = [(400, 80), (160, 305), (240, 240), (120, 240), (320, 140)]
     for coord in coordinates:
         ax.plot(coord[0], coord[1], marker='x', color='black', markersize=8)
+        ax.text(coord[0], coord[1] + 15, f'({coord[1]}, {coord[0]})', color='black', fontsize=8, ha='center')
 
     # # Load the visuals if arguments are provided
     # if starting_x is not None and starting_y is not None and orientation is not None and end_x is not None and end_y is not None:
@@ -87,24 +92,23 @@ def visuel_grid():#starting_x, starting_y, orientation, waypoint_x, waypoint_y, 
     #     # Plot purple star at waypoint location
     #     ax.plot(waypoint_x, waypoint_y, marker='*', color='purple', markersize=12)
 
-        # # Load the RC car image
-        # car_image = mpimg.imread('rc-car.ico')
-        #
-        # # Set the position and orientation of the car image
-        # car_width = 30
-        # car_height = 20
-        # car_position = (starting_x - car_width / 2, starting_y - car_height / 2)
-        # car_transform = plt.transforms.Affine2D().rotate_deg(orientation).translate(*car_position)
-        #
-        # # Plot the car image
-        # ax.imshow(car_image, extent=[0, field_size, 0, field_size], transform=car_transform)
+    # # Load the RC car image
+    # car_image = mpimg.imread('rc-car.ico')
+    #
+    # # Set the position and orientation of the car image
+    # car_width = 30
+    # car_height = 20
+    # car_position = (starting_x - car_width / 2, starting_y - car_height / 2)
+    # car_transform = plt.transforms.Affine2D().rotate_deg(orientation).translate(*car_position)
+    #
+    # # Plot the car image
+    # ax.imshow(car_image, extent=[0, field_size, 0, field_size], transform=car_transform)
 
     # # Display the plot
-    # plt.show()
+    plt.show()
 
     # Save the figure as a PNG image
-    # fig.savefig('grid_plot.svg')
+    fig.savefig('grid_plot.svg')
     return fig
 
-
-
+visuel_grid()
