@@ -33,19 +33,20 @@ mic_positions_xy = np.array(
 Fs = 48000
 
 # File path mic data
-# file_path_mic = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Mic-Data\kitt_carrier_2250_bit_3k_305x160.txt"
+file_path_mic = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Mic-Data\Mic-Data-V1\kitt_carrier_2250_bit_3k_305x160.txt"
 # file_path_mic = r"Mic-Data/Mic-Data-V1/kitt_carrier_2250_bit_3k_20x240.txt"
 
 # location_car = '40x40'
-# location_car = [20, 240]
+location_car = [305, 160]
 #
-# # Load data from the text file
-# data_recording = np.loadtxt(file_path_mic)
+#  Load data from the text file
+data_recording = np.loadtxt(file_path_mic)
 
 # File path ref signal
-# file_path_xref = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\ref_sig_V1.8.txt"
+file_path_xref = r"C:\Users\Sam\PycharmProjects\EPO-4\epo4\Module2\Module2_mic_array\Mic-Data\Mic-Data-V1\ref_sig_V1.8.txt"
 # file_path_xref = r"C:\Users\ZA\Desktop\EPO-4\EPO-4-Python\epo4\Module2\Module2_mic_array\Mic-Data\Mic-Data-V1\ref_sig_V1.8.txt"
-file_path_xref =r"C:\Users\rbjwe\PycharmProjects\EPO-4_GIT\epo4\Module2\Module2_mic_array\Mic-Data\Mic-Data-V1\ref_sig_V1.8.txt"
+# file_path_xref =r"C:\Users\rbjwe\PycharmProjects\EPO-4_GIT\epo4\Module2\Module2_mic_array\Mic-Data\Mic-Data-V1\ref_sig_V1.8.txt"
+
 # Load data from the text file
 xref = np.loadtxt(file_path_xref)
 print('lenght xref=', len(xref))
@@ -649,7 +650,7 @@ def localization(data_recording, x_ref, mic_positions, Fs, eps, Vsound, Lhat, lo
     data_per_channel = split_channels(data_recording)
 
     # Plot_each_channel_in_one_plot_color(data_per_channel, Fs, location_car)
-    Plot_each_channel_separately(data_per_channel, Fs, location_car)
+    # Plot_each_channel_separately(data_per_channel, Fs, location_car)
 
     peak_begin = find_peak_begin(data_per_channel)
     # print('peak begin=',peak_begin)
@@ -665,7 +666,7 @@ def localization(data_recording, x_ref, mic_positions, Fs, eps, Vsound, Lhat, lo
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
                 Only use when you have a low number of peaks
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-        # Plot_each_segment_and_each_channel_separately(segments, Fs, location_car, n, lowest_peak_value)
+        Plot_each_segment_and_each_channel_separately(segments, Fs, location_car, n, lowest_peak_value)
         # Plot_all_channels_per_segment_one_plot(segments, Fs, location_car, n, lowest_peak_value)
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
@@ -735,7 +736,7 @@ def IQR_average(locations):
     return average_location_within_iqr
 
 
-# locations = localization(data_recording, xref, mic_positions_xy, Fs, eps, Vsound, len(xref), location_car, threshold)
+locations = localization(data_recording, xref, mic_positions_xy, Fs, eps, Vsound, len(xref), location_car, threshold)
 # print(locations)
 # location = IQR_average(locations)
 # #
